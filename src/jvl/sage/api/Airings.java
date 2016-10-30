@@ -33,6 +33,11 @@ public class Airings extends SageArrayObject<Airing>
     }
     */
     
+    public Airings()
+    {
+        airings = new ArrayList();
+    }
+    
     public Airings(Object object)
     {
         Object [] objects = null;
@@ -139,15 +144,16 @@ public class Airings extends SageArrayObject<Airing>
                 
                 for(int j = 0; j < shows.Size() && nextShow == null; j++)
                 {
-                    //Has an episode number, and is no watched
+                    //Has an episode number, and is not watched
                     if(shows.Get(j).GetEpisodeNumber() > 0 && !shows.Get(j).GetAiring().IsWatched())
                     {
-                        nextShow = shows.Get(i);
-                        
-                        if(oldestShow == null)
-                        {
-                            oldestShow = shows.Get(j);
-                        }
+                        nextShow = shows.Get(i);   
+                    }
+                    
+                    //The first show we come in contact with is the oldest
+                    if(oldestShow == null)
+                    {
+                        oldestShow = shows.Get(j);
                     }
                 }
             }

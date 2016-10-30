@@ -114,6 +114,21 @@ public class Shows extends SageArrayObject<Show>
         return retSorted;
     }
     
+    public Airings GetAirings()
+    {
+        Airings airings = new Airings();
+       
+        for(int i = 0; i < this.shows.size(); i++)
+        {
+            Object temp = shows.get(i).UnwrapObject();
+
+            Airing airing = new Airing(temp);
+
+            airings.Add(airing);
+        }
+        
+        return airings;
+    }
     
     @Override
     public Show Remove(int index) 
