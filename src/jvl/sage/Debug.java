@@ -118,7 +118,7 @@ public class Debug
                 Debug.CheckForFileRotation();
                 
                 FileWriter output = new FileWriter(debugfile, true);
-                output.write(formatedLine + System.lineSeparator());
+                output.write(formatedLine + System.getProperty("line.separator"));
                 output.close();
             }
             catch(Exception ex)

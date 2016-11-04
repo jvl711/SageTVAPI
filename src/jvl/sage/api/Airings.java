@@ -147,7 +147,7 @@ public class Airings extends SageArrayObject<Airing>
                     //Has an episode number, and is not watched
                     if(shows.Get(j).GetEpisodeNumber() > 0 && !shows.Get(j).GetAiring().IsWatched())
                     {
-                        nextShow = shows.Get(i);   
+                        nextShow = shows.Get(j);   
                     }
                     
                     //The first show we come in contact with is the oldest
@@ -186,6 +186,23 @@ public class Airings extends SageArrayObject<Airing>
         
         return unwrapped;
 
+    }
+    
+    /**
+     * Goes through each object in the list and tries to determine if they are
+     * still valid files on disk for each.  If not the airings are removed from
+     * the list
+     */
+    public void Verify()
+    {
+        for(int i = airings.size() - 1; i >= 0; i--)
+        {
+            if(!airings.get(i).ExistsOnDisk())
+            {
+                airings.remove(i);
+                Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.INFO);
+            }
+        }
     }
 
     @Override

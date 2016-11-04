@@ -65,7 +65,7 @@ public class SageAPI
         
         try 
         {
-            String message = "SageAPI calling method: " + method + System.lineSeparator();
+            String message = "SageAPI calling method: " + method + System.getProperty("line.separator");
         
             if(args != null)
             {

@@ -113,7 +113,16 @@ public class MediaFile extends SageObject
         
         return ret;
     }
-    
+ 
+    public long GetSize() throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetSize", this.mediafile);
+        
+        return ret;
+    }
+
     @Override
     public Object UnwrapObject() 
     {

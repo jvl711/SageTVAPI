@@ -1,6 +1,9 @@
 
 package jvl.sage.api;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 
@@ -16,6 +19,11 @@ public class Airing extends SageObject
     public Show GetShow()
     {
         return new Show(this.UnwrapObject());
+    }
+    
+    public MediaFile GetMediaFile()
+    {
+        return new MediaFile(this.UnwrapObject());
     }
     
     public boolean IsWatched() throws SageCallApiException
@@ -71,6 +79,34 @@ public class Airing extends SageObject
         int ret = java.lang.Math.round(temp);
         
         return ret;
+    }
+    
+    /**
+     * Attempt to determine if the there is an actual file for the airing.
+     * @return true if MediaFile.GetSize > 0 else false
+     */
+    public boolean ExistsOnDisk()
+    {
+        long size;
+        
+        try 
+        {
+            size = this.GetMediaFile().GetSize();
+        } 
+        catch (SageCallApiException ex) 
+        {
+            Debug.Writeln("Called Airing.ExistsOnDisk() - SageCallApiException.  I assume this means the object no longer exists", Debug.INFO);
+            size = 0;
+        }
+        
+        if(size > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     @Override
