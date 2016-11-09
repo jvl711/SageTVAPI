@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
+import java.util.Random;
 
 
 
 public class Airings extends SageArrayObject<Airing>
 {
     ArrayList<Airing> airings;
+    
+    ArrayList<Airing> randomAirings;
+    
+    
 
     /*
     public Airings(String MediaMask)
@@ -118,6 +123,37 @@ public class Airings extends SageArrayObject<Airing>
     }
     
     /**
+     * Uses the random class to pick a random airing in the set of airings.
+     * The class keeps track of the random airings picked, and will not pick
+     * the same airing twice until the set of airings is empty.  Then it will
+     * rebuild the list and start over again.
+     * 
+     * @return A random airing from the set
+     */
+    public Airing GetRandomAiring()
+    {
+        Random random = new Random();
+     
+        //Fill an array of airings.  Makes sure we do not pull the same episode
+        //over and over again.
+        if (randomAirings == null || randomAirings.size() == 0)
+        {
+            randomAirings = new ArrayList<Airing>();
+            
+            for(int i = 0; i < airings.size(); i++)
+            {
+                randomAirings.add(airings.get(i));
+            }
+        }
+        else if (randomAirings.size() == 1)
+        {
+            return randomAirings.remove(0);
+        }
+        
+        return airings.get(random.nextInt(this.airings.size()));
+    }
+    
+    /**
      * Looks through all of the airings for the oldest unwatched airing.
      * If all airings are unwatched it returns the oldest airing. If
      * there are no qualifying airings it will return null.
@@ -199,8 +235,10 @@ public class Airings extends SageArrayObject<Airing>
         {
             if(!airings.get(i).ExistsOnDisk())
             {
-                airings.remove(i);
+                Airing deletedAiring = airings.remove(i);
                 Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.INFO);
+                
+                randomAirings.remove(deletedAiring);
             }
         }
     }
@@ -208,12 +246,16 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public Airing Remove(int index) 
     {
-        return this.airings.remove(index);
+        Airing deletedAiring = this.airings.remove(index);
+        randomAirings.remove(deletedAiring);
+        
+        return deletedAiring;
     }
 
     @Override
     public void Add(Airing d) 
     {
+        randomAirings.add(d);
         this.airings.add(d);
     }
 
@@ -232,6 +274,7 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public void Set(int index, Airing d) 
     {
+        this.randomAirings.set(index, d);
         this.airings.set(index, d);
     }
     
