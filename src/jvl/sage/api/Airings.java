@@ -41,6 +41,7 @@ public class Airings extends SageArrayObject<Airing>
     public Airings()
     {
         airings = new ArrayList();
+        randomAirings = new ArrayList();
     }
     
     public Airings(Object object)

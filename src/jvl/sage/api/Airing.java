@@ -75,8 +75,8 @@ public class Airing extends SageObject
     
     public int GetWatchedPercent() throws SageCallApiException
     {
-        float temp = ((this.GetWatchedDuration() / this.GetDuration()) * 100);
-        int ret = java.lang.Math.round(temp);
+        double temp = (((this.GetWatchedDuration() * 1.0) / (this.GetDuration() * 1.0)) * 100.0);
+        int ret = (int)java.lang.Math.round(temp);
         
         return ret;
     }
