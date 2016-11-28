@@ -211,6 +211,44 @@ public class Airings extends SageArrayObject<Airing>
         return nextShow.GetAiring();
     }
     
+    
+    /**
+     * Check to see if there is a gap in the episode numbers.  It does not expect
+     * that all of the episodes are present, only that if in a series of episodes
+     * there is a number that is missing
+     * 
+     * Excludes Seasons 0
+     * 
+     * @return Returns true if there is a gap in episode numbers.  False if there is not
+     */
+    public boolean IsGapInAirings()
+    {
+        Integer[] seasons = this.GetShows().GetSeasons();
+        int lastEpisodeNumber;
+        
+        for(int i = 0; i < seasons.length; i++)
+        {    
+            //Ignore 0 season
+            if(seasons[i] > 0)
+            {
+                Shows shows = this.GetShows().GetShows(seasons[i]);
+                
+                lastEpisodeNumber = shows.Get(0).GetEpisodeNumber();
+                
+                for(int j = 1; j < shows.Size(); j++)
+                {
+                    //If there is a gap in the series (Ep 2, Ep 4, Ep 5) vs (Ep 2, Ep 3, Ep 4, Ep 5)
+                    if(shows.Get(j).GetEpisodeNumber() > lastEpisodeNumber + 1)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+    
     @Override
     public Object[] UnwrapObject() 
     {
@@ -223,6 +261,67 @@ public class Airings extends SageArrayObject<Airing>
         
         return unwrapped;
 
+    }
+    
+    /**
+     * Will delete all of the airings that are watched.  Will stop deleting
+     * if one of the files errors when attempting to delete.  Will remove the
+     * items from the collection if they are successfully deleted
+     * 
+     * @return true if all of the files are deleted successfully.  Returns false
+     * and stops processing if any of them return an error
+     * @throws jvl.sage.SageCallApiException Throws an exception if the call fails
+     */
+    public boolean DeleteAllWatched() throws SageCallApiException 
+    {
+        for(int i = airings.size() - 1; i >= 0; i--)
+        {
+        
+                if(airings.get(i).IsWatched())
+                {
+                    if(airings.get(i).GetMediaFile().DeleteFile())
+                    {
+                        airings.remove(i);
+                    }
+                    else
+                    {
+                        Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.ERROR);
+                        return false;
+                    }
+                }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Will delete all of the airings that are not currently recording.  Will stop deleting
+     * if one of the files errors when attempting to delete.  Will remove the
+     * items from the collection if they are successfully deleted
+     * 
+     * @return true if all of the files are deleted successfully.  Returns false
+     * and stops processing if any of them return an error
+     * @throws jvl.sage.SageCallApiException Throws an exception if the call fails
+     */
+    public boolean DeleteAll() throws SageCallApiException 
+    {
+        for(int i = airings.size() - 1; i >= 0; i--)
+        {
+            if(!airings.get(i).GetMediaFile().IsFileCurrentlyRecording())
+            {
+                if(airings.get(i).GetMediaFile().DeleteFile())
+                {
+                    airings.remove(i);
+                }
+                else
+                {
+                    Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.ERROR);
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
     
     /**

@@ -122,6 +122,24 @@ public class MediaFile extends SageObject
         
         return ret;
     }
+    
+    public boolean IsFileCurrentlyRecording() throws SageCallApiException
+    {
+        boolean ret;
+        
+        ret = SageAPI.callAPIBoolean("IsFileCurrentlyRecording", mediafile);
+        
+        return ret;
+    }
+    
+    public boolean DeleteFile() throws SageCallApiException
+    {
+        boolean ret;
+        
+        ret = SageAPI.callAPIBoolean("DeleteFile", mediafile);
+        
+        return ret;
+    }
 
     @Override
     public Object UnwrapObject() 
