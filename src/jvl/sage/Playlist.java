@@ -16,23 +16,50 @@ public class Playlist
 
     public Playlist(Shows shows)
     {
-        this.airings = shows.GetAirings();
+        airings = new Airings();
+        
+        Integer [] seasons = shows.GetSeasons();
+        
+        for(int i = 0; i < seasons.length; i++)
+        {
+            Shows temp = shows.GetShows(seasons[i]);
+            
+            for(int j = 0; j < temp.Size(); j++)
+            {
+                airings.Add(temp.Get(j).GetAiring());
+            }
+        }
+        
         currentIndex = 0;
     }
     
     public Playlist(Airings airings)
     {
-        this.airings = airings;
+        this.airings = new Airings();
+        Shows shows = airings.GetShows();
+        
+        Integer [] seasons = shows.GetSeasons();
+        
+        for(int i = 0; i < seasons.length; i++)
+        {
+            Shows temp = shows.GetShows(seasons[i]);
+            
+            for(int j = 0; j < temp.Size(); j++)
+            {
+                this.airings.Add(temp.Get(j).GetAiring());
+            }
+        }
+        
         currentIndex = 0;
     }
-    
+            
     /**
      * Returns true if the next call to GetNextAiring would succeed
      * @return 
      */
     public boolean HasMoreAirings()
     {
-        return (currentIndex + 1) < airings.Size();
+        return (currentIndex) < airings.Size();
     }
     
     /**
@@ -41,14 +68,8 @@ public class Playlist
      * @return 
      */
     public Object GetNextAiringUnwrapped()
-    {
-        //Check to see if incrementing would go beyond
-        if(!this.HasMoreAirings())
-        {
-            throw new RuntimeException("Index is outside of the bounds");
-        }
-        
-        return airings.Get(++currentIndex).UnwrapObject();
+    {        
+        return GetNextAiring().UnwrapObject();
     }
     
     public Airing GetNextAiring()
@@ -59,7 +80,10 @@ public class Playlist
             throw new RuntimeException("Index is outside of the bounds");
         }
         
-        return airings.Get(++currentIndex);
+        Airing airing = airings.Get(currentIndex);
+        currentIndex++;
+        
+        return airing;
     }
     
 

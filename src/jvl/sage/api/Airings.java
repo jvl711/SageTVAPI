@@ -73,7 +73,6 @@ public class Airings extends SageArrayObject<Airing>
         }
     }
     
-    
     public Shows GetShows()
     {
         Shows shows = new Shows();
@@ -88,6 +87,23 @@ public class Airings extends SageArrayObject<Airing>
         }
         
         return shows;
+    }
+    
+    public Airings GetUnwatchedAirings() throws SageCallApiException
+    {
+        Airings unwatchedAirings = new Airings();
+        
+        for(int i = 0; i < airings.size(); i++)
+        {
+            if(!airings.get(i).IsWatched())
+            {
+                unwatchedAirings.Add(airings.get(i));
+            }
+        }
+        
+        System.out.println("Airings.GetUnwatchedAirings: " + unwatchedAirings.Size());
+        
+        return unwatchedAirings;
     }
 
     /**
