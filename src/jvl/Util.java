@@ -57,6 +57,40 @@ public class Util
     }
     
     /**
+     * Takes in an Object [] and resizes it to new length starting from the 
+     * start index given. It copies all of the data to the new structure.
+     * 
+     * @param data Object [] to resize
+     * @param startIndex Index to start copying from
+     * @param length Length of the new object
+     * @return Returns new Object [] of given length
+     */
+    public static Object GetSubset(Object data, int startIndex, int length)
+    {
+        Object ret;
+        
+        if(data instanceof Object[])
+        {
+            Object [] input = ((Object[])data);
+            Object [] output = new Object[length];
+            int j = 0;
+            
+            for(int i = startIndex; i < length;  i++)
+            {
+                output[j] = input[i];
+            }
+            
+            ret = output;
+        }
+        else
+        {
+            throw new RuntimeException("Unimplemented data type passed to: GetSubset");
+        }
+        
+        return ret;
+    }
+    
+    /**
      * Returns item at the index of a Collection, Array, Map or String.  
      * Otherwise it will return the object passed.
      * 

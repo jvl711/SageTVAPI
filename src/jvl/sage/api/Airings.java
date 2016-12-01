@@ -254,10 +254,13 @@ public class Airings extends SageArrayObject<Airing>
                 for(int j = 1; j < shows.Size(); j++)
                 {
                     //If there is a gap in the series (Ep 2, Ep 4, Ep 5) vs (Ep 2, Ep 3, Ep 4, Ep 5)
+                    //Allows for duplicate episodes
                     if(shows.Get(j).GetEpisodeNumber() > lastEpisodeNumber + 1)
                     {
                         return true;
                     }
+                    
+                    lastEpisodeNumber = shows.Get(j).GetEpisodeNumber();
                 }
             }
         }
