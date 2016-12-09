@@ -4,6 +4,7 @@ package jvl.sage.api;
 import jvl.sage.SageArrayObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import jvl.sage.SageCallApiException;
 
 
 public class MediaFiles extends SageArrayObject<MediaFile>
@@ -39,6 +40,28 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         }
     }
 
+    public void FilterByMetadata(String field, String value)
+    {
+        ArrayList<MediaFile> tempmediafiles = new ArrayList<MediaFile>();
+        
+        for(int i = 0; i < this.mediafiles.size(); i++)
+        {
+            try
+            {
+                if(this.mediafiles.get(i).GetMetadata(field).equalsIgnoreCase(value))
+                {
+                    tempmediafiles.add(this.mediafiles.get(i));
+                }
+            }
+            catch(Exception ex)
+            {
+                //Assume that if there is an error there was no meta data on the file
+            }
+        }
+        
+        this.mediafiles = tempmediafiles;
+    }
+    
     @Override
     public MediaFile Remove(int index) 
     {
@@ -76,7 +99,7 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         
         for(int i = 0; i < mediafiles.size(); i++)
         {
-            temp[i] = mediafiles.get(i);
+            temp[i] = mediafiles.get(i).UnwrapObject();
         }
         
         return temp;

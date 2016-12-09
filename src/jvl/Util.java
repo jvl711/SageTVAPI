@@ -78,6 +78,8 @@ public class Util
             for(int i = startIndex; i < length;  i++)
             {
                 output[j] = input[i];
+                
+                j++;
             }
             
             ret = output;
