@@ -4,7 +4,10 @@ package jvl.sage.api;
 import jvl.sage.SageArrayObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
+import jvl.sage.SageCallApiException;
 
 public class Shows extends SageArrayObject<Show>
 {
@@ -46,12 +49,12 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
-    public int GetSeasonCount()
+    public int GetSeasonCount() throws SageCallApiException
     {
         return this.GetSeasons().length;
     }
     
-    public Integer [] GetSeasons()
+    public Integer [] GetSeasons() throws SageCallApiException
     {
         Integer [] ret;
         LinkedList list = new LinkedList();
@@ -78,7 +81,7 @@ public class Shows extends SageArrayObject<Show>
         return ret;
     }
     
-    public Shows GetShows(int season)
+    public Shows GetShows(int season) throws SageCallApiException
     {
         Shows retTemp = new Shows();
         Shows retSorted = new Shows();
@@ -128,6 +131,11 @@ public class Shows extends SageArrayObject<Show>
         }
         
         return airings;
+    }
+    
+    public void SortByTitle()
+    {
+        Collections.sort(shows, new SortableShowTitleCompaator());
     }
     
     @Override

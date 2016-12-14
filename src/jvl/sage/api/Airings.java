@@ -237,7 +237,7 @@ public class Airings extends SageArrayObject<Airing>
      * 
      * @return Returns true if there is a gap in episode numbers.  False if there is not
      */
-    public boolean IsGapInAirings()
+    public boolean IsGapInAirings() throws SageCallApiException
     {
         Integer[] seasons = this.GetShows().GetSeasons();
         int lastEpisodeNumber;

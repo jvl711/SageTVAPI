@@ -75,11 +75,11 @@ public class Util
             Object [] output = new Object[length];
             int j = 0;
             
-            for(int i = startIndex; i < length;  i++)
+            for(int i = startIndex; i < length && i < input.length;  i++)
             {
                 output[j] = input[i];
-                
                 j++;
+
             }
             
             ret = output;
