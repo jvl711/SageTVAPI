@@ -39,6 +39,20 @@ public class Show extends SageObject
     {
         return callApiString("GetShowTitle", this);
     }
+ 
+    public char GetShowTitleSearchChar() throws SageCallApiException
+    {
+        String title = this.GetSortableShowTitle();
+        
+        if(title.length() > 0)
+        {
+            return this.GetSortableShowTitle().charAt(0);
+        }
+        else
+        {
+            return ' ';
+        }
+    }
     
     public String GetSortableShowTitle() throws SageCallApiException
     {

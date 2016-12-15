@@ -135,7 +135,17 @@ public class Shows extends SageArrayObject<Show>
     
     public void SortByTitle()
     {
+        this.SortByTitle(false);
+    }
+    
+    public void SortByTitle(boolean desc)
+    {
         Collections.sort(shows, new SortableShowTitleCompaator());
+        
+        if(desc)
+        {
+            Collections.reverse(shows);
+        }
     }
     
     @Override

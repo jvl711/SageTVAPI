@@ -14,7 +14,7 @@ public class Playlist
     private Airings airings;
     private int currentIndex;
 
-    public Playlist(Shows shows)
+    public Playlist(Shows shows) throws SageCallApiException
     {
         airings = new Airings();
         
@@ -33,7 +33,7 @@ public class Playlist
         currentIndex = 0;
     }
     
-    public Playlist(Airings airings)
+    public Playlist(Airings airings) throws SageCallApiException
     {
         this.airings = new Airings();
         Shows shows = airings.GetShows();
