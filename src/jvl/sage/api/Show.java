@@ -44,7 +44,7 @@ public class Show extends SageObject
 
     public String GetShowTitle() throws SageCallApiException
     {
-        return callApiString("GetShowTitle", this);
+        return callApiString("GetShowTitle", this.show);
     }
  
     public char GetShowTitleSearchChar() throws SageCallApiException
