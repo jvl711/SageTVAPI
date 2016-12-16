@@ -79,14 +79,22 @@ public class Airings extends SageArrayObject<Airing>
        
         for(int i = 0; i < this.airings.size(); i++)
         {
-            Object temp = airings.get(i).UnwrapObject();
-
-            Show show = new Show(temp);
-
-            shows.Add(show);
+            shows.Add(this.airings.get(i).GetShow());
         }
         
         return shows;
+    }
+    
+    public MediaFiles GetMediaFiles()
+    {
+        MediaFiles mediafiles = new MediaFiles();
+        
+        for(int i = 0; i < this.airings.size(); i++)
+        {
+            mediafiles.Add(this.airings.get(i).GetMediaFile());
+        }
+        
+        return mediafiles;
     }
     
     public Airings GetUnwatchedAirings() throws SageCallApiException

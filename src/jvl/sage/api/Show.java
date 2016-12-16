@@ -1,11 +1,8 @@
 package jvl.sage.api;
 
 import java.util.Comparator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
-
 
 public class Show extends SageObject
 {
@@ -15,6 +12,16 @@ public class Show extends SageObject
     public Show(Object show)
     {
         this.show = show;
+    }
+    
+    public MediaFile GetMediaFile()
+    {
+        return new MediaFile(this.UnwrapObject());
+    }
+    
+    public Airing GetAiring()
+    {
+        return new Airing(this.UnwrapObject());
     }
     
     public int GetSeasonNumber() throws SageCallApiException 
@@ -79,11 +86,6 @@ public class Show extends SageObject
         }
         
         return ret;
-    }
-    
-    public Airing GetAiring()
-    {
-        return new Airing(this.UnwrapObject());
     }
 
     

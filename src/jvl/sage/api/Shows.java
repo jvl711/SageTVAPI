@@ -49,6 +49,30 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
+    public Airings GetAirings()
+    {
+        Airings airings = new Airings();
+       
+        for(int i = 0; i < this.shows.size(); i++)
+        {
+            airings.Add(this.shows.get(i).GetAiring());
+        }
+        
+        return airings;
+    }
+    
+    public MediaFiles GetMediaFiles()
+    {
+        MediaFiles mediafiles = new MediaFiles();
+        
+        for(int i = 0; i < this.shows.size(); i++)
+        {
+            mediafiles.Add(this.shows.get(i).GetMediaFile());
+        }
+                
+        return mediafiles;
+    }
+    
     public int GetSeasonCount() throws SageCallApiException
     {
         return this.GetSeasons().length;
@@ -115,22 +139,6 @@ public class Shows extends SageArrayObject<Show>
         }
 
         return retSorted;
-    }
-    
-    public Airings GetAirings()
-    {
-        Airings airings = new Airings();
-       
-        for(int i = 0; i < this.shows.size(); i++)
-        {
-            Object temp = shows.get(i).UnwrapObject();
-
-            Airing airing = new Airing(temp);
-
-            airings.Add(airing);
-        }
-        
-        return airings;
     }
     
     public void SortByTitle()

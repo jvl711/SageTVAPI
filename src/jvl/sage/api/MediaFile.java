@@ -15,6 +15,16 @@ public class MediaFile extends SageObject
         this.mediafile = mediafile;
     }
     
+    public Show GetShow()
+    {
+        return new Show(this.UnwrapObject());
+    }
+    
+    public Airing GetAiring()
+    {
+        return new Airing(this.UnwrapObject());
+    }
+    
     public String GetVideoResolution() throws SageCallApiException
     {
         String ret;

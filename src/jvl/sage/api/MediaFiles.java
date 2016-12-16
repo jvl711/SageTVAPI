@@ -11,6 +11,11 @@ public class MediaFiles extends SageArrayObject<MediaFile>
 {
     ArrayList<MediaFile> mediafiles;
     
+    public MediaFiles()
+    {
+        mediafiles = new ArrayList<MediaFile>();
+    }
+    
     public MediaFiles(Object object)
     {
         Object [] objects = null;
@@ -40,6 +45,30 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         }
     }
 
+    public Shows GetShows()
+    {
+        Shows shows = new Shows();
+        
+        for(int i = 0; i < this.mediafiles.size(); i++)
+        {
+            shows.Add(mediafiles.get(i).GetShow());
+        }
+        
+        return shows;
+    }
+    
+    public Airings GetAirings()
+    {
+        Airings airings = new Airings();
+        
+        for(int i = 0; i < this.mediafiles.size(); i++)
+        {
+            airings.Add(mediafiles.get(i).GetAiring());
+        }
+        
+        return airings;
+    }
+    
     public void FilterByMetadata(String field, String value)
     {
         ArrayList<MediaFile> tempmediafiles = new ArrayList<MediaFile>();
