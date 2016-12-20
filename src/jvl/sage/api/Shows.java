@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import jvl.sage.SageCallApiException;
 
+
 public class Shows extends SageArrayObject<Show>
 {
     ArrayList<Show> shows;
@@ -153,6 +154,22 @@ public class Shows extends SageArrayObject<Show>
         if(desc)
         {
             Collections.reverse(shows);
+        }
+    }
+    
+    public void CleanPosters(int width)
+    {
+        for(int i = 0; i < shows.size(); i++)
+        {
+            shows.get(i).CleanPosters(width);
+        }
+    }
+    
+    public void ScalePosters(int width)
+    {
+        for(int i = 0; i < shows.size(); i++)
+        {
+            shows.get(i).ScalePosters(width);
         }
     }
     

@@ -1,12 +1,17 @@
 package jvl.sage.api;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.util.Comparator;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
+import phoenix.fanart;
+import phoenix.util;
+import jvl.AdvancedImage;
 
 public class Show extends SageObject
 {
-    
     private Object show;
     
     public Show(Object show)
@@ -88,6 +93,64 @@ public class Show extends SageObject
         return ret;
     }
 
+    public String [] GetPosters()
+    {
+        return fanart.GetFanartPosters(this.show);
+    }
+    
+    /**
+     * Delete all posters that are not as large as width
+     * @param Width Any poster with a width less than this will be deleted
+     */
+    public void CleanPosters(int Width)
+    {
+        String [] posters = fanart.GetFanartPosters(this.show);
+        
+        for(int i = 0; i < posters.length; i++)
+        {
+            try
+            {
+                AdvancedImage image = new AdvancedImage(posters[i]);
+                
+                if(image.getWidth() < Width)
+                {
+                    File file = new File(posters[i]);
+                    file.delete();
+                }
+            }
+            catch(IOException e)
+            {
+                //TODO: Add error logging
+            }
+        }
+    }
+    
+    /***
+     * Scales all posters for this show to the given width maintaining
+     * aspect ratio
+     * @param Width 
+     */
+    public void ScalePosters(int Width)
+    {
+        String [] posters = fanart.GetFanartPosters(this.show);
+        
+        for(int i = 0; i < posters.length; i++)
+        {
+            try
+            {
+                //TODO: Only resize if the poster is > than the specified width
+                
+                AdvancedImage image = new AdvancedImage(posters[i]);
+                image.ResizeImageByWidth(Width, true);
+                image.SaveImageToFile(posters[i]);
+            }
+            catch(IOException e)
+            {
+                //TODO: Add error logging
+            }
+        }
+        
+    }
     
     @Override
     public Object UnwrapObject() 

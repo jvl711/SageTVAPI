@@ -25,6 +25,7 @@ public class Util
         return temp;
     }
     
+    
     /**
      * Returns size of Collection, Array, Map or String.  Otherwise it assumes
      * that the object is singular and returns 1
@@ -62,7 +63,7 @@ public class Util
      * 
      * @param data Object [] to resize
      * @param startIndex Index to start copying from
-     * @param length Length of the new object
+     * @param length Length of the new object will not exceed this length
      * @return Returns new Object [] of given length
      */
     public static Object GetSubset(Object data, int startIndex, int length)
@@ -72,8 +73,69 @@ public class Util
         if(data instanceof Object[])
         {
             Object [] input = ((Object[])data);
-            Object [] output = new Object[length];
+            Object [] output;
             int j = 0;
+            
+            if((input.length - startIndex) < length)
+            {
+                output = new Object[input.length - startIndex];
+            }
+            else
+            {
+                output = new Object[length];
+            }
+            
+            
+            for(int i = startIndex; i < length && i < input.length;  i++)
+            {
+                output[j] = input[i];
+                j++;
+
+            }
+            
+            ret = output;
+        }
+        else
+        {
+            throw new RuntimeException("Unimplemented data type passed to: GetSubset");
+        }
+        
+        return ret;
+    }
+    
+        /**
+     * Takes in an Object [] and resizes it to new length starting from the 
+     * start index given. It copies all of the data to the new structure.
+     * 
+     * @param data Object [] to resize
+     * @param startIndex Index to start copying from
+     * @param minLength Minimum length of the new object
+     * @param length The length of the new object will not exceed this length
+     * @return Returns new Object [] of given length
+     */
+    public static Object GetSubset(Object data, int startIndex, int minLength, int length)
+    {
+        Object ret;
+        
+        if(data instanceof Object[])
+        {
+            Object [] input = ((Object[])data);
+            Object [] output;
+            int j = 0;
+            
+            if((input.length - startIndex) < minLength)
+            {
+                output = new Object[minLength];
+            }
+            else if((input.length - startIndex) < length)
+            {
+                output = new Object[input.length - startIndex];
+            }
+            else
+            {
+                output = new Object[length];
+            }
+                   
             
             for(int i = startIndex; i < length && i < input.length;  i++)
             {
