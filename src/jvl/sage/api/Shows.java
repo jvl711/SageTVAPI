@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import jvl.sage.JobStatus;
 import jvl.sage.SageCallApiException;
 
 
@@ -165,12 +166,16 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
-    public void ScalePosters(int width)
+    public JobStatus ScalePosters(int width)
     {
-        for(int i = 0; i < shows.size(); i++)
-        {
-            shows.get(i).ScalePosters(width);
-        }
+        JobStatus jobStatus = new JobStatus();
+        
+        ScalePostersThread scalePosterThread = new ScalePostersThread(this, width, jobStatus);
+        Thread thread = new Thread(scalePosterThread);
+        thread.start();
+        
+        
+        return jobStatus;
     }
     
     @Override
@@ -216,4 +221,38 @@ public class Shows extends SageArrayObject<Show>
         this.shows.set(index, d);
     }
     
+    private class ScalePostersThread implements Runnable
+    {
+        private JobStatus jobStatus;
+        private Shows shows;
+        private int width;
+        
+        public ScalePostersThread(Shows shows, int width, JobStatus jobStatus)
+        {
+           this.jobStatus = jobStatus;
+           this.shows = shows;
+           this.width = width;
+        }
+        
+        @Override
+        public void run() 
+        {
+            this.jobStatus.SetRunning();
+            
+            try
+            {
+                for(int i = 0; i < this.shows.Size(); i++)
+                {
+                    shows.Get(i).ScalePosters(width);
+                    
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.Size() + " - " + shows.Get(i).GetShowTitle());
+                }
+            }
+            catch(Exception ex)
+            {
+                this.jobStatus.SetError("Error scaling posters: " + ex.getMessage());
+            }
+        }
+        
+    }
 }

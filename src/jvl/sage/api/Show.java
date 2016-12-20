@@ -106,21 +106,24 @@ public class Show extends SageObject
     {
         String [] posters = fanart.GetFanartPosters(this.show);
         
-        for(int i = 0; i < posters.length; i++)
+        if(posters != null)
         {
-            try
+            for(int i = 0; i < posters.length; i++)
             {
-                AdvancedImage image = new AdvancedImage(posters[i]);
-                
-                if(image.getWidth() < Width)
+                try
                 {
-                    File file = new File(posters[i]);
-                    file.delete();
+                    AdvancedImage image = new AdvancedImage(posters[i]);
+
+                    if(image.getWidth() < Width)
+                    {
+                        File file = new File(posters[i]);
+                        file.delete();
+                    }
                 }
-            }
-            catch(IOException e)
-            {
-                //TODO: Add error logging
+                catch(IOException e)
+                {
+                    //TODO: Add error logging
+                }
             }
         }
     }
@@ -130,23 +133,31 @@ public class Show extends SageObject
      * aspect ratio
      * @param Width 
      */
-    public void ScalePosters(int Width)
+    public void ScalePosters(int width)
     {
         String [] posters = fanart.GetFanartPosters(this.show);
         
-        for(int i = 0; i < posters.length; i++)
+        if(posters != null)
         {
-            try
+            for(int i = 0; i < posters.length; i++)
             {
-                //TODO: Only resize if the poster is > than the specified width
-                
-                AdvancedImage image = new AdvancedImage(posters[i]);
-                image.ResizeImageByWidth(Width, true);
-                image.SaveImageToFile(posters[i]);
-            }
-            catch(IOException e)
-            {
-                //TODO: Add error logging
+                try
+                {
+                    //TODO: Only resize if the poster is > than the specified width
+
+                    
+                    AdvancedImage image = new AdvancedImage(posters[i]);
+                    
+                    if(image.getWidth() > width)
+                    {
+                        image.ResizeImageByWidth(width, true);
+                        image.SaveImageToFile(posters[i]);
+                    }
+                }
+                catch(IOException e)
+                {
+                    //TODO: Add error logging
+                }
             }
         }
         
