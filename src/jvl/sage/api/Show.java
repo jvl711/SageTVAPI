@@ -1,14 +1,14 @@
 package jvl.sage.api;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import phoenix.fanart;
-import phoenix.util;
 import jvl.AdvancedImage;
+import jvl.sage.Debug;
+
 
 public class Show extends SageObject
 {
@@ -120,7 +120,7 @@ public class Show extends SageObject
                         file.delete();
                     }
                 }
-                catch(IOException e)
+                catch(IOException ex2)
                 {
                     //TODO: Add error logging
                 }
@@ -154,9 +154,15 @@ public class Show extends SageObject
                         image.SaveImageToFile(posters[i]);
                     }
                 }
-                catch(IOException e)
+                catch(IllegalArgumentException ex1)
                 {
-                    //TODO: Add error logging
+                    Debug.Writeln("jvl.sage.api.Show.ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
+                    Debug.WriteStackTrace(ex1, Debug.ERROR);
+                }
+                catch(IOException ex2)
+                {
+                    Debug.Writeln("jvl.sage.api.Show.ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
+                    Debug.WriteStackTrace(ex2, Debug.ERROR);
                 }
             }
         }

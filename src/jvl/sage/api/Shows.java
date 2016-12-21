@@ -158,12 +158,15 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
-    public void CleanPosters(int width)
+    public JobStatus CleanPosters(int width)
     {
-        for(int i = 0; i < shows.size(); i++)
-        {
-            shows.get(i).CleanPosters(width);
-        }
+        JobStatus jobStatus = new JobStatus();
+        
+        CleanPostersThread cleanPostersThread = new CleanPostersThread(this, width, jobStatus);
+        Thread thread = new Thread(cleanPostersThread);
+        thread.start();
+        
+        return jobStatus;
     }
     
     public JobStatus ScalePosters(int width)
@@ -247,10 +250,49 @@ public class Shows extends SageArrayObject<Show>
                     
                     this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.Size() + " - " + shows.Get(i).GetShowTitle());
                 }
+                
+                this.jobStatus.SetComplete();
             }
             catch(Exception ex)
             {
                 this.jobStatus.SetError("Error scaling posters: " + ex.getMessage());
+            }
+        }
+        
+    }
+    
+    private class CleanPostersThread implements Runnable
+    {
+        private JobStatus jobStatus;
+        private Shows shows;
+        private int width;
+        
+        public CleanPostersThread(Shows shows, int width, JobStatus jobStatus)
+        {
+           this.jobStatus = jobStatus;
+           this.shows = shows;
+           this.width = width;
+        }
+        
+        @Override
+        public void run() 
+        {
+            this.jobStatus.SetRunning();
+            
+            try
+            {
+                for(int i = 0; i < this.shows.Size(); i++)
+                {
+                    shows.Get(i).CleanPosters(width);
+                    
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.Size() + " - " + shows.Get(i).GetShowTitle());
+                }
+                
+                this.jobStatus.SetComplete();
+            }
+            catch(Exception ex)
+            {
+                this.jobStatus.SetError("Error cleaning posters: " + ex.getMessage());
             }
         }
         
