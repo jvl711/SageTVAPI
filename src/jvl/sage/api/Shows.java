@@ -181,6 +181,30 @@ public class Shows extends SageArrayObject<Show>
         return jobStatus;
     }
     
+    public Show GetShowBySearchChar(char searchChar) throws SageCallApiException
+    {
+        Show lastShow = shows.get(0);
+        
+        for(int i = 1; i < shows.size(); i++)
+        {
+            if(shows.get(i).GetShowTitle().charAt(0) < searchChar)
+            {
+                lastShow = shows.get(i);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return lastShow;
+    }
+    
+    public int GetIndex(Show show)
+    {
+        return shows.indexOf(show);
+    }
+    
     @Override
     public Show Remove(int index) 
     {

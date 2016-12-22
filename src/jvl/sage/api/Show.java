@@ -99,7 +99,9 @@ public class Show extends SageObject
     }
     
     /**
-     * Delete all posters that are not as large as width
+     * Delete all posters that are not as large as specified width
+     * Also deletes any poster that does not fall into specified 
+     * ratio of width / height between .68 and .64
      * @param Width Any poster with a width less than this will be deleted
      */
     public void CleanPosters(int Width)
@@ -114,7 +116,10 @@ public class Show extends SageObject
                 {
                     AdvancedImage image = new AdvancedImage(posters[i]);
 
-                    if(image.getWidth() < Width)
+                    Double ratio = (image.getWidth() * 1.0) / (image.getHeight() * 1.0);
+                    
+                    //Delete the poster if it is not in the standard format
+                    if(ratio < 0.64 || ratio > 0.68 || image.getWidth() < Width)
                     {
                         File file = new File(posters[i]);
                         file.delete();
