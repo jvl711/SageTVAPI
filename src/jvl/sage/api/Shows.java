@@ -181,15 +181,25 @@ public class Shows extends SageArrayObject<Show>
         return jobStatus;
     }
     
+    public Show GetShowBySearchChar(String searchChar) throws SageCallApiException
+    {
+        return this.GetShowBySearchChar(searchChar.toUpperCase().charAt(0));
+    }
+    
     public Show GetShowBySearchChar(char searchChar) throws SageCallApiException
     {
         Show lastShow = shows.get(0);
         
         for(int i = 1; i < shows.size(); i++)
         {
-            if(shows.get(i).GetShowTitle().charAt(0) < searchChar)
+            if(shows.get(i).GetSortableShowTitle().toUpperCase().charAt(0) < searchChar)
             {
                 lastShow = shows.get(i);
+            }
+            else if(shows.get(i).GetSortableShowTitle().toUpperCase().charAt(0) == searchChar)
+            {
+                lastShow = shows.get(i);
+                break;
             }
             else
             {

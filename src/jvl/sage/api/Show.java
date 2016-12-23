@@ -190,7 +190,7 @@ class SortableShowTitleCompaator implements Comparator<Show>
     {
         try 
         {   
-            return t.GetSortableShowTitle().compareTo(t1.GetSortableShowTitle());
+            return t.GetSortableShowTitle().toUpperCase().compareTo(t1.GetSortableShowTitle().toUpperCase());
             
         } 
         catch (SageCallApiException ex) 
