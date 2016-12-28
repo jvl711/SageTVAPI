@@ -2,6 +2,7 @@ package jvl.sage.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
@@ -12,6 +13,9 @@ import jvl.sage.Debug;
 
 public class Show extends SageObject
 {
+    public static final double MINIMUM_POSTER_RATIO = 0.64;
+    public static final double MAXIMUM_POSTER_RATIO = 0.68;
+
     private Object show;
     
     public Show(Object show)
@@ -93,9 +97,132 @@ public class Show extends SageObject
         return ret;
     }
 
+    public String GetPoster()
+    {
+        String poster = fanart.GetFanartPoster(this.show);
+        File file = null;
+        
+        if(poster != null)
+        {
+            file = new File(poster);
+        }
+                
+        if(file == null || !file.exists())
+        {
+            String [] posters = this.GetPosters();
+            
+            if(posters.length > 0)
+            {
+                poster = posters[0];
+            }
+            
+            fanart.SetFanartPoster(show, poster);
+        }
+        
+        return poster;
+    }
+    
+    public String GetBackground()
+    {
+        String background = fanart.GetFanartBackground(this.show);
+        File file = null;
+        
+        if(background != null)
+        {
+            file = new File(background);
+        }
+                
+        if(file == null || !file.exists())
+        {
+            String [] backgrounds = this.GetBackgrounds();
+            
+            if(backgrounds.length > 0)
+            {
+                background = backgrounds[0];
+            }
+            
+            fanart.SetFanartPoster(show, background);
+        }
+        
+        return background;
+    }
+    
+    public void SetPoster(String poster)
+    {
+        fanart.SetFanartPoster(show, poster);
+    }
+    
+    public void SetBackground(String background)
+    {
+        fanart.SetFanartBackground(show, background);
+    }
+    /**
+     * Returns all of the posters for the show.  Verifies that the poster
+     * exists.
+     * @return String [] of paths to posters that have been verified to exist
+     */
     public String [] GetPosters()
     {
-        return fanart.GetFanartPosters(this.show);
+        String [] posters = fanart.GetFanartPosters(this.show);
+        ArrayList temp = new ArrayList();
+        
+        for(int i = 0; i < posters.length; i++)
+        {
+            File file = new File(posters[i]);
+            
+            if(file.exists())
+            {
+                temp.add(posters[i]);
+            }
+        }
+        
+        if(temp.size() > 0)
+        {
+            posters = new String[temp.size()];
+            
+            for(int i = 0; i < temp.size(); i++)
+            {
+                posters[i] = (String)temp.get(i);
+            }
+        }
+        else
+        {
+            posters = null;
+        }
+        
+        return posters;
+    }
+    
+    public String [] GetBackgrounds()
+    {
+        String [] backgrounds = fanart.GetFanartBackgrounds(this.show);
+        ArrayList temp = new ArrayList();
+        
+        for(int i = 0; i < backgrounds.length; i++)
+        {
+            File file = new File(backgrounds[i]);
+            
+            if(file.exists())
+            {
+                temp.add(backgrounds[i]);
+            }
+        }
+        
+        if(temp.size() > 0)
+        {
+            backgrounds = new String[temp.size()];
+            
+            for(int i = 0; i < temp.size(); i++)
+            {
+                backgrounds[i] = (String)temp.get(i);
+            }
+        }
+        else
+        {
+            backgrounds = null;
+        }
+        
+        return backgrounds;
     }
     
     /**
@@ -119,7 +246,7 @@ public class Show extends SageObject
                     Double ratio = (image.getWidth() * 1.0) / (image.getHeight() * 1.0);
                     
                     //Delete the poster if it is not in the standard format
-                    if(ratio < 0.64 || ratio > 0.68 || image.getWidth() < Width)
+                    if(ratio < Show.MINIMUM_POSTER_RATIO || ratio > Show.MAXIMUM_POSTER_RATIO || image.getWidth() < Width)
                     {
                         File file = new File(posters[i]);
                         file.delete();
