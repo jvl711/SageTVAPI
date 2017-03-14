@@ -101,8 +101,15 @@ public class Show extends SageObject
     {
         String poster = fanart.GetFanartPoster(this.show);
         File file = null;
-        
-        System.out.println("JVL Debug - Get poster: " + poster);
+
+        //If it returns null sttempt to clear cache and pickup new poster
+        if(poster == null)
+        {
+            System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
+            fanart.ClearMemoryCaches();
+            poster = fanart.GetFanartPoster(this.show);
+            System.out.println("JVL Debug - Second poster call attemp: " + poster);
+        }
         
         if(poster != null)
         {
@@ -111,18 +118,16 @@ public class Show extends SageObject
                 
         if(file == null || !file.exists())
         {
-            System.out.println("JVL Debug - File does not exist:");
-            
             String [] posters = this.GetPosters();
-            
+
             if(posters.length > 0)
             {
                 poster = posters[0];
             }
             
-            System.out.println("JVL Debug - Setting new poster: " + poster);
-            
-            fanart.SetFanartPoster(show, poster);
+            //TODO:  Investigate further.  Not sure why, but when I set a new poster
+            // on one client, it is not respected on the other.
+            //fanart.SetFanartPoster(show, poster);
         }
         
         return poster;
@@ -147,7 +152,9 @@ public class Show extends SageObject
                 background = backgrounds[0];
             }
             
-            fanart.SetFanartPoster(show, background);
+            //TODO:  Investigate further.  Not sure why, but when I set a new poster
+            // on one client, it is not respected on the other.
+            //fanart.SetFanartPoster(show, background);
         }
         
         return background;
