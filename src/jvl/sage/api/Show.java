@@ -102,6 +102,8 @@ public class Show extends SageObject
         String poster = fanart.GetFanartPoster(this.show);
         File file = null;
         
+        System.out.println("JVL Debug - Get poster: " + poster);
+        
         if(poster != null)
         {
             file = new File(poster);
@@ -109,12 +111,16 @@ public class Show extends SageObject
                 
         if(file == null || !file.exists())
         {
+            System.out.println("JVL Debug - File does not exist:");
+            
             String [] posters = this.GetPosters();
             
             if(posters.length > 0)
             {
                 poster = posters[0];
             }
+            
+            System.out.println("JVL Debug - Setting new poster: " + poster);
             
             fanart.SetFanartPoster(show, poster);
         }
