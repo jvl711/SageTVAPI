@@ -5,6 +5,7 @@
  */
 package jvl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -85,13 +86,33 @@ public class Util
                 output = new Object[length];
             }
             
-            
             for(int i = startIndex; i < length && i < input.length;  i++)
             {
                 output[j] = input[i];
                 j++;
 
             }
+            
+            ret = output;
+        }
+        else if(data instanceof ArrayList)
+        {
+            ArrayList input = ((ArrayList)data);
+            ArrayList output = new ArrayList();
+            
+            for(int i = 0; i < length; i++)
+            {
+                if(i < input.size())
+                {
+                    output.add((input.get(i)));
+                }
+                else
+                {
+                    output.add(null);
+                }
+            }
+            
+            ret = output;
             
             ret = output;
         }
@@ -103,7 +124,7 @@ public class Util
         return ret;
     }
     
-        /**
+     /**
      * Takes in an Object [] and resizes it to new length starting from the 
      * start index given. It copies all of the data to the new structure.
      * 
@@ -136,12 +157,30 @@ public class Util
                 output = new Object[length];
             }
                    
-            
             for(int i = startIndex; i < length && i < input.length;  i++)
             {
                 output[j] = input[i];
                 j++;
 
+            }
+            
+            ret = output;
+        }
+        else if(data instanceof ArrayList)
+        {
+            ArrayList input = ((ArrayList)data);
+            ArrayList output = new ArrayList();
+            
+            for(int i = 0; i < minLength || i < length; i++)
+            {
+                if(i < input.size())
+                {
+                    output.add((input.get(i)));
+                }
+                else
+                {
+                    output.add(null);
+                }
             }
             
             ret = output;
