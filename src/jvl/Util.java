@@ -171,7 +171,7 @@ public class Util
             ArrayList input = ((ArrayList)data);
             ArrayList output = new ArrayList();
             
-            for(int i = 0; i < minLength || i < length; i++)
+            for(int i = 0; i < minLength && i < length; i++)
             {
                 if(i < input.size())
                 {
