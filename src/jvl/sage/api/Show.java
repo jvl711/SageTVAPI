@@ -105,12 +105,12 @@ public class Show extends SageObject
         //If it returns null sttempt to clear cache and pickup new poster
         if(poster == null)
         {
-            System.out.println("JVL Debug - Getting poster returned null...");
-            System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
-            System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
+            //System.out.println("JVL Debug - Getting poster returned null...");
+            //System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
+            //System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
             fanart.ClearMemoryCaches();
             poster = fanart.GetFanartPoster(this.show);
-            System.out.println("JVL Debug - Second poster call attemp: " + poster);
+            //System.out.println("JVL Debug - Second poster call attemp: " + poster);
         }
         
         if(poster != null)
@@ -125,12 +125,12 @@ public class Show extends SageObject
             
             try
             {
-                System.out.println("JVL Debug - Attempting to get all posters... ");
+                //System.out.println("JVL Debug - Attempting to get all posters... ");
                 posters = this.GetPosters();
             }
             catch(Exception ex)
             {
-                System.out.println("JVL Debug - Failed with error: " + ex.getMessage());
+                //System.out.println("JVL Debug - Failed with error: " + ex.getMessage());
             }
 
             if(posters != null && posters.length > 0)
