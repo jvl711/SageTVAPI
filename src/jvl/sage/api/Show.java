@@ -179,8 +179,12 @@ public class Show extends SageObject
         String [] posters = fanart.GetFanartPosters(this.show);
         ArrayList temp = new ArrayList();
         
+        System.out.println("Get Posters Called: " + posters.length);
+        
         for(int i = 0; i < posters.length; i++)
         {
+            System.out.println(posters[i]);
+            
             File file = new File(posters[i]);
             
             if(file.exists())
