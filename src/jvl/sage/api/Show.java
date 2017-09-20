@@ -105,6 +105,8 @@ public class Show extends SageObject
         //If it returns null sttempt to clear cache and pickup new poster
         if(poster == null)
         {
+            System.out.println("JVL Debug - Getting poster returned null...");
+            System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
             System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
             fanart.ClearMemoryCaches();
             poster = fanart.GetFanartPoster(this.show);
@@ -118,9 +120,20 @@ public class Show extends SageObject
                 
         if(file == null || !file.exists())
         {
-            String [] posters = this.GetPosters();
+            String [] posters = null;
+            
+            
+            try
+            {
+                System.out.println("JVL Debug - Attempting to get all posters... ");
+                posters = this.GetPosters();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("JVL Debug - Failed with error: " + ex.getMessage());
+            }
 
-            if(posters.length > 0)
+            if(posters != null && posters.length > 0)
             {
                 poster = posters[0];
             }
@@ -179,12 +192,9 @@ public class Show extends SageObject
         String [] posters = fanart.GetFanartPosters(this.show);
         ArrayList temp = new ArrayList();
         
-        System.out.println("Get Posters Called: " + posters.length);
         
         for(int i = 0; i < posters.length; i++)
         {
-            System.out.println(posters[i]);
-            
             File file = new File(posters[i]);
             
             if(file.exists())
