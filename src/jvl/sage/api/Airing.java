@@ -55,6 +55,24 @@ public class Airing extends SageObject
         
     }
     
+    public long GetAiringStartTime() throws SageCallApiException
+    {
+        long ret = 0;
+        
+        ret = callApiLong("GetAiringStartTime", this.airing);
+                
+        return ret;
+    }
+    
+    public long GetAiringEndTime() throws SageCallApiException
+    {
+        long ret = 0;
+        
+        ret = callApiLong("GetAiringEndTime", this.airing);
+                
+        return ret;
+    }
+    
     public long GetDuration() throws SageCallApiException
     {
         long ret = 0;
@@ -79,6 +97,38 @@ public class Airing extends SageObject
         int ret = (int)java.lang.Math.round(temp);
         
         return ret;
+    }
+    
+    public int GetAiredPercent() throws SageCallApiException
+    {
+        long currentTime = 0;
+        long startTime = 0;
+        long endTime = 0;
+        long duration = 0;
+        long progress = 0;
+        double percent = 0;
+        
+        currentTime = callApiLong("Time");
+        startTime = this.GetAiringStartTime();
+        endTime = this.GetAiringEndTime();
+        
+        if(currentTime < startTime)
+        {
+            //Has not started yet.  Return 0%
+            return 0;
+        }
+        else if (currentTime > endTime)
+        {
+            //Airing complete.  Return 100%
+            return 100;
+        }
+        
+        duration = endTime - startTime;
+        progress = currentTime - startTime;        
+        
+        percent = ((progress *1.0) / (duration * 1.0) * 100.0 );
+        
+        return (int)java.lang.Math.round(percent);
     }
     
     /**
