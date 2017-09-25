@@ -1,6 +1,7 @@
 
 package jvl.sage.api;
 
+import java.io.File;
 import jvl.sage.SageAPI;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
@@ -148,6 +149,15 @@ public class MediaFile extends SageObject
         boolean ret;
         
         ret = SageAPI.callAPIBoolean("DeleteFile", mediafile);
+        
+        return ret;
+    }
+    
+    public File [] GetSegmentFiles() throws SageCallApiException
+    {
+        File [] ret;
+        
+        ret = (File [])SageAPI.callApiArray("GetSegmentFiles", mediafile);
         
         return ret;
     }
