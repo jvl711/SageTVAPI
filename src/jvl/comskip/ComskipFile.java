@@ -44,9 +44,17 @@ public class ComskipFile
         for(int i = 0; i < mediaSegments.length; i++)
         {
             String segmentName = mediaSegments[i].getAbsolutePath();
+            
+            System.out.println("Debug - segment file name: " + segmentName);
+            
             int extIndex = segmentName.lastIndexOf(".");
             
+            
+            
             String edlFileName = segmentName.substring(0, extIndex + 1) + EDL_EXT;
+            
+            System.out.println("Debug - edl file name: " + edlFileName);
+            
             File edlFile = new File(edlFileName);        
             
             if(edlFile.exists())
@@ -81,6 +89,10 @@ public class ComskipFile
                 }
 
             }
+            else
+            {
+                System.out.println("Debug - edl file not found: " + edlFileName);
+            }
         }
 
     }
@@ -100,6 +112,11 @@ public class ComskipFile
             output += "Marker " + i + ": ";
             output += "StartTime = " + markers.get(i).GetStartTime();
             output += "EndTime = " + markers.get(i).GetEndTime() + "\n";
+        }
+        
+        if(output.length() == 0)
+        {
+            output = "No Markers!";
         }
         
         return output;
