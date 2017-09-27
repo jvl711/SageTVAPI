@@ -57,6 +57,11 @@ public class SageAPI
         return (Long)callAPIBase(method, new Object [] {arg1});
     }
     
+    protected static long callApiLong(String method, Object arg1, Object arg2) throws SageCallApiException
+    {
+        return (Long)callAPIBase(method, new Object [] {arg1, arg2});
+    }
+    
     protected static boolean callAPIBoolean(String method, Object arg1) throws SageCallApiException
     {
         return (Boolean)callAPIBase(method, new Object [] {arg1});

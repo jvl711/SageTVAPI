@@ -162,6 +162,24 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    public long GetStartForSegment(int segmentIndex) throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetStartForSegment", mediafile, segmentIndex);
+        
+        return ret;
+    }
+    
+    public long GetEndForSegment(int segmentIndex) throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetEndForSegment", mediafile, segmentIndex);
+        
+        return ret;
+    }
+    
     @Override
     public Object UnwrapObject() 
     {
