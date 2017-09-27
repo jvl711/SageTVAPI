@@ -61,8 +61,9 @@ public class ComskipFile
             
             if(!fileContents.equals(""))
             {
+                System.out.println("Debug - processing return: " + fileContents);
+                String [] lines = fileContents.split("\n");
                 System.out.println("Debug - processing return from: " + edlFileName);
-                String [] lines = fileContents.split("\r");
                 
                 long segmentStart = mediaFile.GetStartForSegment(i);
                 
