@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.MediaFile;
+import jvl.sage.api.Utility;
 
 /*
 * EDL Format appears to be as follows
@@ -49,49 +50,38 @@ public class ComskipFile
             
             int extIndex = segmentName.lastIndexOf(".");
             
-            
-            
             String edlFileName = segmentName.substring(0, extIndex + 1) + EDL_EXT;
             
             System.out.println("Debug - edl file name: " + edlFileName);
             
             File edlFile = new File(edlFileName);        
+            String fileContents = "";
             
-            if(edlFile.exists())
+            fileContents = Utility.GetFileAsString(edlFile);
+            
+            if(!fileContents.equals(""))
             {
-
-                try
+                System.out.println("Debug - processing return from: " + edlFileName);
+                String [] lines = fileContents.split("\r");
+                
+                long segmentStart = mediaFile.GetStartForSegment(i);
+                
+                for(int j = 0; j < lines.length; j++)
                 {
-                
-                    InputStream is = new FileInputStream(edlFileName);
-                    BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-                
-                    String temp = buf.readLine();
-                
-                    while(buf.readLine() != null)
-                    {
-                        String [] cuttimes = temp.split("\t");
+                    System.out.println("Debug - processing line from: " + edlFileName);
+                    String [] cuttimes = lines[j].split("\t");
 
-                        long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
-                        long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
-                        long segmentStart = mediaFile.GetStartForSegment(i);
-                        
-                        Marker marker = new Marker(startTime, endTime, segmentStart);
-                        this.markers.add(marker);
-                        
-                        temp = buf.readLine();
-                    }                
-                
-                }
-                catch(Exception ex)
-                {
-                    System.out.println("Unexpected error reading EDL file");
-                }
+                    long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
+                    long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
+                    
 
+                    Marker marker = new Marker(startTime, endTime, segmentStart);
+                    this.markers.add(marker);
+                }                
             }
             else
             {
-                System.out.println("Debug - edl file not found: " + edlFileName);
+                System.out.println("Debug - edl file was empty or not found: " + edlFileName);
             }
         }
 
