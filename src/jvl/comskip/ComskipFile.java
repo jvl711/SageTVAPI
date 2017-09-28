@@ -46,13 +46,9 @@ public class ComskipFile
         {
             String segmentName = mediaSegments[i].getAbsolutePath();
             
-            System.out.println("Debug - segment file name: " + segmentName);
-            
             int extIndex = segmentName.lastIndexOf(".");
             
             String edlFileName = segmentName.substring(0, extIndex + 1) + EDL_EXT;
-            
-            System.out.println("Debug - edl file name: " + edlFileName);
             
             File edlFile = new File(edlFileName);        
             String fileContents = "";
@@ -61,21 +57,16 @@ public class ComskipFile
             
             if(!fileContents.equals(""))
             {
-                System.out.println("Debug - processing return: " + fileContents);
                 String [] lines = fileContents.split("\n");
-                System.out.println("Debug - processing return from: " + edlFileName);
-                
                 long segmentStart = mediaFile.GetStartForSegment(i);
                 
                 for(int j = 0; j < lines.length; j++)
-                {
-                    System.out.println("Debug - processing line from: " + edlFileName);
+                {   
                     String [] cuttimes = lines[j].split("\t");
 
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
-                    
-
+                   
                     Marker marker = new Marker(startTime, endTime, segmentStart);
                     this.markers.add(marker);
                 }                
