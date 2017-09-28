@@ -55,6 +55,12 @@ public class Airing extends SageObject
         
     }
     
+    /***
+     * Gets the start time of this Airing. The time is in Java time units, which are milliseconds since Jan 1, 1970 GMT
+     * 
+     * @return the start time of this Airing
+     * @throws SageCallApiException 
+     */
     public long GetAiringStartTime() throws SageCallApiException
     {
         long ret = 0;
@@ -64,6 +70,12 @@ public class Airing extends SageObject
         return ret;
     }
     
+    /***
+     * Gets the end time of this Airing. The time is in Java time units, which are milliseconds since Jan 1, 1970 GMT
+     * 
+     * @return the end time of this Airing
+     * @throws SageCallApiException 
+     */
     public long GetAiringEndTime() throws SageCallApiException
     {
         long ret = 0;

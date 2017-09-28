@@ -41,6 +41,8 @@ public class ComskipFile
     public void load() throws SageCallApiException
     {
         mediaSegments = this.mediaFile.GetSegmentFiles();
+        long airingStartTime = this.mediaFile.GetAiring().GetAiringStartTime();
+        long airingEndTime = this.mediaFile.GetAiring().GetAiringEndTime();
         
         for(int i = 0; i < mediaSegments.length; i++)
         {
@@ -67,7 +69,8 @@ public class ComskipFile
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
-                    Marker marker = new Marker(startTime, endTime, segmentStart);
+                    //ToDo: Modify the airingStatrt and end to be scheduled.
+                    Marker marker = new Marker(startTime, endTime, segmentStart, airingStartTime, airingEndTime);
                     this.markers.add(marker);
                 }                
             }
@@ -92,8 +95,11 @@ public class ComskipFile
         for(int i = 0; i < markers.size(); i++)
         {
             output += "Marker " + i + ": ";
-            output += "StartTime = " + markers.get(i).GetStartTime();
-            output += "EndTime = " + markers.get(i).GetEndTime() + "\n";
+            output += " StartTime = " + markers.get(i).GetStartTime();
+            output += " EndTime = " + markers.get(i).GetEndTime();
+            output += " Marker Start Percent = " + markers.get(i).getAiringStartPercent();
+            output += " Marker End Percent = " + markers.get(i).getAiringEndPercent();
+            output += " Marker Duration Percent = " + markers.get(i).getMarkerDurationPercent() + "\n";
         }
         
         if(output.length() == 0)
