@@ -42,8 +42,8 @@ public class ComskipFile
     {
         mediaSegments = this.mediaFile.GetSegmentFiles();
         
-        long airingStartTime = this.mediaFile.GetFileStartTime();
-        long airingEndTime = this.mediaFile.GetFileEndTime();
+        long mediaFileStartTime = this.mediaFile.GetFileStartTime();
+        long mediaFileEndTime = this.mediaFile.GetFileEndTime();
         
         for(int i = 0; i < mediaSegments.length; i++)
         {
@@ -71,7 +71,7 @@ public class ComskipFile
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
                     //ToDo: Modify the airingStatrt and end to be scheduled.
-                    Marker marker = new Marker(startTime, endTime, segmentStart, airingStartTime, airingEndTime);
+                    Marker marker = new Marker(startTime, endTime, segmentStart, mediaFileStartTime, mediaFileEndTime);
                     this.markers.add(marker);
                 }                
             }
@@ -98,8 +98,8 @@ public class ComskipFile
             output += "Marker " + i + ": ";
             output += " StartTime = " + markers.get(i).GetStartTime();
             output += " EndTime = " + markers.get(i).GetEndTime();
-            output += " Marker Start Percent = " + markers.get(i).getAiringStartPercent();
-            output += " Marker End Percent = " + markers.get(i).getAiringEndPercent();
+            output += " Marker Start Percent = " + markers.get(i).getMarkerStartPercent();
+            output += " Marker End Percent = " + markers.get(i).getMarkerEndPercent();
             output += " Marker Duration Percent = " + markers.get(i).getMarkerDurationPercent() + "\n";
         }
         

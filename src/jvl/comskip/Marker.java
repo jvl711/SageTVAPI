@@ -7,27 +7,27 @@ public class Marker
     private long startTime;
     private long endTime;
     private long offsetTime;
-    private long airingStartTime;
-    private long airingEndTime;
-    private long airingDuration;
+    private long mediaFileStartTime;
+    private long mediaFileEndTime;
+    private long mediaFileDuration;
     
     /**
      * Constructs a marker object
      * @param startTime Start of the marker
      * @param endTime End of the marker
      * @param offsetTime A time offset of where the marker is in relation to the
-     * @param airingStartTime The start time of the airing
-     * @param airingEndTime The end time of the airing
+     * @param mediaFileStartTime The start time of the mediaFile
+     * @param mediaFileEndTime The end time of the mediaFile
      *                   recording time of the file
      */
-    public Marker(long startTime, long endTime, long offsetTime, long airingStartTime, long airingEndTime)
+    public Marker(long startTime, long endTime, long offsetTime, long mediaFileStartTime, long mediaFileEndTime)
     {
         this.startTime = startTime;
         this.endTime = endTime;
         this.offsetTime = offsetTime;
-        this.airingEndTime = airingEndTime;
-        this.airingStartTime = airingStartTime;
-        this.airingDuration = this.airingEndTime - this.airingStartTime;
+        this.mediaFileEndTime = mediaFileEndTime;
+        this.mediaFileStartTime = mediaFileStartTime;
+        this.mediaFileDuration = this.mediaFileEndTime - this.mediaFileStartTime;
     }
     
     public long GetStartTime()
@@ -40,21 +40,21 @@ public class Marker
         return endTime + offsetTime;
     }
     
-    public int getAiringStartPercent()
+    public int getMarkerStartPercent()
     {
-        long markerStartDuration = this.GetStartTime() - this.airingStartTime;
+        long markerStartDuration = this.GetStartTime() - this.mediaFileStartTime;
 
-        double temp = ((markerStartDuration * 1.0) / (airingDuration * 1.0) * 100.0);
+        double temp = ((markerStartDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
         int ret = (int)java.lang.Math.round(temp);
         
         return ret;
     }
     
-    public int getAiringEndPercent()
+    public int getMarkerEndPercent()
     {
-        long markerEndDuration = this.GetEndTime() - this.airingStartTime;
+        long markerEndDuration = this.GetEndTime() - this.mediaFileStartTime;
 
-        double temp = ((markerEndDuration * 1.0) / (airingDuration * 1.0) * 100.0);
+        double temp = ((markerEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
         int ret = (int)java.lang.Math.round(temp);
         
         return ret;
@@ -62,6 +62,6 @@ public class Marker
     
     public int getMarkerDurationPercent()
     {
-        return this.getAiringEndPercent() - this.getAiringStartPercent();
+        return this.getMarkerEndPercent() - this.getMarkerStartPercent();
     }
 }
