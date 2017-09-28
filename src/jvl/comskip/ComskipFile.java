@@ -41,8 +41,8 @@ public class ComskipFile
     public void load() throws SageCallApiException
     {
         mediaSegments = this.mediaFile.GetSegmentFiles();
-        long airingStartTime = this.mediaFile.GetAiring().GetAiringStartTime();
-        long airingEndTime = this.mediaFile.GetAiring().GetAiringEndTime();
+        long airingStartTime = this.mediaFile.GetAiring().GetScheduleStartTime();
+        long airingEndTime = this.mediaFile.GetAiring().GetScheduleEndTime();
         
         for(int i = 0; i < mediaSegments.length; i++)
         {

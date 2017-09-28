@@ -85,6 +85,24 @@ public class Airing extends SageObject
         return ret;
     }
     
+    public long GetScheduleStartTime() throws SageCallApiException
+    {
+        long ret = 0;
+        
+        ret = callApiLong("GetScheduleStartTime", this.airing);
+                
+        return ret;
+    }
+    
+    public long GetScheduleEndTime() throws SageCallApiException
+    {
+        long ret = 0;
+        
+        ret = callApiLong("GetScheduleEndTime", this.airing);
+                
+        return ret;
+    }
+    
     public long GetDuration() throws SageCallApiException
     {
         long ret = 0;

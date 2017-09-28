@@ -62,11 +62,6 @@ public class Marker
     
     public int getMarkerDurationPercent()
     {
-        long markerDuration = this.GetEndTime() - this.GetStartTime();
-        
-        double temp = ((markerDuration * 1.0) / (airingDuration * 1.0) * 100.0);
-        int ret = (int)java.lang.Math.round(temp);
-        
-        return ret;
+        return this.getAiringEndPercent() - this.getAiringStartPercent();
     }
 }
