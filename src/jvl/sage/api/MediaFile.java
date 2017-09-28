@@ -180,6 +180,24 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    public long GetFileStartTime() throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetFileStartTime", mediafile);
+        
+        return ret;
+    }
+    
+    public long GetFileEndTime() throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetFileEndTime", mediafile);
+        
+        return ret;
+    }
+    
     @Override
     public Object UnwrapObject() 
     {
