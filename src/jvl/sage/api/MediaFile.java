@@ -290,7 +290,7 @@ public class MediaFile extends SageObject
         try
         {
             Marker [] markers = this.GetCommercialMarkers();
-            output = "";
+            //output = "";
             
             for(int i = 0; i < markers.length; i++)
             {
@@ -304,7 +304,8 @@ public class MediaFile extends SageObject
         }
         catch(Exception ex)
         {
-            
+            output += " Error getting markers: " + ex.getMessage();
+            ex.printStackTrace();
         }
         if(output.length() == 0)
         {
