@@ -254,7 +254,7 @@ public class MediaFile extends SageObject
             }
         }
         
-        return (Marker [])temp.toArray();
+        return (Marker [])temp.toArray(new Marker[temp.size()]);
     }
     
     @Override
