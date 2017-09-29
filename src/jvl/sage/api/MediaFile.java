@@ -2,6 +2,8 @@
 package jvl.sage.api;
 
 import java.io.File;
+import java.util.ArrayList;
+import jvl.comskip.Marker;
 import jvl.sage.SageAPI;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
@@ -180,6 +182,16 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    
+    public long GetDurationForSegment(int segmentIndex) throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("GetDurationForSegment", mediafile, segmentIndex);
+        
+        return ret;
+    }
+    
     public long GetFileStartTime() throws SageCallApiException
     {
         long ret;
@@ -196,6 +208,110 @@ public class MediaFile extends SageObject
         ret = SageAPI.callApiLong("GetFileEndTime", mediafile);
         
         return ret;
+    }
+    
+    public MediaFileSegment [] GetMediaFileSegments() throws SageCallApiException
+    {
+        File [] files = this.GetSegmentFiles();
+        MediaFileSegment [] segments = new MediaFileSegment[files.length];
+        
+        for(int i = 0; i < files.length; i++)
+        {
+            MediaFileSegment mfs = new MediaFileSegment(this, i, files[i].getAbsolutePath());
+            segments[i] = mfs;
+        }
+        
+        return segments;
+    }
+    
+    public Marker [] GetCommercialMarkers() throws SageCallApiException
+    {
+        MediaFileSegment [] segments = this.GetMediaFileSegments();
+        ArrayList<Marker> temp = new ArrayList<Marker>();
+        
+        for(int i = 0; i < segments.length; i++)
+        {
+            String fileContents = Utility.GetFileAsString(new File(segments[i].getEDLFileName()));
+            
+            if(!fileContents.equals(""))
+            {
+                String [] lines = fileContents.split("\n");
+                
+                for(int j = 0; j < lines.length; j++)
+                {   
+                    String [] cuttimes = lines[j].split("\t");
+
+                    long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
+                    long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
+                   
+                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), segments[i].GetStartTime(), segments[i].GetEndTime());
+                    temp.add(marker);
+                }                
+            }
+            else
+            {
+                System.out.println("Debug - edl file was empty or not found: " + segments[i].getEDLFileName());
+            }
+        }
+        
+        return (Marker [])temp.toArray();
+    }
+    
+    @Override
+    public String toString() 
+    {
+        String output = "";
+        
+        try
+        {
+            MediaFileSegment segments [] = this.GetMediaFileSegments();
+            output = "";
+            
+            for(int i = 0; i < segments.length; i++)
+            {
+                output += "Segment " + i + ": ";
+                //output += " StartTime = " + markers[i].GetStartTime();
+                //output += " EndTime = " + markers[i].GetEndTime();
+                output += " Start Percent = " + segments[i].GetStartPercent();
+                output += " End Percent = " + segments[i].GetEndPercent();
+                output += " Duration Percent = " + segments[i].GetDurationPercent() + "\n";
+            }
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        
+        if(output.length() == 0)
+        {
+            output = "No Segments!\n";
+        }
+        
+        try
+        {
+            Marker [] markers = this.GetCommercialMarkers();
+            output = "";
+            
+            for(int i = 0; i < markers.length; i++)
+            {
+                output += "Marker " + i + ": ";
+                //output += " StartTime = " + markers[i].GetStartTime();
+                //output += " EndTime = " + markers[i].GetEndTime();
+                output += " Start Percent = " + markers[i].getMarkerStartPercent();
+                output += " End Percent = " + markers[i].getMarkerEndPercent();
+                output += " Duration Percent = " + markers[i].getMarkerDurationPercent() + "\n";
+            }
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        if(output.length() == 0)
+        {
+            output = "No Markers!\n";
+        }
+
+        return output;
     }
     
     @Override

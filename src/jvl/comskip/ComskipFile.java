@@ -88,27 +88,6 @@ public class ComskipFile
         return markers.size() > 0;
     }
 
-    @Override
-    public String toString()
-    {
-        String output = "";
-        
-        for(int i = 0; i < markers.size(); i++)
-        {
-            output += "Marker " + i + ": ";
-            output += " StartTime = " + markers.get(i).GetStartTime();
-            output += " EndTime = " + markers.get(i).GetEndTime();
-            output += " Marker Start Percent = " + markers.get(i).getMarkerStartPercent();
-            output += " Marker End Percent = " + markers.get(i).getMarkerEndPercent();
-            output += " Marker Duration Percent = " + markers.get(i).getMarkerDurationPercent() + "\n";
-        }
-        
-        if(output.length() == 0)
-        {
-            output = "No Markers!";
-        }
-        
-        return output;
-    }
+    
     
 }
