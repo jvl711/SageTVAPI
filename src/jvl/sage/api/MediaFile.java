@@ -244,7 +244,7 @@ public class MediaFile extends SageObject
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
-                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), segments[i].GetStartTime(), segments[i].GetEndTime());
+                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), this.GetFileStartTime(), this.GetFileEndTime());
                     temp.add(marker);
                 }                
             }
