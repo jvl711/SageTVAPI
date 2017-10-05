@@ -39,39 +39,39 @@ public class MediaFileSegment
         return this.mediaFile.GetDurationForSegment(segment);
     }
     
-    public int GetStartPercent() throws SageCallApiException
+    public double GetStartPercent() throws SageCallApiException
     {
         long segmentStartDuration = this.GetStartTime() - this.mediaFile.GetFileStartTime();
 
         double temp = ((segmentStartDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
-        int ret = (int)java.lang.Math.round(temp);
+        //int ret = (int)java.lang.Math.round(temp);
         
-        return ret;
+        return temp;
     }
     
-    public int GetEndPercent() throws SageCallApiException
+    public double GetEndPercent() throws SageCallApiException
     {
         long segmentEndDuration = this.GetEndTime() - this.mediaFile.GetFileStartTime();
 
         double temp = ((segmentEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
-        int ret = (int)java.lang.Math.round(temp);
+        //int ret = (int)java.lang.Math.round(temp);
         
-        return ret;
+        return temp;
     }
     
-    public int GetDurationPercent() throws SageCallApiException
+    public double GetDurationPercent() throws SageCallApiException
     {
         return this.GetEndPercent() - this.GetStartPercent();
     }
     
-    public String getEDLFileName()
+    public String GetEDLFileName()
     {
         return filePath.substring(0, filePath.lastIndexOf(".") + 1) + EDL_EXT;
     }
     
-    public boolean hasComskipFile() throws SageCallApiException
+    public boolean HasComskipFile() throws SageCallApiException
     {
-        String contents = Utility.GetFileAsString(new File(this.getEDLFileName()));
+        String contents = Utility.GetFileAsString(new File(this.GetEDLFileName()));
         
         return contents.length() > 0;
     }

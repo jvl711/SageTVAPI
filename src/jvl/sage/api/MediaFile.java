@@ -231,7 +231,7 @@ public class MediaFile extends SageObject
         
         for(int i = 0; i < segments.length; i++)
         {
-            String fileContents = Utility.GetFileAsString(new File(segments[i].getEDLFileName()));
+            String fileContents = Utility.GetFileAsString(new File(segments[i].GetEDLFileName()));
             
             if(!fileContents.equals(""))
             {
@@ -250,7 +250,7 @@ public class MediaFile extends SageObject
             }
             else
             {
-                System.out.println("Debug - edl file was empty or not found: " + segments[i].getEDLFileName());
+                System.out.println("Debug - edl file was empty or not found: " + segments[i].GetEDLFileName());
             }
         }
         

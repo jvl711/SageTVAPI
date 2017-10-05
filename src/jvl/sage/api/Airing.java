@@ -121,6 +121,15 @@ public class Airing extends SageObject
         return ret;
     }
     
+    public long GetLatestWatchedTime() throws SageCallApiException
+    {
+        long ret = 0;
+        
+        ret = callApiLong("GetLatestWatchedTime", this.airing);
+        
+        return ret;
+    }
+    
     public int GetWatchedPercent() throws SageCallApiException
     {
         double temp = (((this.GetWatchedDuration() * 1.0) / (this.GetDuration() * 1.0)) * 100.0);
