@@ -152,6 +152,8 @@ public class Timebar implements Runnable
     @Override
     public void run() 
     {
+        System.out.println("jvl.sage.Timebar - Commercial Skipping thread started");
+        
         while(comThreadRun)
         {
             try 
@@ -176,5 +178,7 @@ public class Timebar implements Runnable
             catch (SageCallApiException ex){ }
             catch(InterruptedException ex2){ }
         }
+        
+        System.out.println("jvl.sage.Timebar - Commercial Skipping thread stopped");
     }
 }
