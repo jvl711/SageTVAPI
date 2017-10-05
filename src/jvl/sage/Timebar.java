@@ -5,7 +5,7 @@ import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaPlayer;
 
-public class Timebar implements Runnable
+public class Timebar
 {
     private MediaFile mediaFile;
     private Marker [] markers;
@@ -140,8 +140,11 @@ public class Timebar implements Runnable
 
     public void StartCommSkipThread()
     {
-        comThreadRun = true;
-        (new Thread(this)).start();
+        if(!comThreadRun)
+        {
+            comThreadRun = true;
+            this.RunCommercialSkip();
+        }
     }
     
     public void StopCommSkipThread()
@@ -149,8 +152,11 @@ public class Timebar implements Runnable
         comThreadRun = false;
     }
     
-    @Override
-    public void run() 
+    
+    /*
+     * Fork this from the Sage Side.... 
+     */
+    public void RunCommercialSkip() 
     {
         System.out.println("jvl.sage.Timebar - Commercial Skipping thread started");
         
@@ -158,21 +164,17 @@ public class Timebar implements Runnable
         {
             try 
             {
-                //if(MediaPlayer.IsMediaPlayerLoaded())
-                //{
-
-                    for(int i = 0; i < markers.length; i++)
-                    {
-                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
-                        {
-                            System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
-                            MediaPlayer.Seek(markers[i].GetEndTime());
-                            
-                        }
-                    }
-                    
-                //}
                 
+                for(int i = 0; i < markers.length; i++)
+                {
+                    if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
+                    {
+                        System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
+                        MediaPlayer.Seek(markers[i].GetEndTime());
+
+                    }
+                }
+                    
                 Thread.sleep(1000);
             } 
             catch (SageCallApiException ex){ }
