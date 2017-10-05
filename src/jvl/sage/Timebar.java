@@ -5,16 +5,17 @@ import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaPlayer;
 
-
-public class Timebar 
+public class Timebar implements Runnable
 {
     private MediaFile mediaFile;
     private Marker [] markers;
+    private boolean comThreadRun;
 
     public Timebar(MediaFile mediaFile) throws SageCallApiException
     {
         this.mediaFile = mediaFile;
         this.markers = mediaFile.GetCommercialMarkers();
+        this.comThreadRun = false;
     }
     
     
@@ -134,6 +135,44 @@ public class Timebar
         if(markerTime > 0 )
         {
             MediaPlayer.Seek(markerTime);
+        }
+    }
+
+    public void StartCommSkipThread()
+    {
+        comThreadRun = true;
+        this.run();
+    }
+    
+    public void StopCommSkipThread()
+    {
+        comThreadRun = false;
+    }
+    
+    @Override
+    public void run() 
+    {
+        while(comThreadRun)
+        {
+            try 
+            {
+                if(MediaPlayer.IsMediaPlayerLoaded())
+                {
+
+                    for(int i = 0; i < markers.length; i++)
+                    {
+                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
+                        {
+                            MediaPlayer.Seek(markers[i].GetEndTime());
+                        }
+                    }
+                    
+                }
+                
+                Thread.sleep(1000);
+            } 
+            catch (SageCallApiException ex){ }
+            catch(InterruptedException ex2){ }
         }
     }
 }

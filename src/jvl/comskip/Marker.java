@@ -40,6 +40,16 @@ public class Marker
         return endTime + offsetTime;
     }
     
+    public boolean IsHit(long testtime, long range)
+    {
+        if(this.GetStartTime() <= testtime && this.GetStartTime() >= testtime + range)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
     public double GetStartPercent()
     {
         long markerStartDuration = this.GetStartTime() - this.mediaFileStartTime;
