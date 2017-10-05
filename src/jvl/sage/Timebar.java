@@ -156,18 +156,20 @@ public class Timebar implements Runnable
         {
             try 
             {
-                if(MediaPlayer.IsMediaPlayerLoaded())
-                {
+                //if(MediaPlayer.IsMediaPlayerLoaded())
+                //{
 
                     for(int i = 0; i < markers.length; i++)
                     {
                         if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
                         {
+                            System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
                             MediaPlayer.Seek(markers[i].GetEndTime());
+                            
                         }
                     }
                     
-                }
+                //}
                 
                 Thread.sleep(1000);
             } 

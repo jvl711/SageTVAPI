@@ -42,7 +42,7 @@ public class Marker
     
     public boolean IsHit(long testtime, long range)
     {
-        if(this.GetStartTime() <= testtime && this.GetStartTime() >= testtime + range)
+        if(testtime >= this.GetStartTime() && (testtime + range) <= this.GetStartTime())
         {
             return true;
         }
