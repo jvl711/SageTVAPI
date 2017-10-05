@@ -55,14 +55,51 @@ public class Timebar
         return temp;
     }
     
+    public long GetPreviousMarker() throws SageCallApiException
+    {
+        for(int i = markers.length - 1; i >= 0; i--)
+        {
+            if(markers[i].GetEndTime() < MediaPlayer.GetMediaTime())
+            {
+                return markers[i].GetEndTime();
+            }
+            else if(markers[i].GetStartTime() < MediaPlayer.GetMediaTime())
+            {
+                return markers[i].GetStartTime();
+            }
+        }
+        
+        return -1;
+    }
+    
     public long GetNextMarker() throws SageCallApiException
     {
         for(int i = 0; i < markers.length; i++)
         {
             if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime())
             {
+                return markers[i].GetStartTime();
+            }
+            else if(markers[i].GetEndTime() > MediaPlayer.GetMediaTime())
+            {
                 return markers[i].GetEndTime();
             }
+                
+            
+        }
+        
+        return -1;
+    }
+    
+    public long GetNextMarkerEnd() throws SageCallApiException
+    {
+        for(int i = 0; i < markers.length; i++)
+        {
+            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime() || markers[i].GetEndTime() > MediaPlayer.GetMediaTime())
+            {
+                return markers[i].GetEndTime();
+            }
+            
         }
         
         return -1;
@@ -71,6 +108,26 @@ public class Timebar
     public void SkipToNextMarker() throws SageCallApiException
     {
         long markerTime = this.GetNextMarker();
+        
+        if(markerTime > 0 )
+        {
+            MediaPlayer.Seek(markerTime);
+        }
+    }
+    
+    public void SkipToPreviousMarker() throws SageCallApiException
+    {
+        long markerTime = this.GetPreviousMarker();
+        
+        if(markerTime > 0 )
+        {
+            MediaPlayer.Seek(markerTime);
+        }
+    }
+    
+    public void SkipToNextMarkerEnd() throws SageCallApiException
+    {
+        long markerTime = this.GetNextMarkerEnd();
         
         if(markerTime > 0 )
         {
