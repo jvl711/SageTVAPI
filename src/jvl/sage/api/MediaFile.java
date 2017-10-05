@@ -297,9 +297,9 @@ public class MediaFile extends SageObject
                 output += "Marker " + i + ": ";
                 //output += " StartTime = " + markers[i].GetStartTime();
                 //output += " EndTime = " + markers[i].GetEndTime();
-                output += " Start Percent = " + markers[i].getMarkerStartPercent();
-                output += " End Percent = " + markers[i].getMarkerEndPercent();
-                output += " Duration Percent = " + markers[i].getMarkerDurationPercent() + "\n";
+                output += " Start Percent = " + markers[i].GetStartPercent();
+                output += " End Percent = " + markers[i].GetEndPercent();
+                output += " Duration Percent = " + markers[i].GetDurationPercent() + "\n";
             }
         }
         catch(Exception ex)

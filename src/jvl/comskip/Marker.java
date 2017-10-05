@@ -40,28 +40,28 @@ public class Marker
         return endTime + offsetTime;
     }
     
-    public int getMarkerStartPercent()
+    public double GetStartPercent()
     {
         long markerStartDuration = this.GetStartTime() - this.mediaFileStartTime;
 
         double temp = ((markerStartDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
-        int ret = (int)java.lang.Math.round(temp);
+        //int ret = (int)java.lang.Math.round(temp);
         
-        return ret;
+        return temp;
     }
     
-    public int getMarkerEndPercent()
+    public double GetEndPercent()
     {
         long markerEndDuration = this.GetEndTime() - this.mediaFileStartTime;
 
         double temp = ((markerEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
-        int ret = (int)java.lang.Math.round(temp);
+        //int ret = (int)java.lang.Math.round(temp);
         
-        return ret;
+        return temp;
     }
     
-    public int getMarkerDurationPercent()
+    public double GetDurationPercent()
     {
-        return this.getMarkerEndPercent() - this.getMarkerStartPercent();
+        return this.GetEndPercent() - this.GetStartPercent();
     }
 }
