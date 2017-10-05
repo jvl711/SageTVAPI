@@ -141,7 +141,7 @@ public class Timebar implements Runnable
     public void StartCommSkipThread()
     {
         comThreadRun = true;
-        this.run();
+        (new Thread(this)).start();
     }
     
     public void StopCommSkipThread()
