@@ -57,13 +57,15 @@ public class Timebar
     
     public long GetPreviousMarker() throws SageCallApiException
     {
+        //Take some time off of the GetMediaTime to allow for multiple skip backs
+        
         for(int i = markers.length - 1; i >= 0; i--)
         {
-            if(markers[i].GetEndTime() < MediaPlayer.GetMediaTime())
+            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime() - 1500))
             {
                 return markers[i].GetEndTime();
             }
-            else if(markers[i].GetStartTime() < MediaPlayer.GetMediaTime())
+            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime() - 1500))
             {
                 return markers[i].GetStartTime();
             }
