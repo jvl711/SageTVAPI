@@ -40,7 +40,10 @@ public class Timebar
         }
         else
         {
-            return mediaFile.GetAiring().GetLatestWatchedTime() - this.mediaFile.GetFileStartTime();
+            //Get the current watch time
+            long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
+            
+            return airingCurrnetWathcedTime - this.mediaFile.GetFileStartTime();
         }
         
     }
