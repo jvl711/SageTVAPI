@@ -2,7 +2,7 @@ package jvl.comskip;
 
 import java.util.Date;
 
-public class Marker 
+public class Marker
 {
     private long startTime;
     private long endTime;

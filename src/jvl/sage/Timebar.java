@@ -5,17 +5,27 @@ import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaPlayer;
 
-public class Timebar
+public class Timebar extends Thread
 {
     private MediaFile mediaFile;
     private Marker [] markers;
     private boolean comThreadRun;
+    private long sleepCommThread;
+    private long sleepOnSkip;
+    private long commHitRange;
+    
+    private static final int DEFAULT_SLEEP_ON_SKIP = 10000;
+    private static final int DEFAULT_COMM_HIT_RANGE = 5000;
+    
 
     public Timebar(MediaFile mediaFile) throws SageCallApiException
     {
         this.mediaFile = mediaFile;
         this.markers = mediaFile.GetCommercialMarkers();
         this.comThreadRun = false;
+        this.sleepCommThread = 0;
+        this.sleepOnSkip = Timebar.DEFAULT_SLEEP_ON_SKIP;
+        this.commHitRange = Timebar.DEFAULT_COMM_HIT_RANGE;
     }
     
     
@@ -110,6 +120,7 @@ public class Timebar
     
     public void SkipToNextMarker() throws SageCallApiException
     {
+        this.SleepCommThread();
         long markerTime = this.GetNextMarker();
         
         if(markerTime > 0 )
@@ -120,6 +131,7 @@ public class Timebar
     
     public void SkipToPreviousMarker() throws SageCallApiException
     {
+        this.SleepCommThread();
         long markerTime = this.GetPreviousMarker();
         
         if(markerTime > 0 )
@@ -130,6 +142,7 @@ public class Timebar
     
     public void SkipToNextMarkerEnd() throws SageCallApiException
     {
+        this.SleepCommThread();
         long markerTime = this.GetNextMarkerEnd();
         
         if(markerTime > 0 )
@@ -138,12 +151,17 @@ public class Timebar
         }
     }
 
+    private void SleepCommThread()
+    {
+        this.sleepCommThread = this.sleepOnSkip;
+    }
+    
     public void StartCommSkipThread()
     {
         if(!comThreadRun)
         {
             comThreadRun = true;
-            this.RunCommercialSkip();
+            this.start();
         }
     }
     
@@ -153,10 +171,8 @@ public class Timebar
     }
     
     
-    /*
-     * Fork this from the Sage Side.... 
-     */
-    public void RunCommercialSkip() 
+    @Override
+    public void run() 
     {
         System.out.println("jvl.sage.Timebar - Commercial Skipping thread started");
         
@@ -164,17 +180,24 @@ public class Timebar
         {
             try 
             {
-                
-                for(int i = 0; i < markers.length; i++)
+                if(this.sleepCommThread <= 0)
                 {
-                    if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
+                    for(int i = 0; i < markers.length; i++)
                     {
-                        System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
-                        MediaPlayer.Seek(markers[i].GetEndTime());
+                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
+                        {
+                            System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
+                            this.SleepCommThread();
+                            MediaPlayer.Seek(markers[i].GetEndTime());
 
+                        }
                     }
                 }
-                    
+                else
+                {
+                    this.sleepCommThread = this.sleepCommThread - 1000;
+                }
+                
                 Thread.sleep(1000);
             } 
             catch (SageCallApiException ex){ }
