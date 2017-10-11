@@ -129,6 +129,11 @@ public class Timebar extends Thread
         }
     }
     
+    public Marker [] GetMarkers()
+    {
+        return this.markers;
+    }
+    
     public void SkipToPreviousMarker() throws SageCallApiException
     {
         this.SleepCommThread();
