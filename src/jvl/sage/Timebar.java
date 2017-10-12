@@ -15,7 +15,7 @@ public class Timebar extends Thread
     private long sleepOnSkip;
     private long commHitRange;
     
-    private static final int DEFAULT_SLEEP_ON_SKIP = 10000;
+    private static final int DEFAULT_SLEEP_ON_SKIP = 15000;
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
     
 
@@ -23,7 +23,18 @@ public class Timebar extends Thread
     {
         this.context = context;
         this.mediaFile = mediaFile;
-        this.markers = mediaFile.GetCommercialMarkers();
+     
+        try
+        {    
+            this.markers = mediaFile.GetCommercialMarkers();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL - Exception getting commercial markers.  Setting markers to null.");
+            System.out.println("JVL - Error Message: " + ex.getMessage());
+            this.markers = null;
+        }
+        
         this.comThreadRun = false;
         this.sleepCommThread = 0;
         this.sleepOnSkip = Timebar.DEFAULT_SLEEP_ON_SKIP;
@@ -71,36 +82,38 @@ public class Timebar extends Thread
     public long GetPreviousMarker() throws SageCallApiException
     {
         //Take some time off of the GetMediaTime to allow for multiple skip backs
-        
-        for(int i = markers.length - 1; i >= 0; i--)
+        if(this.HasMarkers())
         {
-            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
+            for(int i = markers.length - 1; i >= 0; i--)
             {
-                return markers[i].GetEndTime();
-            }
-            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
-            {
-                return markers[i].GetStartTime();
+                if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
+                {
+                    return markers[i].GetEndTime();
+                }
+                else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
+                {
+                    return markers[i].GetStartTime();
+                }
             }
         }
-        
         return -1;
     }
     
     public long GetNextMarker() throws SageCallApiException
     {
-        for(int i = 0; i < markers.length; i++)
+        if(this.HasMarkers())
         {
-            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context))
+            for(int i = 0; i < markers.length; i++)
             {
-                return markers[i].GetStartTime();
+                if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context))
+                {
+                    return markers[i].GetStartTime();
+                }
+                else if(markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
+                {
+                    return markers[i].GetEndTime();
+                }
             }
-            else if(markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
-            {
-                return markers[i].GetEndTime();
-            }
-                
-            
         }
         
         return -1;
@@ -108,13 +121,15 @@ public class Timebar extends Thread
     
     public long GetNextMarkerEnd() throws SageCallApiException
     {
-        for(int i = 0; i < markers.length; i++)
+        if(this.HasMarkers())
         {
-            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context) || markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
+            for(int i = 0; i < markers.length; i++)
             {
-                return markers[i].GetEndTime();
+                if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context) || markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
+                {
+                    return markers[i].GetEndTime();
+                }
             }
-            
         }
         
         return -1;
@@ -122,12 +137,15 @@ public class Timebar extends Thread
     
     public void SkipToNextMarker() throws SageCallApiException
     {
-        this.SleepCommThread();
-        long markerTime = this.GetNextMarker();
-        
-        if(markerTime > 0 )
+        if(this.HasMarkers())
         {
-            MediaPlayer.Seek(this.context, markerTime);
+            this.SleepCommThread();
+            long markerTime = this.GetNextMarker();
+
+            if(markerTime > 0 )
+            {
+                MediaPlayer.Seek(this.context, markerTime);
+            }
         }
     }
     
@@ -136,25 +154,36 @@ public class Timebar extends Thread
         return this.markers;
     }
     
+    public boolean HasMarkers()
+    {
+        return (this.markers != null && this.markers.length > 0);
+    }
+    
     public void SkipToPreviousMarker() throws SageCallApiException
     {
-        this.SleepCommThread();
-        long markerTime = this.GetPreviousMarker();
-        
-        if(markerTime > 0 )
+        if(this.HasMarkers())
         {
-            MediaPlayer.Seek(this.context, markerTime);
+            this.SleepCommThread();
+            long markerTime = this.GetPreviousMarker();
+
+            if(markerTime > 0 )
+            {
+                MediaPlayer.Seek(this.context, markerTime);
+            }
         }
     }
     
     public void SkipToNextMarkerEnd() throws SageCallApiException
     {
-        this.SleepCommThread();
-        long markerTime = this.GetNextMarkerEnd();
-        
-        if(markerTime > 0 )
+        if(this.HasMarkers())
         {
-            MediaPlayer.Seek(this.context, markerTime);
+            this.SleepCommThread();
+            long markerTime = this.GetNextMarkerEnd();
+
+            if(markerTime > 0 )
+            {
+                MediaPlayer.Seek(this.context, markerTime);
+            }
         }
     }
 
@@ -165,7 +194,7 @@ public class Timebar extends Thread
     
     public void StartCommSkipThread()
     {
-        if(!comThreadRun)
+        if(!comThreadRun && this.HasMarkers())
         {
             comThreadRun = true;
             this.start();
