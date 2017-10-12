@@ -6,23 +6,23 @@ import jvl.sage.SageCallApiException;
 
 public class MediaPlayer extends SageAPI
 {
-    public static long GetMediaTime() throws SageCallApiException
+    public static long GetMediaTime(String context) throws SageCallApiException
     {
-        return MediaPlayer.callApiLong("GetMediaTime");
+        return MediaPlayer.callApiLong(context, "GetMediaTime");
     }
     
-    public static boolean IsMediaPlayerLoaded() throws SageCallApiException
+    public static boolean IsMediaPlayerLoaded(String context) throws SageCallApiException
     {
-        return MediaPlayer.callAPIBoolean("IsMediaPlayerFullyLoaded");
+        return MediaPlayer.callAPIBoolean(context, "IsMediaPlayerFullyLoaded");
     }
     
-    public static boolean HasMediaFile() throws SageCallApiException
+    public static boolean HasMediaFile(String context) throws SageCallApiException
     {
-        return MediaPlayer.callAPIBoolean("HasMediaFile");
+        return MediaPlayer.callAPIBoolean(context, "HasMediaFile");
     }
     
-    public static void Seek(long time) throws SageCallApiException
+    public static void Seek(String context, long time) throws SageCallApiException
     {
-        MediaPlayer.callApi("Seek", time);
+        MediaPlayer.callApi(context, "Seek", time);
     }
 }

@@ -7,6 +7,7 @@ import jvl.sage.api.MediaPlayer;
 
 public class Timebar extends Thread
 {
+    private String context;
     private MediaFile mediaFile;
     private Marker [] markers;
     private boolean comThreadRun;
@@ -18,8 +19,9 @@ public class Timebar extends Thread
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
     
 
-    public Timebar(MediaFile mediaFile) throws SageCallApiException
+    public Timebar(String context, MediaFile mediaFile) throws SageCallApiException
     {
+        this.context = context;
         this.mediaFile = mediaFile;
         this.markers = mediaFile.GetCommercialMarkers();
         this.comThreadRun = false;
@@ -45,9 +47,9 @@ public class Timebar extends Thread
     {
         //This may be something different if it is a live airing. Will look later
         
-        if(MediaPlayer.HasMediaFile())
+        if(MediaPlayer.HasMediaFile(this.context))
         {
-            return MediaPlayer.GetMediaTime() - this.mediaFile.GetFileStartTime();
+            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetFileStartTime();
         }
         else
         {
@@ -72,11 +74,11 @@ public class Timebar extends Thread
         
         for(int i = markers.length - 1; i >= 0; i--)
         {
-            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime() - 1500))
+            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime(this.context) - 1500))
             {
                 return markers[i].GetEndTime();
             }
-            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime() - 1500))
+            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime(this.context) - 1500))
             {
                 return markers[i].GetStartTime();
             }
@@ -89,11 +91,11 @@ public class Timebar extends Thread
     {
         for(int i = 0; i < markers.length; i++)
         {
-            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime())
+            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context))
             {
                 return markers[i].GetStartTime();
             }
-            else if(markers[i].GetEndTime() > MediaPlayer.GetMediaTime())
+            else if(markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
             {
                 return markers[i].GetEndTime();
             }
@@ -108,7 +110,7 @@ public class Timebar extends Thread
     {
         for(int i = 0; i < markers.length; i++)
         {
-            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime() || markers[i].GetEndTime() > MediaPlayer.GetMediaTime())
+            if(markers[i].GetStartTime() > MediaPlayer.GetMediaTime(this.context) || markers[i].GetEndTime() > MediaPlayer.GetMediaTime(this.context))
             {
                 return markers[i].GetEndTime();
             }
@@ -125,7 +127,7 @@ public class Timebar extends Thread
         
         if(markerTime > 0 )
         {
-            MediaPlayer.Seek(markerTime);
+            MediaPlayer.Seek(this.context, markerTime);
         }
     }
     
@@ -141,7 +143,7 @@ public class Timebar extends Thread
         
         if(markerTime > 0 )
         {
-            MediaPlayer.Seek(markerTime);
+            MediaPlayer.Seek(this.context, markerTime);
         }
     }
     
@@ -152,7 +154,7 @@ public class Timebar extends Thread
         
         if(markerTime > 0 )
         {
-            MediaPlayer.Seek(markerTime);
+            MediaPlayer.Seek(this.context, markerTime);
         }
     }
 
@@ -189,11 +191,11 @@ public class Timebar extends Thread
                 {
                     for(int i = 0; i < markers.length; i++)
                     {
-                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(), 5000))
+                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(this.context), 5000))
                         {
                             System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
                             this.SleepCommThread();
-                            MediaPlayer.Seek(markers[i].GetEndTime());
+                            MediaPlayer.Seek(this.context, markers[i].GetEndTime());
 
                         }
                     }
