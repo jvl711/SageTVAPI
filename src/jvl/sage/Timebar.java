@@ -74,11 +74,11 @@ public class Timebar extends Thread
         
         for(int i = markers.length - 1; i >= 0; i--)
         {
-            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime(this.context) - 1500))
+            if(markers[i].GetEndTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
             {
                 return markers[i].GetEndTime();
             }
-            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime(this.context) - 1500))
+            else if(markers[i].GetStartTime() < (MediaPlayer.GetMediaTime(this.context) - 3000))
             {
                 return markers[i].GetStartTime();
             }
@@ -177,6 +177,15 @@ public class Timebar extends Thread
         comThreadRun = false;
     }
     
+    public void SetSleepOnSkipTime(long time)
+    {
+        this.sleepOnSkip = time;
+    }
+    
+    public long GetSleepOnSkipTime()
+    {
+        return this.sleepOnSkip;
+    }
     
     @Override
     public void run() 
@@ -191,9 +200,9 @@ public class Timebar extends Thread
                 {
                     for(int i = 0; i < markers.length; i++)
                     {
-                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(this.context), 5000))
+                        if(markers[i].IsHit(MediaPlayer.GetMediaTime(this.context), this.commHitRange))
                         {
-                            System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
+                            //System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
                             this.SleepCommThread();
                             MediaPlayer.Seek(this.context, markers[i].GetEndTime());
 
