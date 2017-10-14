@@ -44,7 +44,17 @@ public class Timebar extends Thread
     
     public long GetDuration() throws SageCallApiException 
     {
-        return mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+        //If the media file is recording get duration from airing...
+        //Otherwise get it from media file so it includes all padding
+        if(MediaPlayer.IsCurrentMediaFileRecording(context))
+        {
+            return mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
+        }
+        else
+        {
+            return mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+        }
+        
     }
     
     /***
@@ -74,9 +84,15 @@ public class Timebar extends Thread
     
     public double GetPlaybackPercent() throws SageCallApiException
     {
+        //This is going to need to change for live...  I am not sure how.
         double temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
         
         return temp;
+    }
+    
+    public double GetPlaybackStartPercent() throws SageCallApiException
+    {
+        return this.mediaFile.GetMediaFileSegments()[0].GetStartPercent();
     }
     
     public long GetPreviousMarker() throws SageCallApiException

@@ -19,4 +19,13 @@ public class Utility extends SageAPI
         
         return ret;
     }
+    
+    public static long Time() throws SageCallApiException
+    {
+        long ret;
+        
+        ret = SageAPI.callApiLong("Time");
+        
+        return ret;
+    }
 }
