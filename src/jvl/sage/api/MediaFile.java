@@ -34,7 +34,7 @@ public class MediaFile extends SageObject
     {
         if(this.GetFileEndTime() > this.GetAiring().GetAiringEndTime())
         {
-            return this.GetFileStartTime();
+            return this.GetFileEndTime();
         }
         
         return this.GetAiring().GetScheduleEndTime();

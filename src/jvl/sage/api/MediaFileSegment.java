@@ -72,9 +72,8 @@ public class MediaFileSegment
         }
         */
         
-        
         long segmentStartDuration = this.GetStartTime() - this.mediaFile.GetMediaStartTime();
-
+        
         double temp = ((segmentStartDuration * 1.0) / (this.mediaFile.GetMediaDuration() * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
         
