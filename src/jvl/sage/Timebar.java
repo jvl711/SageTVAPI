@@ -88,8 +88,21 @@ public class Timebar extends Thread
     
     public double GetPlaybackPercent() throws SageCallApiException
     {
+        double temp;
+        
         //This is going to need to change for live...  I am not sure how.
-        double temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
+        if(mediaFile.IsFileCurrentlyRecording())
+        {
+            long duration = this.mediaFile.GetFileEndTime() - this.mediaFile.GetFileStartTime();
+            temp = ((this.GetPlaybackTime() * 1.0) / (duration * 1.0) * 100.0);
+        }
+        else
+        {
+            temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
+        }
+        
+        
+        
         
         return temp;
     }
