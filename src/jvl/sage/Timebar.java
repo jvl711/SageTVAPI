@@ -40,8 +40,8 @@ public class Timebar extends Thread
             this.markers = null;
         }
         
-        this.startTime = this.mediaFile.GetAiring().GetScheduleStartTime();
-        this.endTime = this.mediaFile.GetAiring().GetScheduleEndTime();
+        this.startTime = this.mediaFile.GetMediaStartTime();
+        this.endTime = this.mediaFile.GetMediaEndTime();
         
         this.comThreadRun = false;
         this.sleepCommThread = 0;
@@ -104,7 +104,7 @@ public class Timebar extends Thread
             //Get the current watch time
             long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
             
-            return airingCurrnetWathcedTime - this.mediaFile.GetFileStartTime();
+            return airingCurrnetWathcedTime - this.GetStartTime();
         }
         
     }
