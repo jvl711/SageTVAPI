@@ -118,7 +118,7 @@ public class Timebar extends Thread
         if(mediaFile.IsFileCurrentlyRecording())
         {
             //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            long relativePlaybackDuration = this.GetPlaybackTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            long relativePlaybackDuration = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             
             long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
