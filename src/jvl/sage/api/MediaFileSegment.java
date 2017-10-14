@@ -12,7 +12,7 @@ public class MediaFileSegment
     
     private MediaFile mediaFile;
     private int segment;
-    private long mediaFileDuration;
+    //private long mediaFileDuration;
     private String filePath;
     
     
@@ -21,15 +21,22 @@ public class MediaFileSegment
         this.mediaFile = mediaFile;
         this.segment = segment;
         
-        if(mediaFile.IsFileCurrentlyRecording())
-        {
-            this.mediaFileDuration = mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
-        }
-        else
-        {
-            this.mediaFileDuration = mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
-        }
+//        if(mediaFile.IsFileCurrentlyRecording())
+//        {
+//            this.mediaFileDuration = mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
+//        }
+//        else
+//        {
+//            this.mediaFileDuration = mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+//        }
+        
+
         this.filePath = filePath;
+    }
+    
+    public long GetMediaDuration() throws SageCallApiException
+    {
+        return mediaFile.GetAiring().GetScheduleEndTime() - mediaFile.GetAiring().GetScheduleStartTime();
     }
     
     public long GetStartTime() throws SageCallApiException
@@ -68,7 +75,7 @@ public class MediaFileSegment
         
         long segmentStartDuration = this.GetStartTime() - startTime;
 
-        double temp = ((segmentStartDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
+        double temp = ((segmentStartDuration * 1.0) / (GetMediaDuration() * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
         
         return temp;
@@ -90,7 +97,7 @@ public class MediaFileSegment
         */
         long segmentEndDuration = this.GetEndTime() - startTime;
 
-        double temp = ((segmentEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
+        double temp = ((segmentEndDuration * 1.0) / (GetMediaDuration() * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
         
         return temp;
