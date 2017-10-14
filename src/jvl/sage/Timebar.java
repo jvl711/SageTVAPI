@@ -15,6 +15,11 @@ public class Timebar extends Thread
     private long sleepOnSkip;
     private long commHitRange;
     
+    /* Cached items */
+    private long startTime;
+    private long endTime;
+            
+    
     private static final int DEFAULT_SLEEP_ON_SKIP = 15000;
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
     
@@ -35,26 +40,40 @@ public class Timebar extends Thread
             this.markers = null;
         }
         
+        this.startTime = this.mediaFile.GetAiring().GetScheduleStartTime();
+        this.endTime = this.mediaFile.GetAiring().GetScheduleEndTime();
+        
         this.comThreadRun = false;
         this.sleepCommThread = 0;
         this.sleepOnSkip = Timebar.DEFAULT_SLEEP_ON_SKIP;
         this.commHitRange = Timebar.DEFAULT_COMM_HIT_RANGE;
+        
+        
     }
     
+    public long GetStartTime() throws SageCallApiException
+    {
+        return startTime;
+    }
+    
+    public long GetEndTime() throws SageCallApiException
+    {
+        return endTime;
+    }
     
     public long GetDuration() throws SageCallApiException 
     {
         //If the media file is recording get duration from airing...
         //Otherwise get it from media file so it includes all padding
-        if(MediaPlayer.IsCurrentMediaFileRecording(context))
-        {
-            return mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
-        }
-        else
-        {
-            return mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
-        }
-        
+//            if(MediaPlayer.IsCurrentMediaFileRecording(context))
+//            {
+//                return mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
+//            }
+//            else
+//            {
+//                return mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+//            }
+        return this.GetEndTime() - this.GetStartTime();
     }
     
     /***
@@ -68,13 +87,17 @@ public class Timebar extends Thread
     {
         //This may be something different if it is a live airing. Will look later
         
-        if(MediaPlayer.IsCurrentMediaFileRecording(this.context))
+//        if(MediaPlayer.IsCurrentMediaFileRecording(this.context))
+//        {
+//            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
+//        }
+//        else if(MediaPlayer.HasMediaFile(this.context))
+//        {
+//            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetFileStartTime();
+//        }
+        if(MediaPlayer.IsMediaPlayerLoaded(context))
         {
-            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
-        }
-        else if(MediaPlayer.HasMediaFile(this.context))
-        {
-            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetFileStartTime();
+            return MediaPlayer.GetMediaTime(this.context) - this.GetStartTime();
         }
         else
         {

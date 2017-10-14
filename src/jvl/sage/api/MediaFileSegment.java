@@ -47,10 +47,14 @@ public class MediaFileSegment
         return this.mediaFile.GetDurationForSegment(segment);
     }
     
+    /*
+     * StartTime Percent based on the scheduled start time of airing.
+    */
     public double GetStartPercent() throws SageCallApiException
     {
-        long startTime;
+        long startTime = mediaFile.GetAiring().GetScheduleStartTime();
         
+        /*
         if(mediaFile.IsFileCurrentlyRecording())
         {
             startTime = mediaFile.GetAiring().GetAiringStartTime();
@@ -59,6 +63,8 @@ public class MediaFileSegment
         {
             startTime = this.mediaFile.GetFileStartTime();
         }
+        */
+        
         
         long segmentStartDuration = this.GetStartTime() - startTime;
 
@@ -70,8 +76,9 @@ public class MediaFileSegment
     
     public double GetEndPercent() throws SageCallApiException
     {
-        long startTime;
+        long startTime = mediaFile.GetAiring().GetScheduleStartTime();
         
+        /*
         if(mediaFile.IsFileCurrentlyRecording())
         {
             startTime = mediaFile.GetAiring().GetAiringStartTime();
@@ -80,7 +87,7 @@ public class MediaFileSegment
         {
             startTime = this.mediaFile.GetFileStartTime();
         }
-        
+        */
         long segmentEndDuration = this.GetEndTime() - startTime;
 
         double temp = ((segmentEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
