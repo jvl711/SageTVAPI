@@ -123,7 +123,7 @@ public class Timebar extends Thread
             long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
             
-            temp = ((relativePlaybackDuration * 1.0) / (duration * 1.0) * 100.0);
+            temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0) - this.GetPlaybackStartPercent();
         }
         else
         {
