@@ -16,8 +16,8 @@ public class Timebar extends Thread
     private long commHitRange;
     
     /* Cached items */
-    private long startTime;
-    private long endTime;
+    //private long startTime;
+    //private long endTime;
             
     
     private static final int DEFAULT_SLEEP_ON_SKIP = 15000;
@@ -40,8 +40,8 @@ public class Timebar extends Thread
             this.markers = null;
         }
         
-        this.startTime = this.mediaFile.GetMediaStartTime();
-        this.endTime = this.mediaFile.GetMediaEndTime();
+        //this.startTime = this.mediaFile.GetMediaStartTime();
+        //this.endTime = this.mediaFile.GetMediaEndTime();
         
         this.comThreadRun = false;
         this.sleepCommThread = 0;
@@ -53,12 +53,12 @@ public class Timebar extends Thread
     
     public long GetStartTime() throws SageCallApiException
     {
-        return startTime;
+        return this.mediaFile.GetMediaStartTime();
     }
     
     public long GetEndTime() throws SageCallApiException
     {
-        return endTime;
+        return this.mediaFile.GetMediaEndTime();
     }
     
     public long GetDuration() throws SageCallApiException 
@@ -118,11 +118,12 @@ public class Timebar extends Thread
         if(mediaFile.IsFileCurrentlyRecording())
         {
             //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            //long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             
             long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
             
-            temp = ((this.GetPlaybackTime() * 1.0) / (duration * 1.0) * 100.0);
+            temp = ((relativePlayback * 1.0) / (duration * 1.0) * 100.0);
         }
         else
         {
