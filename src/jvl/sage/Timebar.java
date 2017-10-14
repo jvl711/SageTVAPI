@@ -68,7 +68,11 @@ public class Timebar extends Thread
     {
         //This may be something different if it is a live airing. Will look later
         
-        if(MediaPlayer.HasMediaFile(this.context))
+        if(MediaPlayer.IsCurrentMediaFileRecording(this.context))
+        {
+            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
+        }
+        else if(MediaPlayer.HasMediaFile(this.context))
         {
             return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetFileStartTime();
         }

@@ -41,7 +41,18 @@ public class MediaFileSegment
     
     public double GetStartPercent() throws SageCallApiException
     {
-        long segmentStartDuration = this.GetStartTime() - this.mediaFile.GetFileStartTime();
+        long startTime;
+        
+        if(mediaFile.IsFileCurrentlyRecording())
+        {
+            startTime = mediaFile.GetAiring().GetAiringStartTime();
+        }
+        else
+        {
+            startTime = this.mediaFile.GetFileStartTime();
+        }
+        
+        long segmentStartDuration = this.GetStartTime() - startTime;
 
         double temp = ((segmentStartDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
@@ -51,7 +62,18 @@ public class MediaFileSegment
     
     public double GetEndPercent() throws SageCallApiException
     {
-        long segmentEndDuration = this.GetEndTime() - this.mediaFile.GetFileStartTime();
+        long startTime;
+        
+        if(mediaFile.IsFileCurrentlyRecording())
+        {
+            startTime = mediaFile.GetAiring().GetAiringStartTime();
+        }
+        else
+        {
+            startTime = this.mediaFile.GetFileStartTime();
+        }
+        
+        long segmentEndDuration = this.GetEndTime() - startTime;
 
         double temp = ((segmentEndDuration * 1.0) / (mediaFileDuration * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
