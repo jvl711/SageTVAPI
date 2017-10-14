@@ -17,8 +17,34 @@ public class MediaFile extends SageObject
     {
         this.mediafile = mediafile;
     }
-    
 
+    //This will be the earlier of the Media Start or Scheduled start
+    public long GetMediaStartTime() throws SageCallApiException
+    {
+        if(this.GetFileStartTime() < this.GetAiring().GetAiringStartTime())
+        {
+            return this.GetFileStartTime();
+        }
+        
+        return this.GetAiring().GetScheduleStartTime();
+    }
+    
+    //This will be the latest of the Media Start or Scheduled end
+    public long GetMediaEndTime() throws SageCallApiException
+    {
+        if(this.GetFileEndTime() > this.GetAiring().GetAiringEndTime())
+        {
+            return this.GetFileStartTime();
+        }
+        
+        return this.GetAiring().GetScheduleEndTime();
+    }
+
+    public long GetMediaDuration() throws SageCallApiException
+    {
+        return this.GetMediaEndTime() - this.GetMediaStartTime();
+    }
+    
     public Show GetShow()
     {
         return new Show(this.UnwrapObject());
@@ -244,7 +270,7 @@ public class MediaFile extends SageObject
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
-                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), this.GetAiring().GetScheduleStartTime(), this.GetAiring().GetScheduleEndTime());
+                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
                     temp.add(marker);
                 }                
             }

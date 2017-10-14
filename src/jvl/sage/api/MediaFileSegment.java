@@ -34,10 +34,10 @@ public class MediaFileSegment
         this.filePath = filePath;
     }
     
-    public long GetMediaDuration() throws SageCallApiException
-    {
-        return mediaFile.GetAiring().GetScheduleEndTime() - mediaFile.GetAiring().GetScheduleStartTime();
-    }
+//    public long GetMediaDuration() throws SageCallApiException
+//    {
+//        return mediaFile.GetAiring().GetScheduleEndTime() - mediaFile.GetAiring().GetScheduleStartTime();
+//    }
     
     public long GetStartTime() throws SageCallApiException
     {
@@ -59,7 +59,7 @@ public class MediaFileSegment
     */
     public double GetStartPercent() throws SageCallApiException
     {
-        long startTime = mediaFile.GetAiring().GetScheduleStartTime();
+        //long startTime = mediaFile.GetAiring().GetScheduleStartTime();
         
         /*
         if(mediaFile.IsFileCurrentlyRecording())
@@ -73,9 +73,9 @@ public class MediaFileSegment
         */
         
         
-        long segmentStartDuration = this.GetStartTime() - startTime;
+        long segmentStartDuration = this.GetStartTime() - this.mediaFile.GetMediaStartTime();
 
-        double temp = ((segmentStartDuration * 1.0) / (GetMediaDuration() * 1.0) * 100.0);
+        double temp = ((segmentStartDuration * 1.0) / (this.mediaFile.GetMediaDuration() * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
         
         return temp;
@@ -83,7 +83,7 @@ public class MediaFileSegment
     
     public double GetEndPercent() throws SageCallApiException
     {
-        long startTime = mediaFile.GetAiring().GetScheduleStartTime();
+        //long startTime = mediaFile.GetAiring().GetScheduleStartTime();
         
         /*
         if(mediaFile.IsFileCurrentlyRecording())
@@ -95,9 +95,9 @@ public class MediaFileSegment
             startTime = this.mediaFile.GetFileStartTime();
         }
         */
-        long segmentEndDuration = this.GetEndTime() - startTime;
+        long segmentEndDuration = this.GetEndTime() - this.mediaFile.GetMediaStartTime();
 
-        double temp = ((segmentEndDuration * 1.0) / (GetMediaDuration() * 1.0) * 100.0);
+        double temp = ((segmentEndDuration * 1.0) / (this.mediaFile.GetMediaDuration() * 1.0) * 100.0);
         //int ret = (int)java.lang.Math.round(temp);
         
         return temp;
