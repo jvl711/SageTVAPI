@@ -20,7 +20,15 @@ public class MediaFileSegment
     {
         this.mediaFile = mediaFile;
         this.segment = segment;
-        this.mediaFileDuration = mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+        
+        if(mediaFile.IsFileCurrentlyRecording())
+        {
+            this.mediaFileDuration = mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
+        }
+        else
+        {
+            this.mediaFileDuration = mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
+        }
         this.filePath = filePath;
     }
     
