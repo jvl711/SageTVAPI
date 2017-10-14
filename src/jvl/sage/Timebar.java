@@ -97,7 +97,8 @@ public class Timebar extends Thread
 //        }
         if(MediaPlayer.IsMediaPlayerLoaded(context))
         {
-            return MediaPlayer.GetMediaTime(this.context) - this.GetStartTime();
+            //The documentation says that playbacktime is realative to airing start time.
+            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
         }
         else
         {
@@ -116,10 +117,12 @@ public class Timebar extends Thread
         //This is going to need to change for live...  I am not sure how.
         if(mediaFile.IsFileCurrentlyRecording())
         {
-            long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            //long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             
-            temp = ((relativePlayback * 1.0) / (duration * 1.0) * 100.0);
+            long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+            
+            temp = ((this.GetPlaybackTime() * 1.0) / (duration * 1.0) * 100.0);
         }
         else
         {
