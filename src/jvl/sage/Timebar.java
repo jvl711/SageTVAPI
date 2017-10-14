@@ -115,22 +115,22 @@ public class Timebar extends Thread
         double temp;
         
         //This is going to need to change for live...  I am not sure how.
-        if(mediaFile.IsFileCurrentlyRecording())
-        {
-            //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            
-            long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
-            
-            temp = ((relativePlayback * 1.0) / (duration * 1.0) * 100.0);
-        }
-        else
-        {
-            temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
-        }
+//        if(mediaFile.IsFileCurrentlyRecording())
+//        {
+//            //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+//            long relativePlayback = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+//            
+//            long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
+//            //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
+//            
+//            temp = ((relativePlayback * 1.0) / (duration * 1.0) * 100.0);
+//        }
+//        else
+//        {
+//            temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
+//        }
         
-        
+        temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
         
         
         return temp;
