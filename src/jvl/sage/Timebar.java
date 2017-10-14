@@ -93,7 +93,7 @@ public class Timebar extends Thread
         //This is going to need to change for live...  I am not sure how.
         if(mediaFile.IsFileCurrentlyRecording())
         {
-            long duration = this.mediaFile.GetFileEndTime() - this.mediaFile.GetFileStartTime();
+            long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
             temp = ((this.GetPlaybackTime() * 1.0) / (duration * 1.0) * 100.0);
         }
         else
