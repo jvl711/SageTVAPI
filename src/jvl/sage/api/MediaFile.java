@@ -18,26 +18,45 @@ public class MediaFile extends SageObject
         this.mediafile = mediafile;
     }
 
-    //This will be the earlier of the Media Start or Scheduled start
+    /**
+     * This will be the earlier of the Media Start or Scheduled start.
+     * 
+     * @return Long the time the file was recorded or imported in real time
+     * @throws SageCallApiException 
+     */
     public long GetMediaStartTime() throws SageCallApiException
     {
-        if(this.GetFileStartTime() < this.GetAiring().GetAiringStartTime())
+        long temp = this.GetFileStartTime();
+        
+        if(this.GetAiring().GetAiringStartTime() < temp)
         {
-            return this.GetFileStartTime();
+            temp = this.GetAiring().GetAiringStartTime();
         }
         
-        return this.GetAiring().GetScheduleStartTime();
+        if(this.GetAiring().GetScheduleStartTime() < temp)
+        {
+            temp = this.GetAiring().GetScheduleStartTime();
+        }
+        
+        return temp;
     }
     
     //This will be the latest of the Media Start or Scheduled end
     public long GetMediaEndTime() throws SageCallApiException
     {
-        if(this.GetFileEndTime() > this.GetAiring().GetAiringEndTime())
+        long temp = this.GetFileEndTime();
+        
+        if(this.GetAiring().GetAiringEndTime() > temp)
         {
-            return this.GetFileEndTime();
+            temp = this.GetAiring().GetAiringEndTime();
         }
         
-        return this.GetAiring().GetScheduleEndTime();
+        if(this.GetAiring().GetScheduleEndTime() > temp)
+        {
+            temp = this.GetAiring().GetScheduleEndTime();
+        }
+            
+        return temp;
     }
 
     public long GetMediaDuration() throws SageCallApiException

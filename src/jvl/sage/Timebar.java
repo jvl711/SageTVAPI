@@ -5,6 +5,12 @@ import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaPlayer;
 
+
+/**
+ * This class is to provide functionality to help with the displaying of timebar
+ * data on screen.  It also provides automatic commercial skip capabilities
+ * @author jolewis
+ */
 public class Timebar extends Thread
 {
     private String context;
@@ -14,11 +20,6 @@ public class Timebar extends Thread
     private long sleepCommThread;
     private long sleepOnSkip;
     private long commHitRange;
-    
-    /* Cached items */
-    //private long startTime;
-    //private long endTime;
-            
     
     private static final int DEFAULT_SLEEP_ON_SKIP = 15000;
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
@@ -39,10 +40,7 @@ public class Timebar extends Thread
             System.out.println("JVL - Error Message: " + ex.getMessage());
             this.markers = null;
         }
-        
-        //this.startTime = this.mediaFile.GetMediaStartTime();
-        //this.endTime = this.mediaFile.GetMediaEndTime();
-        
+       
         this.comThreadRun = false;
         this.sleepCommThread = 0;
         this.sleepOnSkip = Timebar.DEFAULT_SLEEP_ON_SKIP;
@@ -51,11 +49,25 @@ public class Timebar extends Thread
         
     }
     
+    /**
+     * This is the time the timebar starts at. This will include the padding, 
+     * and scheduled recording time where a portion of the recording may have been missed.
+     * 
+     * @return Returns A time in ticks of when the recording started or when it was imported
+     * @throws SageCallApiException 
+     */
     public long GetStartTime() throws SageCallApiException
     {
         return this.mediaFile.GetMediaStartTime();
     }
     
+    /**
+     * This is the time the timebar ends at. This will include the padding, and 
+     * scheduled recording time where a portion of the recording may have been missed.
+     * 
+     * @return Returns A time in ticks of when the media file ends.
+     * @throws SageCallApiException 
+     */
     public long GetEndTime() throws SageCallApiException
     {
         return this.mediaFile.GetMediaEndTime();
@@ -63,49 +75,37 @@ public class Timebar extends Thread
     
     public long GetDuration() throws SageCallApiException 
     {
-        //If the media file is recording get duration from airing...
-        //Otherwise get it from media file so it includes all padding
-//            if(MediaPlayer.IsCurrentMediaFileRecording(context))
-//            {
-//                return mediaFile.GetAiring().GetAiringEndTime() - mediaFile.GetAiring().GetAiringStartTime();
-//            }
-//            else
-//            {
-//                return mediaFile.GetFileEndTime() - mediaFile.GetFileStartTime();
-//            }
         return this.GetEndTime() - this.GetStartTime();
     }
     
     /***
      * Returns current watch time if the file is not currently loaded, otherwise
-     * the current media player time - file start time.
+     * the current media player time in relation to the timebar start time.
+     * 
+     * For example when playback is at the beging of the file it will return 0.
+     * When playback is at the end of the file it will return a value = to the
+     * duration.
      * 
      * @return
      * @throws SageCallApiException 
      */
     public long GetPlaybackTime() throws SageCallApiException
     {
-        //This may be something different if it is a live airing. Will look later
         
-//        if(MediaPlayer.IsCurrentMediaFileRecording(this.context))
-//        {
-//            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
-//        }
-//        else if(MediaPlayer.HasMediaFile(this.context))
-//        {
-//            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetFileStartTime();
-//        }
         if(MediaPlayer.IsMediaPlayerLoaded(context))
         {
             //The documentation says that playbacktime is realative to airing start time.
-            return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
+            //return MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
+            return MediaPlayer.GetMediaTime(this.context) - this.GetStartTime();
         }
         else
         {
             //Get the current watch time
-            long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
+            //long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
+            //return airingCurrnetWathcedTime - this.GetStartTime();
             
-            return airingCurrnetWathcedTime - this.GetStartTime();
+            //This is a long shot, but I am thinking this might just be watchedduration
+            return this.mediaFile.GetAiring().GetWatchedDuration();
         }
         
     }
@@ -114,24 +114,14 @@ public class Timebar extends Thread
     {
         double temp;
         
-        //This is going to need to change for live...  I am not sure how.
         if(mediaFile.IsFileCurrentlyRecording())
-        {
-            //long duration = this.mediaFile.GetAiring().GetAiringEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            long relativePlaybackDuration = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            
-            long duration = this.GetEndTime() - this.mediaFile.GetMediaFileSegments()[0].GetStartTime();
-            //long playbackTime = MediaPlayer.GetMediaTime(this.context) - this.mediaFile.GetAiring().GetAiringStartTime();
-            
+        {            
             temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0) - this.GetPlaybackStartPercent();
         }
         else
         {
             temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0);
         }
-        
-        
-        
         
         return temp;
     }
