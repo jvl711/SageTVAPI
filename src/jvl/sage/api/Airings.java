@@ -73,7 +73,7 @@ public class Airings extends SageArrayObject<Airing>
         }
     }
     
-    public Shows GetShows()
+    public Shows GetShows() throws SageCallApiException
     {
         Shows shows = new Shows();
        
@@ -85,7 +85,7 @@ public class Airings extends SageArrayObject<Airing>
         return shows;
     }
     
-    public MediaFiles GetMediaFiles()
+    public MediaFiles GetMediaFiles() throws SageCallApiException
     {
         MediaFiles mediafiles = new MediaFiles();
         
