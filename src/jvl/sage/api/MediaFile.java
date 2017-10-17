@@ -15,9 +15,50 @@ public class MediaFile extends SageObject
 
     public MediaFile(Object mediafile)
     {
+        //TODO:  Check to see what object type this is, and convert accordingly.
+        
         this.mediafile = mediafile;
     }
 
+    /**
+     * Returns true if the specified object is a MediaFile object. No automatic 
+     * type conversion will be performed on the argument. This will return false 
+     * if the argument is a MediaFile object, BUT that object no longer exists 
+     * in the SageTV database.
+     * 
+     * @param testObject The object to test
+     * @return True if it is a media file object.  False otherwise.
+     * @throws SageCallApiException 
+     */
+    public static boolean IsMediaFileObject(Object testObject) throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsMediaFileObject", testObject);
+    }
+    
+    /**
+     * Returns true if the specified object is a MediaFile object. No automatic 
+     * type conversion will be performed on the argument. This will return false 
+     * if the argument is a MediaFile object, BUT that object no longer exists 
+     * in the SageTV database.
+     * 
+     * @return True if it is a media file object.  False otherwise.
+     * @throws SageCallApiException 
+     */
+    public boolean IsMediaFileObject() throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsMediaFileObject", this.mediafile);
+    }
+
+    public static Object GetMediaFileAiring(Object mediaFile) throws SageCallApiException
+    {
+        return MediaFile.callApiObject("GetMediaFileAiring", mediaFile);
+    }
+    
+    public Object GetMediaFileAiring() throws SageCallApiException
+    {
+        return MediaFile.callApiObject("GetMediaFileAiring", this.mediafile);
+    }
+    
     /**
      * This will be the earlier of the Media Start or Scheduled start.
      * 

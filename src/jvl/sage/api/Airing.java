@@ -16,14 +16,56 @@ public class Airing extends SageObject
         this.airing = airing;
     }
     
-    public Show GetShow()
+    /**
+     * Returns true if the argument is an Airing object. Automatic type conversion is NOT done in this call.
+     * 
+     * @param testObject the object to test
+     * @return true if the argument is an Airing object
+     * @throws SageCallApiException 
+     */
+    public static boolean IsAiringObject(Object testObject) throws SageCallApiException
     {
-        return new Show(this.UnwrapObject());
+        return Airing.callAPIBoolean("IsAiringObject", testObject);
     }
     
-    public MediaFile GetMediaFile()
+    /**
+     * Returns true if the argument is an Airing object. Automatic type conversion is NOT done in this call.
+     * 
+     
+     * @return true if the argument is an Airing object
+     * @throws SageCallApiException 
+     */
+    public boolean IsAiringObject() throws SageCallApiException
     {
-        return new MediaFile(this.UnwrapObject());
+        return Airing.callAPIBoolean("IsAiringObject", this.airing);
+    }
+    
+    /**
+     * Gets the MediaFile object which corresponds to this Airing object
+     * 
+     * @return the MediaFile object which corresponds to this Airing object, 
+     * or null if it has no associated MediaFile
+     * @throws SageCallApiException 
+     */
+    public Object GetMediaFileForAiring() throws SageCallApiException
+    {
+        return Airing.callApiObject("GetMediaFileForAiring", this.airing);
+    }
+    
+    public Object GetShowForAiring() throws SageCallApiException
+    {
+        return Airing.callApiObject("GetShow", this.airing);
+    }
+    
+    
+    public Show GetShow() throws SageCallApiException
+    {
+        return new Show(this.GetShowForAiring());
+    }
+    
+    public MediaFile GetMediaFile() throws SageCallApiException
+    {
+        return new MediaFile(this.GetMediaFileForAiring());
     }
     
     public boolean IsWatched() throws SageCallApiException

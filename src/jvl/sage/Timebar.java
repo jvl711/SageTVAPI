@@ -100,12 +100,9 @@ public class Timebar extends Thread
         }
         else
         {
-            //Get the current watch time
-            //long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
-            //return airingCurrnetWathcedTime - this.GetStartTime();
-            
-            //This is a long shot, but I am thinking this might just be watchedduration
-            return this.mediaFile.GetAiring().GetWatchedDuration();
+            //The watchedduration is in relation to the start time of the airing.  This converts to the timebar start time.
+            long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
+            return airingCurrnetWathcedTime - this.GetStartTime();
         }
         
     }

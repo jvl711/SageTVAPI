@@ -27,6 +27,26 @@ public class SageAPI
         callAPIBase(context, method, new Object [] {arg1, arg2});
     }
     
+    protected static Object callApiObject(String method, Object arg1) throws SageCallApiException
+    {
+        return callAPIBase(method, new Object [] {arg1});
+    }
+    
+    protected static Object callApiObject(String context, String method, Object arg1) throws SageCallApiException
+    {
+        return callAPIBase(context, method, new Object [] {arg1});
+    }
+    
+    protected static Object callApiObject(String method, Object arg1, Object arg2) throws SageCallApiException
+    {
+        return callAPIBase(method, new Object [] {arg1, arg2});
+    }
+    
+    protected static Object callApiObject(String context, String method, Object arg1, Object arg2) throws SageCallApiException
+    {
+        return callAPIBase(context, method, new Object [] {arg1, arg2});
+    }
+    
     protected static Object [] callApiArray(String method, Object arg1) throws SageCallApiException
     {
         return (Object [])callAPIBase(method, new Object [] {arg1});
