@@ -44,10 +44,10 @@ public class MediaFile extends SageObject
      * @return True if it is a media file object.  False otherwise.
      * @throws SageCallApiException 
      */
-    public boolean IsMediaFileObject() throws SageCallApiException
-    {
-        return MediaFile.callAPIBoolean("IsMediaFileObject", this.mediafile);
-    }
+//    public boolean IsMediaFileObject() throws SageCallApiException
+//    {
+//        return MediaFile.callAPIBoolean("IsMediaFileObject", this.mediafile);
+//    }
 
     public static Object GetMediaFileAiring(Object mediaFile) throws SageCallApiException
     {
