@@ -78,6 +78,8 @@ public class Timebar extends Thread
         return this.GetEndTime() - this.GetStartTime();
     }
     
+    
+    
     /***
      * Returns current watch time if the file is not currently loaded, otherwise
      * the current media player time in relation to the timebar start time.

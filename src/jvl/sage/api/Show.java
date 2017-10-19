@@ -23,6 +23,30 @@ public class Show extends SageObject
         this.show = show;
     }
     
+    /**
+     * Returns true if the argument is an Show object. Automatic type conversion is NOT done in this call.
+     * 
+     * @param testObject the object to test
+     * @return true if the argument is an Show object
+     * @throws SageCallApiException 
+     */
+    public static boolean IsShowObject(Object testObject) throws SageCallApiException
+    {
+        return Airing.callAPIBoolean("IsShowObject", testObject);
+    }
+    
+    /**
+     * Returns true if the argument is an Show object. Automatic type conversion is NOT done in this call.
+     * 
+     
+     * @return true if the argument is an Show object
+     * @throws SageCallApiException 
+     */
+    public boolean IsShowObject() throws SageCallApiException
+    {
+        return Airing.callAPIBoolean("IsShowObject", this.show);
+    }
+    
     public MediaFile GetMediaFile()
     {
         return new MediaFile(this.UnwrapObject());

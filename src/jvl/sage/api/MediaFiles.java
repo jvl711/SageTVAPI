@@ -45,7 +45,7 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         }
     }
 
-    public Shows GetShows()
+    public Shows GetShows() throws SageCallApiException
     {
         Shows shows = new Shows();
         

@@ -13,7 +13,30 @@ public class Airing extends SageObject
     
     public Airing(Object airing)
     {
-        this.airing = airing;
+        try
+        {
+            if(this.IsAiringObject(airing))
+            {
+                this.airing = airing;
+            }
+            else if(MediaFile.IsMediaFileObject(airing))
+            {
+                this.airing = MediaFile.GetMediaFileAiring(airing);
+            }
+            else
+            {
+                System.out.println("JVL - Airing Constructor object passed in is not a media file or airing");
+                this.airing = airing;
+            }
+        }
+        catch(Exception ex)
+        {
+            //If we fail than just set it.
+            this.airing = airing;
+        }
+        
+        
+        
     }
     
     /**

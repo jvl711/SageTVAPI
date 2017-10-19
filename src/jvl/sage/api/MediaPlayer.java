@@ -26,8 +26,15 @@ public class MediaPlayer extends SageAPI
         return MediaPlayer.callAPIBoolean(context, "HasMediaFile");
     }
     
+    public static Object GetCurrentMediaFile(String context) throws SageCallApiException
+    {
+        return MediaPlayer.callAPIBoolean(context, "GetCurrentMediaFile");
+    }
+    
     public static void Seek(String context, long time) throws SageCallApiException
     {
         MediaPlayer.callApi(context, "Seek", time);
     }
+    
+    
 }
