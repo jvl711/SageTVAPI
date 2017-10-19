@@ -42,10 +42,11 @@ public class Show extends SageObject
      * @return true if the argument is an Show object
      * @throws SageCallApiException 
      */
-    public boolean IsShowObject() throws SageCallApiException
-    {
-        return Airing.callAPIBoolean("IsShowObject", this.show);
-    }
+//    public boolean IsShowObject() throws SageCallApiException
+//    {
+//        return Airing.callAPIBoolean("IsShowObject", this.show);
+//    }
+    
     
     public MediaFile GetMediaFile()
     {

@@ -13,13 +13,11 @@ public class Airing extends SageObject
     
     public Airing(Object airing)
     {
-          this.airing = airing;
+        this.airing = airing;
         
-        /*
-          TODO: Further investigate
         try
         {
-            if(this.IsAiringObject(airing))
+            if(Airing.IsAiringObject(airing))
             {
                 this.airing = airing;
             }
@@ -28,18 +26,18 @@ public class Airing extends SageObject
                 this.airing = MediaFile.GetMediaFileAiring(airing);
             }
             else
-            {
-                System.out.println("JVL - Airing Constructor object passed in is not a media file or airing");
-                this.airing = airing;
+           {     
+                throw new Exception("Unknown object type passed");
+                //System.out.println("JVL - Airing Constructor object passed in is not a media file or airing");
+                //this.airing = airing;
             }
         }
         catch(Exception ex)
         {
             //If we fail than just set it.
-            this.airing = airing;
+            //this.airing = airing;
+            System.out.println("JVL - Error constructing Airing.  The object passed was not an Airing or MediaFile");
         }
-        */
-        
         
     }
     
@@ -62,10 +60,10 @@ public class Airing extends SageObject
      * @return true if the argument is an Airing object
      * @throws SageCallApiException 
      */
-    public boolean IsAiringObject() throws SageCallApiException
-    {
-        return Airing.callAPIBoolean("IsAiringObject", this.airing);
-    }
+//    public boolean IsAiringObject() throws SageCallApiException
+//    {
+//        return Airing.callAPIBoolean("IsAiringObject", this.airing);
+//    }
     
     /**
      * Gets the MediaFile object which corresponds to this Airing object
