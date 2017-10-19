@@ -13,7 +13,6 @@ public class Airing extends SageObject
     
     public Airing(Object airing)
     {
-        this.airing = airing;
         
         try
         {
@@ -26,17 +25,13 @@ public class Airing extends SageObject
                 this.airing = MediaFile.GetMediaFileAiring(airing);
             }
             else
-           {     
+            {     
                 throw new Exception("Unknown object type passed");
-                //System.out.println("JVL - Airing Constructor object passed in is not a media file or airing");
-                //this.airing = airing;
             }
         }
         catch(Exception ex)
         {
-            //If we fail than just set it.
-            //this.airing = airing;
-            System.out.println("JVL - Error constructing Airing.  The object passed was not an Airing or MediaFile");
+            throw new RuntimeException("JVL - Error constructing Airing.  The object passed was not an Airing or MediaFile");
         }
         
     }
@@ -68,13 +63,14 @@ public class Airing extends SageObject
     /**
      * Gets the MediaFile object which corresponds to this Airing object
      * 
+     * @param airing Airing to get media file for
      * @return the MediaFile object which corresponds to this Airing object, 
      * or null if it has no associated MediaFile
      * @throws SageCallApiException 
      */
-    public Object GetMediaFileForAiring() throws SageCallApiException
+    public static Object GetMediaFileForAiring(Object airing) throws SageCallApiException
     {
-        return Airing.callApiObject("GetMediaFileForAiring", this.airing);
+        return Airing.callApiObject("GetMediaFileForAiring", airing);
     }
     
     public Object GetShowForAiring() throws SageCallApiException
@@ -92,7 +88,7 @@ public class Airing extends SageObject
     
     public MediaFile GetMediaFile() throws SageCallApiException
     {
-        return new MediaFile(this.GetMediaFileForAiring());
+        return new MediaFile(Airing.GetMediaFileForAiring(this.airing));
     }
     
     public boolean IsWatched() throws SageCallApiException

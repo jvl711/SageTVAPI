@@ -15,7 +15,22 @@ public class MediaFile extends SageObject
 
     public MediaFile(Object mediafile)
     {
-        //TODO:  Check to see what object type this is, and convert accordingly.
+        try
+        {
+            if(MediaFile.IsMediaFileObject(mediafile))
+            {
+                this.mediafile = mediafile;
+            }
+            else if(Airing.IsAiringObject(mediafile))
+            {
+                this.mediafile = Airing.GetMediaFileForAiring(mediafile);
+                throw new Exception("Unknown object type passed");
+            }
+        }
+        catch(Exception ex)
+        {
+            throw new RuntimeException("JVL - Error constructing Airing.  The object passed was not an Airing or MediaFile");
+        }
         
         this.mediafile = mediafile;
     }

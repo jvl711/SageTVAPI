@@ -220,6 +220,33 @@ public class Airings extends SageArrayObject<Airing>
             }
         }
         
+        //If both of these conditions are null than pull the newest unwatched episode
+        //Ignoring Season and Episode info
+        if(nextShow == null && oldestShow == null)
+        {
+            
+            Shows shows = this.GetShows();
+
+            oldestShow = shows.Get(0);
+            nextShow = shows.Get(0);
+            
+            for(int j = 0; j < shows.Size() && nextShow == null; j++)
+            {
+                //Has an episode number, and is not watched
+                if(!shows.Get(j).GetAiring().IsWatched() && nextShow.GetAiring().GetAiringStartTime() < shows.Get(j).GetAiring().GetAiringStartTime())
+                {
+                    nextShow = shows.Get(j);   
+                }
+
+                //The first show we come in contact with is the oldest
+                if(oldestShow.GetAiring().GetAiringStartTime() > shows.Get(j).GetAiring().GetAiringStartTime())
+                {
+                    oldestShow = shows.Get(j);
+                }
+            }
+        }
+        
+        
         //If all of the shows are watched set to the oldest show
         if(nextShow == null)
         {
