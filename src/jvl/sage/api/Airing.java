@@ -13,6 +13,10 @@ public class Airing extends SageObject
     
     public Airing(Object airing)
     {
+          this.airing = airing;
+        
+        /*
+          TODO: Further investigate
         try
         {
             if(this.IsAiringObject(airing))
@@ -34,7 +38,7 @@ public class Airing extends SageObject
             //If we fail than just set it.
             this.airing = airing;
         }
-        
+        */
         
         
     }
@@ -83,7 +87,9 @@ public class Airing extends SageObject
     
     public Show GetShow() throws SageCallApiException
     {
-        return new Show(this.GetShowForAiring());
+        //TODO Investigate
+        return new Show(this.UnwrapObject());
+        //return new Show(this.GetShowForAiring());
     }
     
     public MediaFile GetMediaFile() throws SageCallApiException
