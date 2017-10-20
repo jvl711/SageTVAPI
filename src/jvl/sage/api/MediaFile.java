@@ -23,7 +23,10 @@ public class MediaFile extends SageObject
             }
             else if(Airing.IsAiringObject(mediafile))
             {
-                this.mediafile = Airing.GetMediaFileForAiring(mediafile);
+                this.mediafile = Airing.GetMediaFileForAiring(mediafile);   
+            }
+            else
+            {
                 throw new Exception("Unknown object type passed");
             }
         }
