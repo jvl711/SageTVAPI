@@ -123,7 +123,7 @@ public class MediaFile extends SageObject
         return this.GetMediaEndTime() - this.GetMediaStartTime();
     }
     
-    public Show GetShow()
+    public Show GetShow() throws SageCallApiException
     {
         return new Show(this.UnwrapObject());
     }

@@ -20,7 +20,7 @@ public class Shows extends SageArrayObject<Show>
         this.shows = new ArrayList();
     }
     
-    public Shows(Object object)
+    public Shows(Object object) throws SageCallApiException
     {
         Object [] objects = null;
         

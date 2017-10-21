@@ -17,12 +17,36 @@ public class Show extends SageObject
     public static final double MAXIMUM_POSTER_RATIO = 0.68;
 
     private Object show;
+    private Object mediafile;
+    private Object airing;
     
-    public Show(Object show)
+    /**
+     * This constructor will only construct if it is given a
+     * MediaFile or Airing. This is to make sure that a conversion
+     * between Airing, Show and MediaFile is properly maintained
+     * 
+     * @param input 
+     * @throws jvl.sage.SageCallApiException 
+     */
+    public Show(Object input) throws SageCallApiException
     {
-        
-        
-        this.show = show;
+        if(MediaFile.IsMediaFileObject(input))
+        {
+            this.mediafile = input;
+            this.airing = Airing.GetMediaFileForAiring(airing);
+            this.show = Airing.GetShowForAiring(airing);
+            
+        }
+        else if(Airing.IsAiringObject(input))
+        {
+            this.airing = input;
+            this.mediafile = Airing.GetMediaFileForAiring(input);
+            this.show = Airing.GetShowForAiring(airing);
+        }
+        else
+        {
+            throw new RuntimeException("JVL - The input is not an Airing or MediaFile.");
+        }
     }
     
     /**
@@ -37,22 +61,12 @@ public class Show extends SageObject
         return Airing.callAPIBoolean("IsShowObject", testObject);
     }
     
-    /**
-     * Returns true if the argument is an Show object. Automatic type conversion is NOT done in this call.
-     * 
-     
-     * @return true if the argument is an Show object
-     * @throws SageCallApiException 
-     */
-    public boolean IsShowObject() throws SageCallApiException
-    {
-        return Airing.callAPIBoolean("IsShowObject", this.show);
-    }
+    
     
     
     public MediaFile GetMediaFile()
     {
-        return new MediaFile(this.UnwrapObject());
+        return new MediaFile(this.mediafile);
     }
     
     public Airing GetAiring()
@@ -64,7 +78,7 @@ public class Show extends SageObject
     {
         int response = 0;
         
-        response = callApiInt("GetShowSeasonNumber", this.show);
+        response = callApiInt("GetShowSeasonNumber", this.airing);
         
         return response;
     }
@@ -73,14 +87,14 @@ public class Show extends SageObject
     {
         int response = 0;
         
-        response = callApiInt("GetShowEpisodeNumber", this.show);
+        response = callApiInt("GetShowEpisodeNumber", this.airing);
         
         return response;
     }
 
     public String GetShowTitle() throws SageCallApiException
     {
-        return callApiString("GetShowTitle", this.show);
+        return callApiString("GetShowTitle", this.airing);
     }
  
     public char GetShowTitleSearchChar() throws SageCallApiException
@@ -126,7 +140,7 @@ public class Show extends SageObject
 
     public String GetPoster()
     {
-        String poster = fanart.GetFanartPoster(this.show);
+        String poster = fanart.GetFanartPoster(this.mediafile);
         
         File file = null;
 
@@ -137,7 +151,7 @@ public class Show extends SageObject
             //System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
             //System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
             fanart.ClearMemoryCaches();
-            poster = fanart.GetFanartPoster(this.show);
+            poster = fanart.GetFanartPoster(this.mediafile);
             //System.out.println("JVL Debug - Second poster call attemp: " + poster);
         }
         
@@ -176,7 +190,7 @@ public class Show extends SageObject
     
     public String GetBackground()
     {
-        String background = fanart.GetFanartBackground(this.show);
+        String background = fanart.GetFanartBackground(this.mediafile);
         File file = null;
         
         if(background != null)
@@ -203,12 +217,12 @@ public class Show extends SageObject
     
     public void SetPoster(String poster)
     {
-        fanart.SetFanartPoster(show, poster);
+        fanart.SetFanartPoster(this.mediafile, poster);
     }
     
     public void SetBackground(String background)
     {
-        fanart.SetFanartBackground(show, background);
+        fanart.SetFanartBackground(this.mediafile, background);
     }
     /**
      * Returns all of the posters for the show.  Verifies that the poster
@@ -217,7 +231,7 @@ public class Show extends SageObject
      */
     public String [] GetPosters()
     {
-        String [] posters = fanart.GetFanartPosters(this.show);
+        String [] posters = fanart.GetFanartPosters(this.mediafile);
         ArrayList temp = new ArrayList();
         
         
@@ -250,7 +264,7 @@ public class Show extends SageObject
     
     public String [] GetBackgrounds()
     {
-        String [] backgrounds = fanart.GetFanartBackgrounds(this.show);
+        String [] backgrounds = fanart.GetFanartBackgrounds(this.mediafile);
         ArrayList temp = new ArrayList();
         
         for(int i = 0; i < backgrounds.length; i++)
@@ -288,7 +302,7 @@ public class Show extends SageObject
      */
     public void CleanPosters(int Width)
     {
-        String [] posters = fanart.GetFanartPosters(this.show);
+        String [] posters = fanart.GetFanartPosters(this.mediafile);
         
         if(posters != null)
         {
@@ -322,7 +336,7 @@ public class Show extends SageObject
      */
     public void ScalePosters(int width)
     {
-        String [] posters = fanart.GetFanartPosters(this.show);
+        String [] posters = fanart.GetFanartPosters(this.mediafile);
         
         if(posters != null)
         {

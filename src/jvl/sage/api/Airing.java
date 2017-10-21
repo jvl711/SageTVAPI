@@ -73,9 +73,9 @@ public class Airing extends SageObject
         return Airing.callApiObject("GetMediaFileForAiring", airing);
     }
     
-    public Object GetShowForAiring() throws SageCallApiException
+    public static Object GetShowForAiring(Object airing) throws SageCallApiException
     {
-        return Airing.callApiObject("GetShow", this.airing);
+        return Airing.callApiObject("GetShow", airing);
     }
     
     
