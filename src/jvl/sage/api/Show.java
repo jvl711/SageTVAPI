@@ -125,6 +125,7 @@ public class Show extends SageObject
     public String GetPoster()
     {
         String poster = fanart.GetFanartPoster(this.show);
+        
         File file = null;
 
         //If it returns null sttempt to clear cache and pickup new poster
