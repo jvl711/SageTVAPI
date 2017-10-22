@@ -33,14 +33,14 @@ public class Show extends SageObject
         if(MediaFile.IsMediaFileObject(input))
         {
             this.mediafile = input;
-            this.airing = Airing.GetMediaFileForAiring(airing);
+            this.airing = MediaFile.GetMediaFileAiring(mediafile);
             this.show = Airing.GetShowForAiring(airing);
             
         }
         else if(Airing.IsAiringObject(input))
         {
             this.airing = input;
-            this.mediafile = Airing.GetMediaFileForAiring(input);
+            this.mediafile = Airing.GetMediaFileForAiring(airing);
             this.show = Airing.GetShowForAiring(airing);
         }
         else
