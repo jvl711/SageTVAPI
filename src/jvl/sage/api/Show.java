@@ -140,7 +140,7 @@ public class Show extends SageObject
 
     public String GetPoster()
     {
-        String poster = fanart.GetFanartPoster(this.mediafile);
+        String poster = fanart.GetFanartPoster(this.airing);
         
         File file = null;
 
@@ -151,7 +151,7 @@ public class Show extends SageObject
             //System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
             //System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
             fanart.ClearMemoryCaches();
-            poster = fanart.GetFanartPoster(this.mediafile);
+            poster = fanart.GetFanartPoster(this.airing);
             //System.out.println("JVL Debug - Second poster call attemp: " + poster);
         }
         
@@ -190,7 +190,7 @@ public class Show extends SageObject
     
     public String GetBackground()
     {
-        String background = fanart.GetFanartBackground(this.mediafile);
+        String background = fanart.GetFanartBackground(this.airing);
         File file = null;
         
         if(background != null)
@@ -217,12 +217,12 @@ public class Show extends SageObject
     
     public void SetPoster(String poster)
     {
-        fanart.SetFanartPoster(this.mediafile, poster);
+        fanart.SetFanartPoster(this.airing, poster);
     }
     
     public void SetBackground(String background)
     {
-        fanart.SetFanartBackground(this.mediafile, background);
+        fanart.SetFanartBackground(this.airing, background);
     }
     /**
      * Returns all of the posters for the show.  Verifies that the poster
@@ -231,7 +231,7 @@ public class Show extends SageObject
      */
     public String [] GetPosters()
     {
-        String [] posters = fanart.GetFanartPosters(this.mediafile);
+        String [] posters = fanart.GetFanartPosters(this.airing);
         ArrayList temp = new ArrayList();
         
         
@@ -264,7 +264,7 @@ public class Show extends SageObject
     
     public String [] GetBackgrounds()
     {
-        String [] backgrounds = fanart.GetFanartBackgrounds(this.mediafile);
+        String [] backgrounds = fanart.GetFanartBackgrounds(this.airing);
         ArrayList temp = new ArrayList();
         
         for(int i = 0; i < backgrounds.length; i++)
@@ -302,7 +302,7 @@ public class Show extends SageObject
      */
     public void CleanPosters(int Width)
     {
-        String [] posters = fanart.GetFanartPosters(this.mediafile);
+        String [] posters = fanart.GetFanartPosters(this.airing);
         
         if(posters != null)
         {
@@ -336,7 +336,7 @@ public class Show extends SageObject
      */
     public void ScalePosters(int width)
     {
-        String [] posters = fanart.GetFanartPosters(this.mediafile);
+        String [] posters = fanart.GetFanartPosters(this.airing);
         
         if(posters != null)
         {
@@ -373,7 +373,7 @@ public class Show extends SageObject
     @Override
     public Object UnwrapObject() 
     {
-        return this.show;
+        return this.airing;
     }
     
 }
