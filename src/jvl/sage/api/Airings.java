@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class Airings extends SageArrayObject<Airing>
 {
-    ArrayList<Airing> airings;
+    //ArrayList<Airing> airings;
     
     ArrayList<Airing> randomAirings;
     
@@ -40,7 +40,7 @@ public class Airings extends SageArrayObject<Airing>
     
     public Airings()
     {
-        airings = new ArrayList();
+        //airings = new ArrayList();
         randomAirings = new ArrayList();
     }
     
@@ -62,13 +62,13 @@ public class Airings extends SageArrayObject<Airing>
             Debug.Writeln("\tObject info: " + object.toString(), Debug.ERROR);
         }
 
-        airings = new ArrayList();
+        //airings = new ArrayList();
         
         if(objects != null)
         {
             for(int i = 0; i < objects.length; i++)
             {
-                airings.add(new Airing(objects[i]));
+                this.add(new Airing(objects[i]));
             }
         }
     }
@@ -77,9 +77,9 @@ public class Airings extends SageArrayObject<Airing>
     {
         Shows shows = new Shows();
        
-        for(int i = 0; i < this.airings.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            shows.Add(this.airings.get(i).GetShow());
+            shows.Add(this.get(i).GetShow());
         }
         
         return shows;
@@ -89,9 +89,9 @@ public class Airings extends SageArrayObject<Airing>
     {
         MediaFiles mediafiles = new MediaFiles();
         
-        for(int i = 0; i < this.airings.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            mediafiles.Add(this.airings.get(i).GetMediaFile());
+            mediafiles.Add(this.get(i).GetMediaFile());
         }
         
         return mediafiles;
@@ -101,11 +101,11 @@ public class Airings extends SageArrayObject<Airing>
     {
         Airings unwatchedAirings = new Airings();
         
-        for(int i = 0; i < airings.size(); i++)
+        for(int i = 0; i < size(); i++)
         {
-            if(!airings.get(i).IsWatched())
+            if(!this.get(i).IsWatched())
             {
-                unwatchedAirings.Add(airings.get(i));
+                unwatchedAirings.Add(this.get(i));
             }
         }
         
@@ -122,9 +122,9 @@ public class Airings extends SageArrayObject<Airing>
      */
     public void SetWatchedStatus(boolean watched) throws SageCallApiException
     {
-        for(int i = 0; i < airings.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            airings.get(i).SetWatchedStatus(watched);
+            this.get(i).SetWatchedStatus(watched);
         }
     }
     
@@ -136,9 +136,9 @@ public class Airings extends SageArrayObject<Airing>
      */
     public boolean IsAllWatched() throws SageCallApiException
     {
-        for(int i = 0; i < this.airings.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            if(!airings.get(i).IsWatched())
+            if(!this.get(i).IsWatched())
             {
                 return false;
             }   
@@ -161,13 +161,13 @@ public class Airings extends SageArrayObject<Airing>
      
         //Fill an array of airings.  Makes sure we do not pull the same episode
         //over and over again.
-        if (randomAirings == null || randomAirings.size() == 0)
+        if (randomAirings == null || randomAirings.isEmpty())
         {
             randomAirings = new ArrayList<Airing>();
             
-            for(int i = 0; i < airings.size(); i++)
+            for(int i = 0; i < this.size(); i++)
             {
-                randomAirings.add(airings.get(i));
+                randomAirings.add(this.get(i));
             }
         }
         else if (randomAirings.size() == 1)
@@ -175,7 +175,7 @@ public class Airings extends SageArrayObject<Airing>
             return randomAirings.remove(0);
         }
         
-        return airings.get(random.nextInt(this.airings.size()));
+        return this.get(random.nextInt(this.size()));
     }
     
     /**
@@ -306,11 +306,11 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public Object[] UnwrapObject() 
     {
-        Object [] unwrapped = new Object[airings.size()];
+        Object [] unwrapped = new Object[this.size()];
         
-        for(int i = 0; i < airings.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            unwrapped[i] = airings.get(i).UnwrapObject();
+            unwrapped[i] = this.get(i).UnwrapObject();
         }
         
         return unwrapped;
@@ -328,21 +328,21 @@ public class Airings extends SageArrayObject<Airing>
      */
     public boolean DeleteAllWatched() throws SageCallApiException 
     {
-        for(int i = airings.size() - 1; i >= 0; i--)
+        for(int i = this.size() - 1; i >= 0; i--)
         {
         
-                if(airings.get(i).IsWatched())
+            if(this.get(i).IsWatched())
+            {
+                if(this.get(i).GetMediaFile().DeleteFile())
                 {
-                    if(airings.get(i).GetMediaFile().DeleteFile())
-                    {
-                        airings.remove(i);
-                    }
-                    else
-                    {
-                        Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.ERROR);
-                        return false;
-                    }
+                    this.remove(i);
                 }
+                else
+                {
+                    Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.ERROR);
+                    return false;
+                }
+            }
         }
         
         return true;
@@ -359,13 +359,13 @@ public class Airings extends SageArrayObject<Airing>
      */
     public boolean DeleteAll() throws SageCallApiException 
     {
-        for(int i = airings.size() - 1; i >= 0; i--)
+        for(int i = this.size() - 1; i >= 0; i--)
         {
-            if(!airings.get(i).GetMediaFile().IsFileCurrentlyRecording())
+            if(!this.get(i).GetMediaFile().IsFileCurrentlyRecording())
             {
-                if(airings.get(i).GetMediaFile().DeleteFile())
+                if(this.get(i).GetMediaFile().DeleteFile())
                 {
-                    airings.remove(i);
+                    this.remove(i);
                 }
                 else
                 {
@@ -385,11 +385,11 @@ public class Airings extends SageArrayObject<Airing>
      */
     public void Verify()
     {
-        for(int i = airings.size() - 1; i >= 0; i--)
+        for(int i = this.size() - 1; i >= 0; i--)
         {
-            if(!airings.get(i).ExistsOnDisk())
+            if(!this.get(i).ExistsOnDisk())
             {
-                Airing deletedAiring = airings.remove(i);
+                Airing deletedAiring = this.remove(i);
                 Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.INFO);
                 
                 randomAirings.remove(deletedAiring);
@@ -400,36 +400,74 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public Airing Remove(int index) 
     {
-        Airing deletedAiring = this.airings.remove(index);
+        Airing deletedAiring = this.remove(index);
         randomAirings.remove(deletedAiring);
         
         return deletedAiring;
     }
 
+    /**
+     * @deprecated 
+     * @param d 
+     */
     @Override
     public void Add(Airing d) 
     {
-        randomAirings.add(d);
-        this.airings.add(d);
+        this.add(d);
+    }
+    
+    @Override
+    public boolean add(Airing e) 
+    {
+        randomAirings.add(e);
+        return baseList.add(e);
+        
     }
 
+    @Override
+    public void add(int i, Airing e) 
+    {
+        randomAirings.add(1, e);
+        this.baseList.add(i, e);
+    }
+
+    /**
+     * @deprecated 
+     * @return 
+     */
     @Override
     public int Size() 
     {
-        return this.airings.size();
+        return this.size();
     }
 
+    /**
+     * @deprecated 
+     * @param index
+     * @return 
+     */
     @Override
     public Airing Get(int index) 
     {
-        return this.airings.get(index);
+        return this.get(index);
     }
 
     @Override
+    public Airing set(int i, Airing e) 
+    {
+        this.randomAirings.set(i, e);
+        return this.baseList.set(i, e);
+    }
+    
+    /**
+     * @deprecated 
+     * @param index
+     * @param d 
+     */
+    @Override
     public void Set(int index, Airing d) 
     {
-        this.randomAirings.set(index, d);
-        this.airings.set(index, d);
+        this.set(index, d);
     }
     
 }
