@@ -41,8 +41,8 @@ public class Airings extends SageArrayObject<Airing>
     public Airings()
     {
         //airings = new ArrayList();
-        //randomAirings = new ArrayList();
-        this.baseList = new ArrayList<Airing>();
+        randomAirings = new ArrayList();
+        //this.baseList = new ArrayList<Airing>();
     }
     
     public Airings(Object object)
@@ -63,7 +63,8 @@ public class Airings extends SageArrayObject<Airing>
             Debug.Writeln("\tObject info: " + object.toString(), Debug.ERROR);
         }
 
-        this.baseList = new ArrayList<Airing>();
+        //this.baseList = new ArrayList<Airing>();
+        randomAirings = new ArrayList<Airing>();
         //airings = new ArrayList();
         
         if(objects != null)
