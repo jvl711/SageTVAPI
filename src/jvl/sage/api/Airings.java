@@ -400,31 +400,27 @@ public class Airings extends SageArrayObject<Airing>
         }
     }
 
+    /*
     @Override
-    public Airing Remove(int index) 
+    public Airing remove(int i)
     {
-        Airing deletedAiring = this.remove(index);
-        randomAirings.remove(deletedAiring);
         
-        return deletedAiring;
-    }
-
-    /**
-     * @deprecated 
-     * @param d 
-     */
-    @Override
-    public void Add(Airing d) 
-    {
-        this.add(d);
     }
     
+    @Override
+    public Airing set(int i, Airing e) 
+    {
+        this.randomAirings.set(i, e);
+        return this.baseList.set(i, e);
+    }
+    
+    
+
     @Override
     public boolean add(Airing e) 
     {
         randomAirings.add(e);
-        return baseList.add(e);
-        
+        return baseList.add(e);        
     }
 
     @Override
@@ -433,7 +429,22 @@ public class Airings extends SageArrayObject<Airing>
         randomAirings.add(1, e);
         this.baseList.add(i, e);
     }
-
+    */
+    
+    /**
+     * @deprecated 
+     * @param index
+     * @return 
+     */
+    @Override
+    public Airing Remove(int index) 
+    {
+        //this.remove(this)
+        //randomAirings.remove(deletedAiring);
+        System.out.println("JVL - Deprecated called (Airings.Remove)");
+        return this.remove(index);
+    }
+    
     /**
      * @deprecated 
      * @return 
@@ -452,15 +463,22 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public Airing Get(int index) 
     {
+        System.out.println("JVL - Deprecated called (Airings.Get)");
         return this.get(index);
     }
 
+    /**
+     * @deprecated 
+     * @param d 
+     */
     @Override
-    public Airing set(int i, Airing e) 
+    public void Add(Airing d) 
     {
-        this.randomAirings.set(i, e);
-        return this.baseList.set(i, e);
+        System.out.println("JVL - Deprecated called (Airings.Add)");
+        this.add(d);
     }
+    
+    
     
     /**
      * @deprecated 
@@ -470,6 +488,7 @@ public class Airings extends SageArrayObject<Airing>
     @Override
     public void Set(int index, Airing d) 
     {
+        System.out.println("JVL - Deprecated called (Airings.Set)");
         this.set(index, d);
     }
     

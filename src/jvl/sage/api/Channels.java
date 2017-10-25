@@ -2,12 +2,11 @@
 package jvl.sage.api;
 
 import jvl.sage.SageArrayObject;
-import java.util.ArrayList;
 import jvl.sage.SageCallApiException;
 
 public class Channels extends SageArrayObject<Channel>
 {
-    ArrayList<Channel> channels;
+   
     
     public Channels()
     {
@@ -23,13 +22,13 @@ public class Channels extends SageArrayObject<Channel>
 
     private void LoadChannels() throws SageCallApiException
     {
-        channels = new ArrayList();
+        //channels = new ArrayList();
         
         Object [] rawChannels = callApiArray("GetAllChannels");
         
         for(int i = 0; i < rawChannels.length; i++)
         {
-            channels.add(new Channel(rawChannels[i]));
+            this.add(new Channel(rawChannels[i]));
         }
     }
     
@@ -63,44 +62,64 @@ public class Channels extends SageArrayObject<Channel>
     @Override
     public Object[] UnwrapObject() 
     {
-        Object [] unwrapped = new Object[channels.size()];
+        Object [] unwrapped = new Object[this.size()];
         
-        for(int i = 0; i < channels.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            unwrapped[i] = channels.get(i).UnwrapObject();
+            unwrapped[i] = this.get(i).UnwrapObject();
         }
         
         return unwrapped;
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public Channel Remove(int index) 
     {
-        return this.channels.remove(index);
+        System.out.println("JVL - Deprecated called (Channels.Remove)");
+        return this.remove(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public Channel Get(int index) 
     {
-        return this.channels.get(index);
+        System.out.println("JVL - Deprecated called (Channels.Get)");
+        return this.get(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public void Add(Channel d) 
     {
-        this.channels.add(d);
+        System.out.println("JVL - Deprecated called (Airings.Add)");
+        this.add(d);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public int Size() 
     {
-        return this.channels.size();
+        System.out.println("JVL - Deprecated called (Airings.Size)");
+        return this.size();
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public void Set(int index, Channel d) 
     {
-        this.channels.set(index, d);
+        System.out.println("JVL - Deprecated called (Airings.Set)");
+        this.set(index, d);
     }
     
 }

@@ -2,10 +2,8 @@
 package jvl.sage.api;
 
 import jvl.sage.SageArrayObject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import jvl.sage.JobStatus;
 import jvl.sage.SageCallApiException;
@@ -13,11 +11,11 @@ import jvl.sage.SageCallApiException;
 
 public class Shows extends SageArrayObject<Show>
 {
-    ArrayList<Show> shows;
+    //ArrayList<Show> shows;
 
     public Shows()
     {
-        this.shows = new ArrayList();
+        //this.shows = new ArrayList();
     }
     
     public Shows(Object object) throws SageCallApiException
@@ -40,13 +38,13 @@ public class Shows extends SageArrayObject<Show>
         }
         
         
-        shows = new ArrayList();
+        //shows = new ArrayList();
         
         if(objects != null)
         {
             for(int i = 0; i < objects.length; i++)
             {
-                shows.add(new Show(objects[i]));
+                this.add(new Show(objects[i]));
             }
         }
     }
@@ -55,9 +53,9 @@ public class Shows extends SageArrayObject<Show>
     {
         Airings airings = new Airings();
        
-        for(int i = 0; i < this.shows.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            airings.Add(this.shows.get(i).GetAiring());
+            airings.Add(this.get(i).GetAiring());
         }
         
         return airings;
@@ -67,9 +65,9 @@ public class Shows extends SageArrayObject<Show>
     {
         MediaFiles mediafiles = new MediaFiles();
         
-        for(int i = 0; i < this.shows.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            mediafiles.Add(this.shows.get(i).GetMediaFile());
+            mediafiles.Add(this.get(i).GetMediaFile());
         }
                 
         return mediafiles;
@@ -85,9 +83,9 @@ public class Shows extends SageArrayObject<Show>
         Integer [] ret;
         LinkedList list = new LinkedList();
         
-        for(int i = 0; i < this.shows.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            Integer temp = this.shows.get(i).GetSeasonNumber();
+            Integer temp = this.get(i).GetSeasonNumber();
             
             if(!list.contains(temp))
             {
@@ -112,32 +110,32 @@ public class Shows extends SageArrayObject<Show>
         Shows retTemp = new Shows();
         Shows retSorted = new Shows();
         
-        for(int i = 0; i < shows.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            if(shows.get(i).GetSeasonNumber() == season)
+            if(this.get(i).GetSeasonNumber() == season)
             {
-                retTemp.Add(shows.get(i));
+                retTemp.add(this.get(i));
             }
         }
         
-        for(int i = 0; i < retTemp.Size(); i++)
+        for(int i = 0; i < retTemp.size(); i++)
         {
             //Get next compare in the list
-            Show next = retTemp.Get(i);
+            Show next = retTemp.get(i);
             
-            for(int j = (i + 1); j < retTemp.Size(); j++)
+            for(int j = (i + 1); j < retTemp.size(); j++)
             {
-                Show compare = retTemp.Get(j);
+                Show compare = retTemp.get(j);
                 
                 //Swap the items
                 if(compare.GetEpisodeNumber() < next.GetEpisodeNumber())
                 {
-                    retTemp.Set(j, next);
+                    retTemp.set(j, next);
                     next = compare;
                 }
             }
             
-            retSorted.Add(next);
+            retSorted.add(next);
         }
 
         return retSorted;
@@ -150,11 +148,11 @@ public class Shows extends SageArrayObject<Show>
     
     public void SortByTitle(boolean desc)
     {
-        Collections.sort(shows, new SortableShowTitleCompaator());
+        Collections.sort(this, new SortableShowTitleCompaator());
         
         if(desc)
         {
-            Collections.reverse(shows);
+            Collections.reverse(this);
         }
     }
     
@@ -188,17 +186,17 @@ public class Shows extends SageArrayObject<Show>
     
     public Show GetShowBySearchChar(char searchChar) throws SageCallApiException
     {
-        Show lastShow = shows.get(0);
+        Show lastShow = this.get(0);
         
-        for(int i = 1; i < shows.size(); i++)
+        for(int i = 1; i < this.size(); i++)
         {
-            if(shows.get(i).GetSortableShowTitle().toUpperCase().charAt(0) < searchChar)
+            if(this.get(i).GetSortableShowTitle().toUpperCase().charAt(0) < searchChar)
             {
-                lastShow = shows.get(i);
+                lastShow = this.get(i);
             }
-            else if(shows.get(i).GetSortableShowTitle().toUpperCase().charAt(0) == searchChar)
+            else if(this.get(i).GetSortableShowTitle().toUpperCase().charAt(0) == searchChar)
             {
-                lastShow = shows.get(i);
+                lastShow = this.get(i);
                 break;
             }
             else
@@ -212,51 +210,68 @@ public class Shows extends SageArrayObject<Show>
     
     public int GetIndex(Show show)
     {
-        return shows.indexOf(show);
+        return this.indexOf(show);
     }
     
+    /**
+     * @deprecated 
+     */
     @Override
     public Show Remove(int index) 
     {
-        return this.shows.remove(index);
+        return this.remove(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public Show Get(int index) 
     {
-        return this.shows.get(index);
+        return this.get(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public void Add(Show d) 
     {
-        this.shows.add(d);
+        this.add(d);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public int Size() 
     {
-        return this.shows.size();
+        return this.size();
     }
     
-        @Override
+    /**
+     * @deprecated 
+     */
+    @Override
+    public void Set(int index, Show d) 
+    {
+        this.set(index, d);
+    }
+    
+    @Override
     public Object[] UnwrapObject() 
     {
-        Object [] unwrapped = new Object[shows.size()];
+        Object [] unwrapped = new Object[this.size()];
         
-        for(int i = 0; i < shows.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            unwrapped[i] = shows.get(i).UnwrapObject();
+            unwrapped[i] = this.get(i).UnwrapObject();
         }
         
         return unwrapped;
     }
 
-    @Override
-    public void Set(int index, Show d) 
-    {
-        this.shows.set(index, d);
-    }
+    
     
     private class ScalePostersThread implements Runnable
     {
