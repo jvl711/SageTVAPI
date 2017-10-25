@@ -16,7 +16,7 @@ public class Show extends SageObject
     public static final double MINIMUM_POSTER_RATIO = 0.64;
     public static final double MAXIMUM_POSTER_RATIO = 0.68;
 
-    private Object show;
+    //private Object show;
     private Object mediafile;
     private Object airing;
     private Object lookupObject;
@@ -88,7 +88,7 @@ public class Show extends SageObject
     {
         int response = 0;
         
-        response = callApiInt("GetShowSeasonNumber", this.show);
+        response = callApiInt("GetShowSeasonNumber", this.lookupObject);
         
         return response;
     }
@@ -97,14 +97,14 @@ public class Show extends SageObject
     {
         int response = 0;
         
-        response = callApiInt("GetShowEpisodeNumber", this.show);
+        response = callApiInt("GetShowEpisodeNumber", this.lookupObject);
         
         return response;
     }
 
     public String GetShowTitle() throws SageCallApiException
     {
-        return callApiString("GetShowTitle", this.show);
+        return callApiString("GetShowTitle", this.lookupObject);
     }
  
     public char GetShowTitleSearchChar() throws SageCallApiException
