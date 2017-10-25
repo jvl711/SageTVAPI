@@ -1,8 +1,6 @@
 
 package jvl.sage.api;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;

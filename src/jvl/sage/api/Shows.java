@@ -296,6 +296,10 @@ public class Shows extends SageArrayObject<Show>
         {
             this.jobStatus.SetRunning();
             
+            //Build a hashmap of Show Title + Season, and only process them once.
+            
+            
+            
             try
             {
                 for(int i = 0; i < this.shows.size(); i++)
