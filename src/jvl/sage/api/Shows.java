@@ -55,7 +55,7 @@ public class Shows extends SageArrayObject<Show>
        
         for(int i = 0; i < this.size(); i++)
         {
-            airings.Add(this.get(i).GetAiring());
+            airings.add(this.get(i).GetAiring());
         }
         
         return airings;
@@ -67,7 +67,7 @@ public class Shows extends SageArrayObject<Show>
         
         for(int i = 0; i < this.size(); i++)
         {
-            mediafiles.Add(this.get(i).GetMediaFile());
+            mediafiles.add(this.get(i).GetMediaFile());
         }
                 
         return mediafiles;
@@ -216,52 +216,52 @@ public class Shows extends SageArrayObject<Show>
     /**
      * @deprecated 
      */
-    @Override
-    public Show Remove(int index) 
-    {
-        System.out.println("JVL - Deprecated called (Shows.Remove)");
-        return this.remove(index);
-    }
+    //@Override
+    //public Show Remove(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Shows.Remove)");
+    //    return this.remove(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public Show Get(int index) 
-    {
-        System.out.println("JVL - Deprecated called (Shows.Get)");
-        return this.get(index);
-    }
+    //@Override
+    //public Show Get(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Shows.Get)");
+    //    return this.get(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public void Add(Show d) 
-    {
-        System.out.println("JVL - Deprecated called (Shows.Add)");
-        this.add(d);
-    }
+    //@Override
+    //public void Add(Show d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Shows.Add)");
+    //    this.add(d);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public int Size() 
-    {
-        System.out.println("JVL - Deprecated called (Shows.Size)");
-        return this.size();
-    }
+    //@Override
+    //public int Size() 
+    //{
+    //    System.out.println("JVL - Deprecated called (Shows.Size)");
+    //    return this.size();
+    //}
     
     /**
      * @deprecated 
      */
-    @Override
-    public void Set(int index, Show d) 
-    {
-        System.out.println("JVL - Deprecated called (Shows.Set)");
-        this.set(index, d);
-    }
+    //@Override
+    //public void Set(int index, Show d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Shows.Set)");
+    //    this.set(index, d);
+    //}
     
     @Override
     public Object[] UnwrapObject() 
@@ -298,11 +298,11 @@ public class Shows extends SageArrayObject<Show>
             
             try
             {
-                for(int i = 0; i < this.shows.Size(); i++)
+                for(int i = 0; i < this.shows.size(); i++)
                 {
-                    shows.Get(i).ScalePosters(width);
+                    shows.get(i).ScalePosters(width);
                     
-                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.Size() + " - " + shows.Get(i).GetShowTitle());
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetShowTitle());
                 }
                 
                 this.jobStatus.SetComplete();
@@ -335,11 +335,11 @@ public class Shows extends SageArrayObject<Show>
             
             try
             {
-                for(int i = 0; i < this.shows.Size(); i++)
+                for(int i = 0; i < this.shows.size(); i++)
                 {
-                    shows.Get(i).CleanPosters(width);
+                    shows.get(i).CleanPosters(width);
                     
-                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.Size() + " - " + shows.Get(i).GetShowTitle());
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetShowTitle());
                 }
                 
                 this.jobStatus.SetComplete();

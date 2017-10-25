@@ -51,7 +51,7 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         
         for(int i = 0; i < this.size(); i++)
         {
-            shows.Add(this.get(i).GetShow());
+            shows.add(this.get(i).GetShow());
         }
         
         return shows;
@@ -63,7 +63,7 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         
         for(int i = 0; i < this.size(); i++)
         {
-            airings.Add(this.get(i).GetAiring());
+            airings.add(this.get(i).GetAiring());
         }
         
         return airings;
@@ -94,52 +94,52 @@ public class MediaFiles extends SageArrayObject<MediaFile>
     /**
      * @deprecated 
      */
-    @Override
-    public MediaFile Remove(int index) 
-    {
-        System.out.println("JVL - Deprecated called (MediaFiles.Remove)");
-        return this.remove(index);
-    }
+    //@Override
+    //public MediaFile Remove(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (MediaFiles.Remove)");
+    //    return this.remove(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public MediaFile Get(int index) 
-    {
-        System.out.println("JVL - Deprecated called (MediaFiles.Get)");
-        return this.get(index);
-    }
+    //@Override
+    //public MediaFile Get(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (MediaFiles.Get)");
+    //    return this.get(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public void Set(int index, MediaFile d) 
-    {
-        System.out.println("JVL - Deprecated called (MediaFiles.Set)");
-        this.set(index, d);
-    }
+    //@Override
+    //public void Set(int index, MediaFile d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (MediaFiles.Set)");
+    //    this.set(index, d);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public void Add(MediaFile d) 
-    {
-        System.out.println("JVL - Deprecated called (MediaFiles.Add)");
-        this.add(d);
-    }
+    //@Override
+    //public void Add(MediaFile d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (MediaFiles.Add)");
+    //    this.add(d);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public int Size() 
-    {
-        System.out.println("JVL - Deprecated called (MediaFiles.Size)");
-        return this.size();
-    }
+    //@Override
+    //public int Size() 
+    //{
+    //    System.out.println("JVL - Deprecated called (MediaFiles.Size)");
+    //    return this.size();
+    //}
     
     @Override
     public Object[] UnwrapObject() 

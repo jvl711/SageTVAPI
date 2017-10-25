@@ -75,51 +75,51 @@ public class Channels extends SageArrayObject<Channel>
     /**
      * @deprecated 
      */
-    @Override
-    public Channel Remove(int index) 
-    {
-        System.out.println("JVL - Deprecated called (Channels.Remove)");
-        return this.remove(index);
-    }
+    //@Override
+    //public Channel Remove(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Channels.Remove)");
+    //    return this.remove(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public Channel Get(int index) 
-    {
-        System.out.println("JVL - Deprecated called (Channels.Get)");
-        return this.get(index);
-    }
+    //@Override
+    //public Channel Get(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Channels.Get)");
+    //    return this.get(index);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public void Add(Channel d) 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Add)");
-        this.add(d);
-    }
+    //@Override
+    //public void Add(Channel d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Add)");
+    //    this.add(d);
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public int Size() 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Size)");
-        return this.size();
-    }
+    //@Override
+    //public int Size() 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Size)");
+    //    return this.size();
+    //}
 
     /**
      * @deprecated 
      */
-    @Override
-    public void Set(int index, Channel d) 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Set)");
-        this.set(index, d);
-    }
+    //@Override
+    //public void Set(int index, Channel d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Set)");
+    //    this.set(index, d);
+    //}
     
 }

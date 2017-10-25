@@ -82,7 +82,7 @@ public class Airings extends SageArrayObject<Airing>
        
         for(int i = 0; i < this.size(); i++)
         {
-            shows.Add(this.get(i).GetShow());
+            shows.add(this.get(i).GetShow());
         }
         
         return shows;
@@ -94,7 +94,7 @@ public class Airings extends SageArrayObject<Airing>
         
         for(int i = 0; i < this.size(); i++)
         {
-            mediafiles.Add(this.get(i).GetMediaFile());
+            mediafiles.add(this.get(i).GetMediaFile());
         }
         
         return mediafiles;
@@ -108,11 +108,11 @@ public class Airings extends SageArrayObject<Airing>
         {
             if(!this.get(i).IsWatched())
             {
-                unwatchedAirings.Add(this.get(i));
+                unwatchedAirings.add(this.get(i));
             }
         }
         
-        System.out.println("Airings.GetUnwatchedAirings: " + unwatchedAirings.Size());
+        System.out.println("Airings.GetUnwatchedAirings: " + unwatchedAirings.size());
         
         return unwatchedAirings;
     }
@@ -206,18 +206,18 @@ public class Airings extends SageArrayObject<Airing>
             {
                 Shows shows = this.GetShows().GetShows(seasons[i]);
                 
-                for(int j = 0; j < shows.Size() && nextShow == null; j++)
+                for(int j = 0; j < shows.size() && nextShow == null; j++)
                 {
                     //Has an episode number, and is not watched
-                    if(shows.Get(j).GetEpisodeNumber() > 0 && !shows.Get(j).GetAiring().IsWatched())
+                    if(shows.get(j).GetEpisodeNumber() > 0 && !shows.get(j).GetAiring().IsWatched())
                     {
-                        nextShow = shows.Get(j);   
+                        nextShow = shows.get(j);   
                     }
                     
                     //The first show we come in contact with is the oldest
                     if(oldestShow == null)
                     {
-                        oldestShow = shows.Get(j);
+                        oldestShow = shows.get(j);
                     }
                 }
             }
@@ -230,21 +230,21 @@ public class Airings extends SageArrayObject<Airing>
             
             Shows shows = this.GetShows();
 
-            oldestShow = shows.Get(0);
-            nextShow = shows.Get(0);
+            oldestShow = shows.get(0);
+            nextShow = shows.get(0);
             
-            for(int j = 0; j < shows.Size() && nextShow == null; j++)
+            for(int j = 0; j < shows.size() && nextShow == null; j++)
             {
                 //Has an episode number, and is not watched
-                if(!shows.Get(j).GetAiring().IsWatched() && nextShow.GetAiring().GetAiringStartTime() < shows.Get(j).GetAiring().GetAiringStartTime())
+                if(!shows.get(j).GetAiring().IsWatched() && nextShow.GetAiring().GetAiringStartTime() < shows.get(j).GetAiring().GetAiringStartTime())
                 {
-                    nextShow = shows.Get(j);   
+                    nextShow = shows.get(j);   
                 }
 
                 //The first show we come in contact with is the oldest
-                if(oldestShow.GetAiring().GetAiringStartTime() > shows.Get(j).GetAiring().GetAiringStartTime())
+                if(oldestShow.GetAiring().GetAiringStartTime() > shows.get(j).GetAiring().GetAiringStartTime())
                 {
-                    oldestShow = shows.Get(j);
+                    oldestShow = shows.get(j);
                 }
             }
         }
@@ -287,18 +287,18 @@ public class Airings extends SageArrayObject<Airing>
             {
                 Shows shows = this.GetShows().GetShows(seasons[i]);
                 
-                lastEpisodeNumber = shows.Get(0).GetEpisodeNumber();
+                lastEpisodeNumber = shows.get(0).GetEpisodeNumber();
                 
-                for(int j = 1; j < shows.Size(); j++)
+                for(int j = 1; j < shows.size(); j++)
                 {
                     //If there is a gap in the series (Ep 2, Ep 4, Ep 5) vs (Ep 2, Ep 3, Ep 4, Ep 5)
                     //Allows for duplicate episodes
-                    if(shows.Get(j).GetEpisodeNumber() > lastEpisodeNumber + 1)
+                    if(shows.get(j).GetEpisodeNumber() > lastEpisodeNumber + 1)
                     {
                         return true;
                     }
                     
-                    lastEpisodeNumber = shows.Get(j).GetEpisodeNumber();
+                    lastEpisodeNumber = shows.get(j).GetEpisodeNumber();
                 }
             }
         }
@@ -436,47 +436,47 @@ public class Airings extends SageArrayObject<Airing>
      * @param index
      * @return 
      */
-    @Override
-    public Airing Remove(int index) 
-    {
+    //@Override
+    //public Airing Remove(int index) 
+    //{
         //this.remove(this)
         //randomAirings.remove(deletedAiring);
-        System.out.println("JVL - Deprecated called (Airings.Remove)");
-        return this.remove(index);
-    }
+    //    System.out.println("JVL - Deprecated called (Airings.Remove)");
+    //    return this.remove(index);
+    //}
     
     /**
      * @deprecated 
      * @return 
      */
-    @Override
-    public int Size() 
-    {
-        return this.size();
-    }
+    //@Override
+    //public int Size() 
+    //{
+    //    return this.size();
+    //}
 
     /**
      * @deprecated 
      * @param index
      * @return 
      */
-    @Override
-    public Airing Get(int index) 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Get)");
-        return this.get(index);
-    }
+    //@Override
+    //public Airing Get(int index) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Get)");
+    //    return this.get(index);
+    //}
 
     /**
      * @deprecated 
      * @param d 
      */
-    @Override
-    public void Add(Airing d) 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Add)");
-        this.add(d);
-    }
+    //@Override
+    //public void Add(Airing d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Add)");
+    //    this.add(d);
+    //}
     
     
     
@@ -485,11 +485,11 @@ public class Airings extends SageArrayObject<Airing>
      * @param index
      * @param d 
      */
-    @Override
-    public void Set(int index, Airing d) 
-    {
-        System.out.println("JVL - Deprecated called (Airings.Set)");
-        this.set(index, d);
-    }
+    //@Override
+    //public void Set(int index, Airing d) 
+    //{
+    //    System.out.println("JVL - Deprecated called (Airings.Set)");
+    //    this.set(index, d);
+    //}
     
 }

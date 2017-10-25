@@ -51,11 +51,11 @@ public class FavoriteChannels
     {
         Channels sageChannels = new Channels();
         
-        for(int i = sageChannels.Size() - 1; i > 0; i--)
+        for(int i = sageChannels.size() - 1; i > 0; i--)
         {
-            if(!this.Exists(sageChannels.Get(i).getChannelNumber()))
+            if(!this.Exists(sageChannels.get(i).getChannelNumber()))
             {
-                sageChannels.Remove(i);
+                sageChannels.remove(i);
             }
         }
         

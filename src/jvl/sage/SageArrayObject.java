@@ -26,31 +26,31 @@ public abstract class SageArrayObject<T> extends SageAPI implements List<T>
      * @deprecated 
      * @return 
      */
-    public abstract <T> T Remove(int index);
+    //public abstract <T> T Remove(int index);
     
     /**
      * @deprecated 
      * @return 
      */
-    public abstract <T> T Get(int index);
+    //public abstract <T> T Get(int index);
     
     /**
      * @deprecated 
      * @return 
      */
-    public abstract void Set(int index, T d);
+    //public abstract void Set(int index, T d);
     
     /**
      * @deprecated 
      * @return 
      */
-    public abstract void Add(T d);
+    //public abstract void Add(T d);
     
     /**
      * @deprecated 
      * @return 
      */
-    public abstract int Size();
+    //public abstract int Size();
     
 
     @Override

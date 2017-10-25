@@ -24,9 +24,9 @@ public class Playlist
         {
             Shows temp = shows.GetShows(seasons[i]);
             
-            for(int j = 0; j < temp.Size(); j++)
+            for(int j = 0; j < temp.size(); j++)
             {
-                airings.Add(temp.Get(j).GetAiring());
+                airings.add(temp.get(j).GetAiring());
             }
         }
         
@@ -44,9 +44,9 @@ public class Playlist
         {
             Shows temp = shows.GetShows(seasons[i]);
             
-            for(int j = 0; j < temp.Size(); j++)
+            for(int j = 0; j < temp.size(); j++)
             {
-                this.airings.Add(temp.Get(j).GetAiring());
+                this.airings.add(temp.get(j).GetAiring());
             }
         }
         
@@ -59,7 +59,7 @@ public class Playlist
      */
     public boolean HasMoreAirings()
     {
-        return (currentIndex) < airings.Size();
+        return (currentIndex) < airings.size();
     }
     
     /**
@@ -80,7 +80,7 @@ public class Playlist
             throw new RuntimeException("Index is outside of the bounds");
         }
         
-        Airing airing = airings.Get(currentIndex);
+        Airing airing = airings.get(currentIndex);
         currentIndex++;
         
         return airing;
@@ -89,12 +89,12 @@ public class Playlist
 
     public Object GetCurrenttAiringUnwrapped()
     {
-        return airings.Get(currentIndex).UnwrapObject();
+        return airings.get(currentIndex).UnwrapObject();
     }
     
     public Object GetCurrenttAiring()
     {
-        return airings.Get(currentIndex);
+        return airings.get(currentIndex);
     }
     
     public void ResetIndex()
