@@ -9,11 +9,11 @@ import jvl.sage.SageCallApiException;
 
 public class MediaFiles extends SageArrayObject<MediaFile>
 {
-    ArrayList<MediaFile> mediafiles;
+    //ArrayList<MediaFile> mediafiles;
     
     public MediaFiles()
     {
-        mediafiles = new ArrayList<MediaFile>();
+        //mediafiles = new ArrayList<MediaFile>();
     }
     
     public MediaFiles(Object object)
@@ -22,7 +22,7 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         
         if (object instanceof Collection)
         {
-              objects = ((Collection)object).toArray();
+            objects = ((Collection)object).toArray();
         }
         else if(object instanceof Object[])
         {
@@ -34,13 +34,13 @@ public class MediaFiles extends SageArrayObject<MediaFile>
             System.out.println(object.toString());
         }
 
-        mediafiles = new ArrayList();
+        //mediafiles = new ArrayList();
         
         if(objects != null)
         {
             for(int i = 0; i < objects.length; i++)
             {
-                mediafiles.add(new MediaFile(objects[i]));
+                this.add(new MediaFile(objects[i]));
             }
         }
     }
@@ -49,9 +49,9 @@ public class MediaFiles extends SageArrayObject<MediaFile>
     {
         Shows shows = new Shows();
         
-        for(int i = 0; i < this.mediafiles.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            shows.Add(mediafiles.get(i).GetShow());
+            shows.Add(this.get(i).GetShow());
         }
         
         return shows;
@@ -61,9 +61,9 @@ public class MediaFiles extends SageArrayObject<MediaFile>
     {
         Airings airings = new Airings();
         
-        for(int i = 0; i < this.mediafiles.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            airings.Add(mediafiles.get(i).GetAiring());
+            airings.Add(this.get(i).GetAiring());
         }
         
         return airings;
@@ -73,13 +73,13 @@ public class MediaFiles extends SageArrayObject<MediaFile>
     {
         ArrayList<MediaFile> tempmediafiles = new ArrayList<MediaFile>();
         
-        for(int i = 0; i < this.mediafiles.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
             try
             {
-                if(this.mediafiles.get(i).GetMetadata(field).equalsIgnoreCase(value))
+                if(this.get(i).GetMetadata(field).equalsIgnoreCase(value))
                 {
-                    tempmediafiles.add(this.mediafiles.get(i));
+                    tempmediafiles.add(this.get(i));
                 }
             }
             catch(Exception ex)
@@ -88,47 +88,67 @@ public class MediaFiles extends SageArrayObject<MediaFile>
             }
         }
         
-        this.mediafiles = tempmediafiles;
+        this.baseList = tempmediafiles;
     }
     
+    /**
+     * @deprecated 
+     */
     @Override
     public MediaFile Remove(int index) 
     {
-        return mediafiles.remove(index);
+        System.out.println("JVL - Deprecated called (MediaFiles.Remove)");
+        return this.remove(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public MediaFile Get(int index) 
     {
-        return mediafiles.get(index);
+        System.out.println("JVL - Deprecated called (MediaFiles.Get)");
+        return this.get(index);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public void Set(int index, MediaFile d) 
     {
-        mediafiles.set(index, d);
+        System.out.println("JVL - Deprecated called (MediaFiles.Set)");
+        this.set(index, d);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public void Add(MediaFile d) 
     {
-        mediafiles.add(d);
+        System.out.println("JVL - Deprecated called (MediaFiles.Add)");
+        this.add(d);
     }
 
+    /**
+     * @deprecated 
+     */
     @Override
     public int Size() 
     {
-        return mediafiles.size();
+        System.out.println("JVL - Deprecated called (MediaFiles.Size)");
+        return this.size();
     }
     
     @Override
     public Object[] UnwrapObject() 
     {
-        Object[] temp = new Object[mediafiles.size()];
+        Object[] temp = new Object[this.size()];
         
-        for(int i = 0; i < mediafiles.size(); i++)
+        for(int i = 0; i < this.size(); i++)
         {
-            temp[i] = mediafiles.get(i).UnwrapObject();
+            temp[i] = this.get(i).UnwrapObject();
         }
         
         return temp;

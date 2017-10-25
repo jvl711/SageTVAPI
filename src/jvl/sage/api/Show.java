@@ -71,9 +71,6 @@ public class Show extends SageObject
         return Airing.callAPIBoolean("IsShowObject", testObject);
     }
     
-    
-    
-    
     public MediaFile GetMediaFile()
     {
         return new MediaFile(this.mediafile);

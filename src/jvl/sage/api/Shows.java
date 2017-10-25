@@ -219,6 +219,7 @@ public class Shows extends SageArrayObject<Show>
     @Override
     public Show Remove(int index) 
     {
+        System.out.println("JVL - Deprecated called (Shows.Remove)");
         return this.remove(index);
     }
 
@@ -228,6 +229,7 @@ public class Shows extends SageArrayObject<Show>
     @Override
     public Show Get(int index) 
     {
+        System.out.println("JVL - Deprecated called (Shows.Get)");
         return this.get(index);
     }
 
@@ -237,6 +239,7 @@ public class Shows extends SageArrayObject<Show>
     @Override
     public void Add(Show d) 
     {
+        System.out.println("JVL - Deprecated called (Shows.Add)");
         this.add(d);
     }
 
@@ -246,6 +249,7 @@ public class Shows extends SageArrayObject<Show>
     @Override
     public int Size() 
     {
+        System.out.println("JVL - Deprecated called (Shows.Size)");
         return this.size();
     }
     
@@ -255,6 +259,7 @@ public class Shows extends SageArrayObject<Show>
     @Override
     public void Set(int index, Show d) 
     {
+        System.out.println("JVL - Deprecated called (Shows.Set)");
         this.set(index, d);
     }
     
