@@ -12,7 +12,7 @@ public class Configuration extends SageAPI
         
         try
         {
-            Configuration.callApiString(context, "GetProperty", property, defaultValue);
+            result = Configuration.callApiString(context, "GetProperty", property, defaultValue);
         }
         catch(Exception ex)
         {
