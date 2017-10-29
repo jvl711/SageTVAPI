@@ -54,10 +54,12 @@ public class Movies
 
             if(sortDir == SortDirection.DESC)
             {
+                System.out.println("JVL - Sorting shows desc: " + sortDir);
                 shows.SortByTitle(true);
             }
             else
             {
+                System.out.println("JVL - Sorting shows asc: " + sortDir);
                 shows.SortByTitle(false);
             }
 
