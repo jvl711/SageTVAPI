@@ -18,6 +18,7 @@ public class Movies
     
     public Movies(String context)
     {
+        System.out.println("JVL - Movies Constructor Called: " + context);
         this.context = context;
     }
     
@@ -34,11 +35,16 @@ public class Movies
     public Shows GetMovies() throws SageCallApiException
     {
         MediaFiles mediaFiles = MediaFile.GetVideoFiles();
+        System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
+        
         SortDirection sortDir = this.GetSortDirection();
         
         //Filter to just Movie type media files
         mediaFiles.FilterByMetadata("MediaType", "Movie");
+        System.out.println("JVL - Movies Filterred: " + mediaFiles.size());
         Shows shows = mediaFiles.GetShows();
+        System.out.println("JVL - Converted to shows: " + shows.size());
+        
         
         if(sortDir == SortDirection.DESC)
         {
