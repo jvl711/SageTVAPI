@@ -34,28 +34,40 @@ public class Movies
     
     public Shows GetMovies() throws SageCallApiException
     {
-        MediaFiles mediaFiles = MediaFile.GetVideoFiles();
-        System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
+        System.out.println("JVL - Movies GetMovies Called: " + this.context);
         
-        SortDirection sortDir = this.GetSortDirection();
-        
-        //Filter to just Movie type media files
-        mediaFiles.FilterByMetadata("MediaType", "Movie");
-        System.out.println("JVL - Movies Filterred: " + mediaFiles.size());
-        Shows shows = mediaFiles.GetShows();
-        System.out.println("JVL - Converted to shows: " + shows.size());
-        
-        
-        if(sortDir == SortDirection.DESC)
+        try
         {
-            shows.SortByTitle(true);
+            MediaFiles mediaFiles = MediaFile.GetVideoFiles();
+            System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
+
+            SortDirection sortDir = this.GetSortDirection();
+
+            //Filter to just Movie type media files
+            mediaFiles.FilterByMetadata("MediaType", "Movie");
+            System.out.println("JVL - Movies Filterred: " + mediaFiles.size());
+            Shows shows = mediaFiles.GetShows();
+            System.out.println("JVL - Converted to shows: " + shows.size());
+
+
+            if(sortDir == SortDirection.DESC)
+            {
+                shows.SortByTitle(true);
+            }
+            else
+            {
+                shows.SortByTitle(false);
+            }
+
+            return shows;
         }
-        else
+        catch(Exception ex)
         {
-            shows.SortByTitle(false);
+            System.out.println("JVL - Movies ERROR: " + ex.getMessage());
+            ex.printStackTrace();
         }
         
-        return shows;
+        return null;
     }
 }
 
