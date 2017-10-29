@@ -4,6 +4,7 @@ package jvl.sage;
 import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaPlayer;
+import jvl.sage.api.UIContext;
 
 
 /**
@@ -13,7 +14,7 @@ import jvl.sage.api.MediaPlayer;
  */
 public class Timebar extends Thread
 {
-    private String context;
+    private UIContext context;
     private MediaFile mediaFile;
     private Marker [] markers;
     private boolean comThreadRun;
@@ -27,7 +28,7 @@ public class Timebar extends Thread
 
     public Timebar(String context, MediaFile mediaFile) throws SageCallApiException
     {
-        this.context = context;
+        this.context = new UIContext(context);
         this.mediaFile = mediaFile;
      
         try

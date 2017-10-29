@@ -6,7 +6,7 @@ import jvl.sage.SageAPI;
 
 public class Configuration extends SageAPI
 {
-    public static String GetProperty(String context, String property, String defaultValue)
+    public static String GetProperty(UIContext context, String property, String defaultValue)
     {
         String result = "";
         
@@ -22,7 +22,7 @@ public class Configuration extends SageAPI
         return result;
     }
     
-    public static void SetProperty(String context, String property, String value)
+    public static void SetProperty(UIContext context, String property, String value)
     {   
         try
         {

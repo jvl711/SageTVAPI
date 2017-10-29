@@ -2,6 +2,7 @@
 package jvl.sage;
 
 import java.lang.reflect.InvocationTargetException;
+import jvl.sage.api.UIContext;
 import sage.SageTV;
 
 public class SageAPI 
@@ -12,7 +13,7 @@ public class SageAPI
         callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static void callApi(String context, String method, Object arg1) throws SageCallApiException
+    protected static void callApi(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         callAPIBase(context, method, new Object [] {arg1});
     }
@@ -22,7 +23,7 @@ public class SageAPI
         callAPIBase(method, new Object [] {arg1, arg2});
     }
     
-    protected static void callApi(String context, String method, Object arg1, Object arg2) throws SageCallApiException
+    protected static void callApi(UIContext context, String method, Object arg1, Object arg2) throws SageCallApiException
     {
         callAPIBase(context, method, new Object [] {arg1, arg2});
     }
@@ -32,7 +33,7 @@ public class SageAPI
         return callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static Object callApiObject(String context, String method, Object arg1) throws SageCallApiException
+    protected static Object callApiObject(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return callAPIBase(context, method, new Object [] {arg1});
     }
@@ -42,7 +43,7 @@ public class SageAPI
         return callAPIBase(method, new Object [] {arg1, arg2});
     }
     
-    protected static Object callApiObject(String context, String method, Object arg1, Object arg2) throws SageCallApiException
+    protected static Object callApiObject(UIContext context, String method, Object arg1, Object arg2) throws SageCallApiException
     {
         return callAPIBase(context, method, new Object [] {arg1, arg2});
     }
@@ -52,7 +53,7 @@ public class SageAPI
         return (Object [])callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static Object [] callApiArray(String context, String method, Object arg1) throws SageCallApiException
+    protected static Object [] callApiArray(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return (Object [])callAPIBase(context, method, new Object [] {arg1});
     }
@@ -62,7 +63,7 @@ public class SageAPI
         return (Object [])callAPIBase(method, null);
     }
     
-    protected static Object [] callApiArray(String context, String method) throws SageCallApiException
+    protected static Object [] callApiArray(UIContext context, String method) throws SageCallApiException
     {
         return (Object [])callAPIBase(context, method, null);
     }
@@ -72,7 +73,7 @@ public class SageAPI
         return (String)callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static String callApiString(String context, String method, Object arg1) throws SageCallApiException
+    protected static String callApiString(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return (String)callAPIBase(context, method, new Object [] {arg1});
     }
@@ -82,7 +83,7 @@ public class SageAPI
         return (String)callAPIBase(method, new Object [] {arg1, arg2});
     }
     
-    protected static String callApiString(String context, String method, Object arg1, Object arg2) throws SageCallApiException
+    protected static String callApiString(UIContext context, String method, Object arg1, Object arg2) throws SageCallApiException
     {
         return (String)callAPIBase(context, method, new Object [] {arg1, arg2});
     }
@@ -92,7 +93,7 @@ public class SageAPI
         return (String)callAPIBase(method, null);
     }
     
-    protected static String callApiString(String context, String method) throws SageCallApiException
+    protected static String callApiString(UIContext context, String method) throws SageCallApiException
     {
         return (String)callAPIBase(context, method, null);
     }
@@ -102,7 +103,7 @@ public class SageAPI
         return (Integer)callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static int callApiInt(String context, String method, Object arg1) throws SageCallApiException
+    protected static int callApiInt(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return (Integer)callAPIBase(context, method, new Object [] {arg1});
     }
@@ -112,7 +113,7 @@ public class SageAPI
         return (Long)callAPIBase(method, null);
     }
     
-    protected static long callApiLong(String context, String method) throws SageCallApiException
+    protected static long callApiLong(UIContext context, String method) throws SageCallApiException
     {
         return (Long)callAPIBase(context, method, null);
     }
@@ -122,7 +123,7 @@ public class SageAPI
         return (Long)callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static long callApiLong(String context, String method, Object arg1) throws SageCallApiException
+    protected static long callApiLong(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return (Long)callAPIBase(context, method, new Object [] {arg1});
     }
@@ -132,7 +133,7 @@ public class SageAPI
         return (Long)callAPIBase(method, new Object [] {arg1, arg2});
     }
     
-    protected static long callApiLong(String context, String method, Object arg1, Object arg2) throws SageCallApiException
+    protected static long callApiLong(UIContext context, String method, Object arg1, Object arg2) throws SageCallApiException
     {
         return (Long)callAPIBase(context, method, new Object [] {arg1, arg2});
     }
@@ -142,7 +143,7 @@ public class SageAPI
         return (Boolean)callAPIBase(method, null);
     }
     
-    protected static boolean callAPIBoolean(String context, String method) throws SageCallApiException
+    protected static boolean callAPIBoolean(UIContext context, String method) throws SageCallApiException
     {
         return (Boolean)callAPIBase(context, method, null);
     }
@@ -152,7 +153,7 @@ public class SageAPI
         return (Boolean)callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static boolean callAPIBoolean(String context, String method, Object arg1) throws SageCallApiException
+    protected static boolean callAPIBoolean(UIContext context, String method, Object arg1) throws SageCallApiException
     {
         return (Boolean)callAPIBase(context, method, new Object [] {arg1});
     }
@@ -211,7 +212,7 @@ public class SageAPI
         return ret;
     }
     
-    private static Object callAPIBase(String context, String method, Object [] args) throws SageCallApiException
+    private static Object callAPIBase(UIContext context, String method, Object [] args) throws SageCallApiException
     {
         
         Object ret = null;
@@ -241,7 +242,7 @@ public class SageAPI
             
             Debug.Writeln(message, Debug.INFO);
             
-            ret = (Object)SageTV.apiUI(context, method, args);
+            ret = (Object)SageTV.apiUI(context.GetName(), method, args);
                     
             if(ret == null)
             {

@@ -5,6 +5,7 @@ import jvl.sage.api.Configuration;
 import jvl.sage.api.Shows;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
+import jvl.sage.api.UIContext;
 
 
 /*
@@ -14,12 +15,13 @@ public class Movies
 {
     public static final String PROPERTY_PREFIX = "jvl.movies";
     public static final String PROPERTY_SORT_DIR = PROPERTY_PREFIX + ".sort.direction";
-    private final String context;
+    
+    private UIContext context;
     
     public Movies(String context)
     {
         System.out.println("JVL - Movies Constructor Called: " + context);
-        this.context = context;
+        this.context = new UIContext(context);
     }
     
     public void SetSortDirection(SortDirection sort)
