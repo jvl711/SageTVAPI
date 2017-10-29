@@ -6,7 +6,35 @@ import jvl.sage.SageAPI;
 
 public class Configuration extends SageAPI
 {
-    public static String getServerProperty(String property, String defaultValue)
+    public static String GetProperty(String context, String property, String defaultValue)
+    {
+        String result = "";
+        
+        try
+        {
+            Configuration.callApiString(context, "GetProperty", property, defaultValue);
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Error getting Client Property: " + property);
+        }
+        
+        return result;
+    }
+    
+    public static void SetProperty(String context, String property, String value)
+    {   
+        try
+        {
+            Configuration.callApiString(context, "SetProperty", property, value);
+        }
+        catch(Exception ex)
+        {
+            System.out.println("Error setting Client Property: " + property);
+        }
+    }
+    
+    public static String GetServerProperty(String property, String defaultValue)
     {
         String result = "";
         
@@ -22,7 +50,7 @@ public class Configuration extends SageAPI
         return result;
     }
     
-    public static void setServerProperty(String property, String value)
+    public static void SetServerProperty(String property, String value)
     {
 
         try

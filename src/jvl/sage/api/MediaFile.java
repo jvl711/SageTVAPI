@@ -419,6 +419,27 @@ public class MediaFile extends SageObject
         return output;
     }
     
+    /*
+     * Media File Accessor methods.  I am going to start with very specific methods.
+     * I may make take a different direction in the future.
+    */
+    
+    /*********************************************************************************************/
+    
+    public static MediaFiles GetVideoFiles() throws SageCallApiException
+    {
+        Object [] objects;
+        MediaFiles mediaFiles;
+        
+        objects = MediaFile.callApiArray("GetMediaFiles", "V");
+        
+        mediaFiles = new MediaFiles(objects);
+        
+        return mediaFiles;
+    }
+    
+    /*********************************************************************************************/
+    
     @Override
     public Object UnwrapObject() 
     {

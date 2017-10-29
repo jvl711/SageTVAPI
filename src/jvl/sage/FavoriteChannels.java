@@ -18,8 +18,8 @@ public class FavoriteChannels
         channels = new ArrayList<String>();
         this.listIndex = listIndex;
         
-        this.listName = Configuration.getServerProperty(propertyPrefix + listIndex + ".listname", "List " + listIndex);
-        String temp = Configuration.getServerProperty(propertyPrefix + listIndex, "");
+        this.listName = Configuration.GetServerProperty(propertyPrefix + listIndex + ".listname", "List " + listIndex);
+        String temp = Configuration.GetServerProperty(propertyPrefix + listIndex, "");
         
         Debug.Writeln("List Property: " + temp, Debug.INFO);
         
@@ -71,7 +71,7 @@ public class FavoriteChannels
     public void SetName(String listName)
     {
         this.listName = listName;
-        Configuration.setServerProperty(propertyPrefix + listIndex + ".listname", listName);
+        Configuration.SetServerProperty(propertyPrefix + listIndex + ".listname", listName);
     }
     
     public int GetIndex()
@@ -86,14 +86,14 @@ public class FavoriteChannels
             channels.add(ChannelNumber);
         }
         
-        Configuration.setServerProperty(propertyPrefix + listIndex, this.toString());
+        Configuration.SetServerProperty(propertyPrefix + listIndex, this.toString());
     }
     
     public void Remove(String ChannelNumber)
     {
         channels.remove(ChannelNumber);
         
-        Configuration.setServerProperty(propertyPrefix + listIndex, this.toString());
+        Configuration.SetServerProperty(propertyPrefix + listIndex, this.toString());
     }
     
     @Override
