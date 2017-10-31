@@ -16,11 +16,11 @@ public enum SortDirection
 
     public static SortDirection Parse(String name)
     {
-        if(name.toLowerCase().equals(ASC.GetName().toLowerCase()))
+        if(name.equalsIgnoreCase(name))
         {
             return ASC;
         }
-        else if(name.toLowerCase().equals(DESC.GetName().toLowerCase()))
+        else if(name.equalsIgnoreCase(name))
         {
             return DESC;
         }

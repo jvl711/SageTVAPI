@@ -24,6 +24,11 @@ public class Movies
         this.context = new UIContext(context);
     }
     
+    public void SetSortDirection(String sort)
+    {
+        Configuration.SetProperty(context, PROPERTY_SORT_DIR, SortDirection.Parse(sort).GetName());
+    }
+    
     public void SetSortDirection(SortDirection sort)
     {
         Configuration.SetProperty(context, PROPERTY_SORT_DIR, sort.GetName());
