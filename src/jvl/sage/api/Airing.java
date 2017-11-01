@@ -119,6 +119,8 @@ public class Airing extends SageObject
     /***
      * Gets the start time of this Airing. The time is in Java time units, which are milliseconds since Jan 1, 1970 GMT
      * 
+     * If this is an import file than this date will be the date the file was imported
+     * 
      * @return the start time of this Airing
      * @throws SageCallApiException 
      */

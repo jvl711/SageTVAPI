@@ -15,6 +15,7 @@ public class Movies
 {
     public static final String PROPERTY_PREFIX = "jvl.movies";
     public static final String PROPERTY_SORT_DIR = PROPERTY_PREFIX + ".sort.direction";
+    public static final String PROPERTY_SORT_COL = PROPERTY_PREFIX + ".sort.column";
     
     private UIContext context;
     
@@ -39,35 +40,63 @@ public class Movies
         return SortDirection.Parse(Configuration.GetProperty(context, PROPERTY_SORT_DIR, SortDirection.GetDefault().GetName()));
     }
     
+    public void SetSortColumn(String sort)
+    {
+        Configuration.SetProperty(context, PROPERTY_SORT_COL, MoviesSortColumn.Parse(sort).GetName());
+    }
+    
+    public void SetSortColumn(MoviesSortColumn sort)
+    {
+        Configuration.SetProperty(context, PROPERTY_SORT_COL, sort.GetName());
+    }
+    
+    public MoviesSortColumn GetSortColumn()
+    {
+        return MoviesSortColumn.Parse(Configuration.GetProperty(context, PROPERTY_SORT_COL, MoviesSortColumn.GetDefault().GetName()));
+    }
+    
     public Shows GetMovies() throws SageCallApiException
     {
-        System.out.println("JVL - Movies GetMovies Called: " + this.context);
+        //System.out.println("JVL - Movies GetMovies Called: " + this.context);
         
         try
         {
             MediaFiles mediaFiles = MediaFile.GetVideoFiles();
-            System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
+            
+            //System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
 
             SortDirection sortDir = this.GetSortDirection();
+            MoviesSortColumn sortCol = this.GetSortColumn();
+            boolean sortDesc = false;
 
             //Filter to just Movie type media files
-            mediaFiles.FilterByMetadata("MediaType", "Movie");
-            System.out.println("JVL - Movies Filterred: " + mediaFiles.size());
+            mediaFiles.FilterByMetadata("MediaType", "Movie");            
+            
             Shows shows = mediaFiles.GetShows();
-            System.out.println("JVL - Converted to shows: " + shows.size());
 
+            sortDesc = (sortDir == SortDirection.DESC);
+            
 
-            if(sortDir == SortDirection.DESC)
+            switch (sortCol) 
             {
-                System.out.println("JVL - Sorting shows desc: " + sortDir);
-                shows.SortByTitle(true);
+                case TITLE:
+                    shows.SortByTitle(sortDesc);
+                    break;
+                    
+                case DATE_ADDED:
+                    shows.SortByDateAdded(sortDesc);
+                    break;
+                    
+                case YEAR_RELEASED:
+                    shows.SortByYearReleased(sortDesc);
+                    break;
+                    
+                default:
+                    //Just in case
+                    shows.SortByTitle();
+                    break;
             }
-            else
-            {
-                System.out.println("JVL - Sorting shows asc: " + sortDir);
-                shows.SortByTitle(false);
-            }
-
+            
             return shows;
         }
         catch(Exception ex)

@@ -103,6 +103,11 @@ public class Show extends SageObject
     {
         return callApiString("GetShowTitle", this.lookupObject);
     }
+    
+    public String GetShowYear() throws SageCallApiException
+    {
+        return callApiString("GetShowYear", this.lookupObject);
+    }
  
     public char GetShowTitleSearchChar() throws SageCallApiException
     {
@@ -400,6 +405,74 @@ class SortableShowTitleCompaator implements Comparator<Show>
         {   
             return t.GetSortableShowTitle().toUpperCase().compareTo(t1.GetSortableShowTitle().toUpperCase());
             
+        } 
+        catch (SageCallApiException ex) 
+        {
+            
+        }
+        
+        return 0;
+        
+    }
+    
+}
+
+class SortableShowDateAddedCompaator implements Comparator<Show>
+{
+
+    @Override
+    public int compare(Show t, Show t1) 
+    {
+        try 
+        {   
+            Long first = t.GetAiring().GetAiringStartTime();
+            Long second = t1.GetAiring().GetAiringStartTime();
+            
+            return first.compareTo(second);
+        } 
+        catch (SageCallApiException ex) 
+        {
+            
+        }
+        
+        return 0;
+        
+    }
+    
+}
+
+/**
+ * First checks for year, than checks sortable title. If there is no year
+ * or the year is able to be parsed than it defaults to title.
+ */
+class SortableShowYearReleasedCompaator implements Comparator<Show>
+{
+
+    @Override
+    public int compare(Show t, Show t1) 
+    {
+        try 
+        {   
+            int first = 0;
+            int second = 0;
+            
+            try{ first = Integer.parseInt(t.GetShowYear()); } catch(Exception ex) { }
+            try{ first = Integer.parseInt(t.GetShowYear()); } catch(Exception ex) { }
+            
+            
+            //if they are the same than use title
+            if(first == second)
+            {
+                return t.GetSortableShowTitle().toUpperCase().compareTo(t1.GetSortableShowTitle().toUpperCase());
+            }
+            else if(first > second)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
         } 
         catch (SageCallApiException ex) 
         {

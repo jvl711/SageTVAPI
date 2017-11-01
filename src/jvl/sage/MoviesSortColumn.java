@@ -4,15 +4,15 @@ package jvl.sage;
 
 
 
-public enum MoviesColumnSort 
+public enum MoviesSortColumn 
 {
     TITLE("Title"),
     DATE_ADDED("Date Added"),
-    DATE_RELEASED("Date Released");
+    YEAR_RELEASED("Year Released");
 
     private final String name;
     
-    private MoviesColumnSort(String name)
+    private MoviesSortColumn(String name)
     {
         this.name = name;
     }
@@ -22,7 +22,7 @@ public enum MoviesColumnSort
         return name;
     }
     
-    private static MoviesColumnSort Parser(String name)
+    public static MoviesSortColumn Parse(String name)
     {
         if(TITLE.GetName().equalsIgnoreCase(name))
         {
@@ -32,9 +32,9 @@ public enum MoviesColumnSort
         {
             return DATE_ADDED;
         }
-        else if(DATE_RELEASED.GetName().equalsIgnoreCase(name))
+        else if(YEAR_RELEASED.GetName().equalsIgnoreCase(name))
         {
-            return DATE_RELEASED;
+            return YEAR_RELEASED;
         }
         else
         {
@@ -42,7 +42,7 @@ public enum MoviesColumnSort
         }
     }
     
-    public static MoviesColumnSort GetDefault()
+    public static MoviesSortColumn GetDefault()
     {
         return TITLE;
     }
@@ -53,10 +53,10 @@ public enum MoviesColumnSort
         return this.GetName();
     }
     
-    public static MoviesColumnSort [] GetDisplayValues()
+    public static MoviesSortColumn [] GetDisplayValues()
     {
-        MoviesColumnSort [] input = MoviesColumnSort.values();
-        MoviesColumnSort [] output = new MoviesColumnSort [input.length - 1];
+        MoviesSortColumn [] input = MoviesSortColumn.values();
+        MoviesSortColumn [] output = new MoviesSortColumn [input.length - 1];
         int outPos = 0;
         
         for(int i = 0; i < input.length; i++)

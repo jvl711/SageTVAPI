@@ -156,6 +156,52 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
+    /**
+     * Sorts the shows ascending by the Airing Date Start
+     */
+    public void SortByDateAdded()
+    {
+        this.SortByTitle(false);
+    }
+    
+    /**
+     * Sorts the shows ascending by the Airing Date Start
+     * @param desc Switches sort to descending if true
+     */
+    public void SortByDateAdded(boolean desc)
+    {
+        Collections.sort(this, new SortableShowDateAddedCompaator());
+        
+        if(desc)
+        {
+            Collections.reverse(this);
+        }
+    }
+    
+    /**
+     * Sorts the shows ascending by the by the year released as the primary
+     * sort, than the title
+     */
+    public void SortByYearReleased()
+    {
+        this.SortByTitle(false);
+    }
+    
+    /**
+     * Sorts the shows ascending by the by the year released as the primary
+     * sort, than the title
+     * @param desc Switches sort to descending if true
+     */
+    public void SortByYearReleased(boolean desc)
+    {
+        Collections.sort(this, new SortableShowYearReleasedCompaator());
+        
+        if(desc)
+        {
+            Collections.reverse(this);
+        }
+    }
+    
     public JobStatus CleanPosters(int width)
     {
         JobStatus jobStatus = new JobStatus();
