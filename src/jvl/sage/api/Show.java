@@ -457,7 +457,7 @@ class SortableShowYearReleasedCompaator implements Comparator<Show>
             int second = 0;
             
             try{ first = Integer.parseInt(t.GetShowYear()); } catch(Exception ex) { }
-            try{ first = Integer.parseInt(t1.GetShowYear()); } catch(Exception ex) { }
+            try{ second = Integer.parseInt(t1.GetShowYear()); } catch(Exception ex) { }
             
             
             //if they are the same than use title
