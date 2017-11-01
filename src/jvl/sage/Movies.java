@@ -74,7 +74,14 @@ public class Movies
             
             Shows shows = mediaFiles.GetShows();
 
-            sortDesc = (sortDir == SortDirection.DESC);
+            if(sortDir == SortDirection.DESC)
+            {
+                sortDesc = true;
+            }
+            else
+            {
+                sortDesc = false;
+            }
             
 
             switch (sortCol) 
