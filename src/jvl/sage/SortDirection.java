@@ -49,7 +49,7 @@ public enum SortDirection
     public static SortDirection [] GetDisplayValues()
     {
         SortDirection [] input = SortDirection.values();
-        SortDirection [] output = new SortDirection [input.length - 1];
+        SortDirection [] output = new SortDirection [input.length];
         int outPos = 0;
         
         for(int i = 0; i < input.length; i++)
