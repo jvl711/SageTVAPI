@@ -55,19 +55,19 @@ public enum MoviesSortColumn
     
     public static MoviesSortColumn [] GetDisplayValues()
     {
-        MoviesSortColumn [] input = MoviesSortColumn.values();
-        MoviesSortColumn [] output = new MoviesSortColumn [input.length];
-        int outPos = 0;
+        return MoviesSortColumn.values();
+        //MoviesSortColumn [] output = new MoviesSortColumn [input.length];
+        //int outPos = 0;
         
-        for(int i = 0; i < input.length; i++)
-        {
+        //for(int i = 0; i < input.length; i++)
+        //{
             
-            output[outPos] = input[i];
-            outPos++;
+        //    output[outPos] = input[i];
+        //    outPos++;
             
-        }
+        //}
         
-        return output;
+        //return output;
     }
     
 }
