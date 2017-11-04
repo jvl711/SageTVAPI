@@ -1,6 +1,7 @@
 
 package jvl.sage.api;
 
+import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +72,51 @@ public class Shows extends SageArrayObject<Show>
         }
                 
         return mediafiles;
+    }
+    
+    public ArrayList<String> GetCategroies() throws SageCallApiException
+    {
+        ArrayList<String> categories = new ArrayList<String>();
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            String [] temp = this.get(i).GetShowCategories();
+            
+            for(int j = 0; j < temp.length; j++)
+            {
+                if(!categories.contains(temp[j]))
+                {
+                    categories.add(temp[j]);
+                }
+            }
+        }
+        
+        categories.sort(null);
+        
+        return categories;
+    }
+    
+    public void FilterByCategory(String Category) throws SageCallApiException
+    {
+        ArrayList<Show> shows = new ArrayList<Show>();
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            String [] categories = this.get(i).GetShowCategories();
+            
+            for(int j = 0; j < categories.length; j++)
+            {
+                if(categories[j].equalsIgnoreCase(Category))
+                {
+                    shows.add(this.get(i));
+                    break;
+                }
+            }
+        }
+        
+        this.baseList = shows;
+        
+        //return shows;
     }
     
     public int GetSeasonCount() throws SageCallApiException
@@ -259,55 +305,6 @@ public class Shows extends SageArrayObject<Show>
         return this.indexOf(show);
     }
     
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public Show Remove(int index) 
-    //{
-    //    System.out.println("JVL - Deprecated called (Shows.Remove)");
-    //    return this.remove(index);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public Show Get(int index) 
-    //{
-    //    System.out.println("JVL - Deprecated called (Shows.Get)");
-    //    return this.get(index);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public void Add(Show d) 
-    //{
-    //    System.out.println("JVL - Deprecated called (Shows.Add)");
-    //    this.add(d);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public int Size() 
-    //{
-    //    System.out.println("JVL - Deprecated called (Shows.Size)");
-    //    return this.size();
-    //}
-    
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public void Set(int index, Show d) 
-    //{
-    //    System.out.println("JVL - Deprecated called (Shows.Set)");
-    //    this.set(index, d);
-    //}
     
     @Override
     public Object[] UnwrapObject() 

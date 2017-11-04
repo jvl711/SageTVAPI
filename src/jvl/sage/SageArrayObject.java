@@ -15,42 +15,7 @@ public abstract class SageArrayObject<T> extends SageAPI implements List<T>
 {
     public ArrayList<T> baseList = new ArrayList<T>();
     
-    
-    /**
-     * @deprecated 
-     * @return 
-     */
     public abstract Object [] UnwrapObject();
-
-    /**
-     * @deprecated 
-     * @return 
-     */
-    //public abstract <T> T Remove(int index);
-    
-    /**
-     * @deprecated 
-     * @return 
-     */
-    //public abstract <T> T Get(int index);
-    
-    /**
-     * @deprecated 
-     * @return 
-     */
-    //public abstract void Set(int index, T d);
-    
-    /**
-     * @deprecated 
-     * @return 
-     */
-    //public abstract void Add(T d);
-    
-    /**
-     * @deprecated 
-     * @return 
-     */
-    //public abstract int Size();
     
 
     @Override

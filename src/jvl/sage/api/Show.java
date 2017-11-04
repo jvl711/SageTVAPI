@@ -109,6 +109,11 @@ public class Show extends SageObject
         return callApiString("GetShowYear", this.lookupObject);
     }
  
+    public String [] GetShowCategories() throws SageCallApiException
+    {
+        return (String []) Show.callApiArray("GetShowCategoriesList", this.lookupObject);
+    }
+    
     public char GetShowTitleSearchChar() throws SageCallApiException
     {
         String title = this.GetSortableShowTitle();

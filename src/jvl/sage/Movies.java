@@ -1,6 +1,7 @@
 
 package jvl.sage;
 
+import java.util.ArrayList;
 import jvl.sage.api.Configuration;
 import jvl.sage.api.Shows;
 import jvl.sage.api.MediaFile;
@@ -16,13 +17,28 @@ public class Movies
     public static final String PROPERTY_PREFIX = "jvl.movies";
     public static final String PROPERTY_SORT_DIR = PROPERTY_PREFIX + ".sort.direction";
     public static final String PROPERTY_SORT_COL = PROPERTY_PREFIX + ".sort.column";
+    public static final String PROPERTY_FILTER_CAT = PROPERTY_PREFIX + ".filter.category";
     
+    
+    private ArrayList<String> categories;
     private UIContext context;
+    
     
     public Movies(String context)
     {
         System.out.println("JVL - Movies Constructor Called: " + context);
         this.context = new UIContext(context);
+        this.categories = new ArrayList<String>();
+    }
+    
+    public void SetFilterCategory(String cat)
+    {
+        Configuration.SetProperty(context, PROPERTY_FILTER_CAT, cat);
+    }
+    
+    public String GetFilterCategory()
+    {
+        return Configuration.GetProperty(context, PROPERTY_FILTER_CAT, "All");
     }
     
     public void SetSortDirection(String sort)
@@ -55,6 +71,13 @@ public class Movies
         return MoviesSortColumn.Parse(Configuration.GetProperty(context, PROPERTY_SORT_COL, MoviesSortColumn.GetDefault().GetName()));
     }
     
+    
+    
+    public ArrayList<String> GetCategories()
+    {
+        return this.categories;
+    }
+    
     public Shows GetMovies() throws SageCallApiException
     {
         //System.out.println("JVL - Movies GetMovies Called: " + this.context);
@@ -74,6 +97,19 @@ public class Movies
             
             Shows shows = mediaFiles.GetShows();
 
+            //Fill and cache the categories
+            if(categories.size() == 0)
+            {
+                this.categories = shows.GetCategroies();
+                //Hard coded all category
+                this.categories.add(0, "All");
+            }
+            
+            if(!this.GetFilterCategory().equalsIgnoreCase("all"))
+            {
+                shows.FilterByCategory(this.GetFilterCategory());
+            }
+            
             if(sortDir == SortDirection.DESC)
             {
                 sortDesc = true;
@@ -83,7 +119,6 @@ public class Movies
                 sortDesc = false;
             }
             
-
             switch (sortCol) 
             {
                 case TITLE:
