@@ -91,8 +91,9 @@ public class Shows extends SageArrayObject<Show>
             }
         }
         
-        categories.sort(null);
         
+        categories.sort(String.CASE_INSENSITIVE_ORDER);
+
         return categories;
     }
     
