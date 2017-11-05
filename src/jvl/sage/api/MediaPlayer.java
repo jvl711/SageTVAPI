@@ -1,6 +1,7 @@
 
 package jvl.sage.api;
 
+import java.util.ArrayList;
 import jvl.sage.SageAPI;
 import jvl.sage.SageCallApiException;
 
@@ -29,6 +30,61 @@ public class MediaPlayer extends SageAPI
     public static Object GetCurrentMediaFile(UIContext context) throws SageCallApiException
     {
         return MediaPlayer.callAPIBoolean(context, "GetCurrentMediaFile");
+    }
+    
+    public static int GetChapterCount(UIContext context) throws SageCallApiException
+    {
+        return MediaPlayer.callApiInt(context, "GetDVDNumberOfChapters");
+    }
+    
+    public static int GetCurrentChapter(UIContext context) throws SageCallApiException
+    {
+        return MediaPlayer.callApiInt(context, "GetDVDCurrentChapter");
+    }
+    
+    public static void SetChapter(UIContext context, int chapternum) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "DVDChapterSet", chapternum);
+    }
+    
+    public static String [] GetCurrentSubtitleTrack(UIContext context) throws SageCallApiException
+    {
+        //TODO: Determine if this really returns an array,
+        return (String [])MediaPlayer.callApiArray("GetDVDCurrentSubpicture");
+    }
+    
+    public static ArrayList<MediaFileSubtitle> GetSubtitleTracks(UIContext context) throws SageCallApiException
+    {
+        ArrayList<MediaFileSubtitle> subtitles = new ArrayList<MediaFileSubtitle>(); 
+        
+        String [] temp = (String [])MediaPlayer.callApiArray("GetDVDAvailableSubpictures");
+        
+        for(int i = 0; i < temp.length; i++)
+        {
+            subtitles.add(new MediaFileSubtitle(i, temp[i]));
+        }   
+        
+        return subtitles;
+    }
+    
+    public static void SetSubtitleTrack(UIContext context, int tracknum) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
+    }
+    
+    public static String GetCurrentAudioTrack(UIContext context) throws SageCallApiException
+    {
+        return MediaPlayer.callApiString("GetDVDCurrentLanguage");
+    }
+    
+    public static String [] GetAudioTracks(UIContext context) throws SageCallApiException
+    {
+        return (String [])MediaPlayer.callApiArray("GetDVDAvailableLanguages");
+    }
+    
+    public static void SetAudioTrack(UIContext context, int tracknum) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "DVDAudioChange", tracknum);
     }
     
     public static void Seek(UIContext context, long time) throws SageCallApiException

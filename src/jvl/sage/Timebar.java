@@ -269,6 +269,10 @@ public class Timebar extends Thread
         return this.sleepOnSkip;
     }
     
+    
+    
+    //<editor-fold defaultstate="collapsed" desc="Timebar thread">
+    
     @Override
     public void run() 
     {
@@ -304,4 +308,5 @@ public class Timebar extends Thread
         
         System.out.println("jvl.sage.Timebar - Commercial Skipping thread stopped");
     }
+    //</editor-fold>
 }

@@ -98,6 +98,16 @@ public class SageAPI
         return (String)callAPIBase(context, method, null);
     }
     
+    protected static int callApiInt(String method) throws SageCallApiException
+    {
+        return (Integer)callAPIBase(method, null);
+    }
+    
+    protected static int callApiInt(UIContext context, String method) throws SageCallApiException
+    {
+        return (Integer)callAPIBase(context, method, null);
+    }
+    
     protected static int callApiInt(String method, Object arg1) throws SageCallApiException
     {
         return (Integer)callAPIBase(method, new Object [] {arg1});
