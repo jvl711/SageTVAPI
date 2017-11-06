@@ -2,7 +2,7 @@
 package jvl.sage.api;
 
 
-public class MediaFileSubtitle 
+public class MediaFileSubtitleTrack 
 {
     //private MediaFile mediaFile;
     private int tracknum;
@@ -17,7 +17,7 @@ public class MediaFileSubtitle
     }
     */
     
-    public MediaFileSubtitle(int tracknum, String description)
+    public MediaFileSubtitleTrack(int tracknum, String description)
     {
         
         this.tracknum = tracknum;

@@ -1,8 +1,10 @@
 
 package jvl.sage;
 
+import java.util.ArrayList;
 import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
+import jvl.sage.api.MediaFileSubtitleTrack;
 import jvl.sage.api.MediaPlayer;
 import jvl.sage.api.UIContext;
 
@@ -269,9 +271,28 @@ public class Timebar extends Thread
         return this.sleepOnSkip;
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Subtitle Calls">
+    
+    public ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks() throws SageCallApiException
+    {
+        ArrayList<MediaFileSubtitleTrack> subtitles = MediaPlayer.GetSubtitleTracks(context);
+        
+        //Adding a track that represents having no track selected.
+        subtitles.add(0, new MediaFileSubtitleTrack(-1, "None"));
+        
+        return subtitles;
+    }
+    
+    public void SetSubtitleTrack(MediaFileSubtitleTrack subtitle) throws SageCallApiException
+    {
+        MediaPlayer.SetSubtitleTrack(context, subtitle);
+    }
     
     
-    //<editor-fold defaultstate="collapsed" desc="Timebar thread">
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Timebar Thread">
     
     @Override
     public void run() 

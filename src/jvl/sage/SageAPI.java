@@ -8,6 +8,16 @@ import sage.SageTV;
 public class SageAPI 
 {
     
+    protected static void callApi(String method) throws SageCallApiException
+    {
+        callAPIBase(method, null);
+    }
+    
+    protected static void callApi(UIContext context, String method) throws SageCallApiException
+    {
+        callAPIBase(context, method, null);
+    }
+    
     protected static void callApi(String method, Object arg1) throws SageCallApiException
     {
         callAPIBase(method, new Object [] {arg1});

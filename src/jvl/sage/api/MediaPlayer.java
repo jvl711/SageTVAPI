@@ -53,15 +53,15 @@ public class MediaPlayer extends SageAPI
         return (String [])MediaPlayer.callApiArray("GetDVDCurrentSubpicture");
     }
     
-    public static ArrayList<MediaFileSubtitle> GetSubtitleTracks(UIContext context) throws SageCallApiException
+    public static ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks(UIContext context) throws SageCallApiException
     {
-        ArrayList<MediaFileSubtitle> subtitles = new ArrayList<MediaFileSubtitle>(); 
+        ArrayList<MediaFileSubtitleTrack> subtitles = new ArrayList<MediaFileSubtitleTrack>(); 
         
         String [] temp = (String [])MediaPlayer.callApiArray("GetDVDAvailableSubpictures");
         
         for(int i = 0; i < temp.length; i++)
         {
-            subtitles.add(new MediaFileSubtitle(i, temp[i]));
+            subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
         }   
         
         return subtitles;
@@ -69,7 +69,24 @@ public class MediaPlayer extends SageAPI
     
     public static void SetSubtitleTrack(UIContext context, int tracknum) throws SageCallApiException
     {
-        MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
+        //If it is -1 than turn off subtitles
+        if(tracknum == -1)
+        {
+            if(MediaPlayer.GetCurrentSubtitleTrack(context) != null)
+            {
+                MediaPlayer.callApi(context, "DVDSubtitleToggle");
+            }
+        }
+        else
+        {
+        
+            MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
+        }
+    }
+    
+    public static void SetSubtitleTrack(UIContext context, MediaFileSubtitleTrack sub) throws SageCallApiException
+    {
+        MediaPlayer.SetSubtitleTrack(context, sub.GetTrackNumber());
     }
     
     public static String GetCurrentAudioTrack(UIContext context) throws SageCallApiException
