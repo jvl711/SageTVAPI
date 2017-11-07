@@ -293,7 +293,15 @@ public class Timebar extends Thread
         MediaFileSubtitleTrack current = MediaPlayer.GetCurrentSubtitleTrack(context);
         ArrayList<MediaFileSubtitleTrack> subtitles = this.GetSubtitleTracks();
         
-        return subtitles.indexOf(current);
+        for(int i = 0; i < subtitles.size(); i++)
+        {
+            if(subtitles.get(i).GetDescription().equals(current.GetDescription()))
+            {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     //</editor-fold>
