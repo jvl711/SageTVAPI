@@ -47,10 +47,27 @@ public class MediaPlayer extends SageAPI
         MediaPlayer.callApi(context, "DVDChapterSet", chapternum);
     }
     
-    public static String [] GetCurrentSubtitleTrack(UIContext context) throws SageCallApiException
+    /**
+     * Returns the currently selected Subtitle, or the NullTrack which represents 
+     * that there is no track selected.  The TrackNmber is -1 and None is the desc
+     * @param context The current UI context the video is playing in.
+     * @return MediaFileSubtitleTrack describing witch track is selected if one is
+     * @throws SageCallApiException 
+     */
+    public static MediaFileSubtitleTrack GetCurrentSubtitleTrack(UIContext context) throws SageCallApiException
     {
-        //TODO: Determine if this really returns an array,
-        return (String [])MediaPlayer.callApiArray("GetDVDCurrentSubpicture");
+        ArrayList<MediaFileSubtitleTrack> subtitles = MediaPlayer.GetSubtitleTracks(context);
+        String currentDesc = MediaPlayer.callApiString(context, "GetDVDCurrentSubpicture");
+        
+        for(int i = 0; i < subtitles.size(); i++)
+        {
+            if(subtitles.get(i).GetDescription().equals(currentDesc))
+            {
+                return subtitles.get(i);
+            }
+        }
+        
+        return MediaFileSubtitleTrack.GetNullTrack();
     }
     
     public static ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks(UIContext context) throws SageCallApiException
@@ -64,6 +81,9 @@ public class MediaPlayer extends SageAPI
             subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
         }   
         
+        //Add the none selected track as position 0
+        subtitles.add(0, MediaFileSubtitleTrack.GetNullTrack());
+        
         return subtitles;
     }
     
@@ -72,14 +92,13 @@ public class MediaPlayer extends SageAPI
         //If it is -1 than turn off subtitles
         if(tracknum == -1)
         {
-            if(MediaPlayer.GetCurrentSubtitleTrack(context) != null)
+            if(MediaPlayer.GetCurrentSubtitleTrack(context) != MediaFileSubtitleTrack.GetNullTrack())
             {
                 MediaPlayer.callApi(context, "DVDSubtitleToggle");
             }
         }
         else
         {
-        
             MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
         }
     }

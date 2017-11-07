@@ -275,12 +275,7 @@ public class Timebar extends Thread
     
     public ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks() throws SageCallApiException
     {
-        ArrayList<MediaFileSubtitleTrack> subtitles = MediaPlayer.GetSubtitleTracks(context);
-        
-        //Adding a track that represents having no track selected.
-        subtitles.add(0, new MediaFileSubtitleTrack(-1, "None"));
-        
-        return subtitles;
+        return MediaPlayer.GetSubtitleTracks(context);
     }
     
     public void SetSubtitleTrack(MediaFileSubtitleTrack subtitle) throws SageCallApiException
@@ -288,7 +283,10 @@ public class Timebar extends Thread
         MediaPlayer.SetSubtitleTrack(context, subtitle);
     }
     
-    
+    public MediaFileSubtitleTrack GetCurrentSubtitleTrack() throws SageCallApiException
+    {
+        return MediaPlayer.GetCurrentSubtitleTrack(context);
+    }
     
     //</editor-fold>
     

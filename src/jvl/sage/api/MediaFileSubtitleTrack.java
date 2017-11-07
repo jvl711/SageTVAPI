@@ -36,6 +36,16 @@ public class MediaFileSubtitleTrack
         return this.tracknum;
     }
     
+    public String GetDescription()
+    {
+        return this.desription;
+    }
+    
+    public static MediaFileSubtitleTrack GetNullTrack()
+    {
+        return new MediaFileSubtitleTrack(1, "None");
+    }
+    
     @Override
     public String toString()
     {
