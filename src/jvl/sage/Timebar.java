@@ -295,7 +295,7 @@ public class Timebar extends Thread
         
         for(int i = 0; i < subtitles.size(); i++)
         {
-            if(subtitles.get(i).GetDescription().equals(current.GetDescription()))
+            if(subtitles.get(i).equals(current))
             {
                 return i;
             }

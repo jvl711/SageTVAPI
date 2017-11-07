@@ -6,7 +6,7 @@ public class MediaFileSubtitleTrack
 {
     //private MediaFile mediaFile;
     private int tracknum;
-    private String desription;
+    private String description;
     
     /*
     public MediaFileSubtitle(MediaFile mediaFile, int tracknum, String description)
@@ -21,7 +21,7 @@ public class MediaFileSubtitleTrack
     {
         
         this.tracknum = tracknum;
-        this.desription = description;
+        this.description = description;
     }
     
     /*
@@ -38,7 +38,7 @@ public class MediaFileSubtitleTrack
     
     public String GetDescription()
     {
-        return this.desription;
+        return this.description;
     }
     
     public static MediaFileSubtitleTrack GetNullTrack()
@@ -47,8 +47,28 @@ public class MediaFileSubtitleTrack
     }
     
     @Override
+    public boolean equals(Object test)
+    {
+        if(test == null || !(test instanceof  MediaFileSubtitleTrack))
+        {
+            return false;
+        }
+
+        return this.tracknum == ((MediaFileSubtitleTrack)test).tracknum && this.description.equals(((MediaFileSubtitleTrack)test).description);
+    }
+
+    @Override
+    public int hashCode() 
+    {
+        int hash = 7;
+        hash = 79 * hash + this.tracknum;
+        hash = 79 * hash + (this.description != null ? this.description.hashCode() : 0);
+        return hash;
+    }
+    
+    @Override
     public String toString()
     {
-        return this.desription;
+        return this.description;
     }
 }

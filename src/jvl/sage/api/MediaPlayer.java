@@ -92,7 +92,7 @@ public class MediaPlayer extends SageAPI
         //If it is -1 than turn off subtitles
         if(tracknum == -1)
         {
-            if(MediaPlayer.GetCurrentSubtitleTrack(context) != MediaFileSubtitleTrack.GetNullTrack())
+            if(!MediaPlayer.GetCurrentSubtitleTrack(context).equals(MediaFileSubtitleTrack.GetNullTrack()))
             {
                 MediaPlayer.callApi(context, "DVDSubtitleToggle");
             }
