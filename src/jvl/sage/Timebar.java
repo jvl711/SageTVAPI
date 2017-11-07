@@ -288,6 +288,14 @@ public class Timebar extends Thread
         return MediaPlayer.GetCurrentSubtitleTrack(context);
     }
     
+    public int GetCurrentSubtitleTrackIndex() throws SageCallApiException
+    {
+        MediaFileSubtitleTrack current = MediaPlayer.GetCurrentSubtitleTrack(context);
+        ArrayList<MediaFileSubtitleTrack> subtitles = this.GetSubtitleTracks();
+        
+        return subtitles.indexOf(current);
+    }
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Timebar Thread">
