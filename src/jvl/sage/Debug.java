@@ -42,7 +42,10 @@ public class Debug
         {
             Debug.output = new FileWriter(Debug.debugfile, true);
         }
-        catch(Exception ex) { }
+        catch(Exception ex) 
+        { 
+            System.out.println("JVL - Error creating FileWriter: " + ex.getMessage());
+        }
         
         System.out.println("********** jvl.sage.Debug Static Constructor ***************");
         System.out.println("jvl.sage.Debug");
@@ -180,7 +183,7 @@ public class Debug
             }
             catch(Exception ex)
             {
-                System.out.println("Error writing to JVL Debug File.");
+                System.out.println("Error writing to JVL Debug File." + ex.getMessage());   
             }
         }
     }
