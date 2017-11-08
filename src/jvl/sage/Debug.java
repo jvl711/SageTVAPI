@@ -32,7 +32,7 @@ public class Debug
     static
     {
         
-        
+        Debug.classFilters = new ArrayList<String>();
         Debug.debugfile = new File(fileName + "." + fileExt);
         Debug.debugLevel = Debug.INFO;
         Debug.maxDebugFileSize = 10240 * 1024; /* Defaulting to 10MB */
