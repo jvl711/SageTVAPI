@@ -2,6 +2,7 @@
 package jvl.sage.api;
 
 import java.util.ArrayList;
+import jvl.sage.Debug;
 import jvl.sage.SageAPI;
 import jvl.sage.SageCallApiException;
 
@@ -56,32 +57,45 @@ public class MediaPlayer extends SageAPI
      */
     public static MediaFileSubtitleTrack GetCurrentSubtitleTrack(UIContext context) throws SageCallApiException
     {
+        Debug.Writeln("GetCurrentSubtitleTrack Called", Debug.INFO);
+        
         ArrayList<MediaFileSubtitleTrack> subtitles = MediaPlayer.GetSubtitleTracks(context);
         String currentDesc = MediaPlayer.callApiString(context, "GetDVDCurrentSubpicture");
+        
+        Debug.Writeln("Current Subtitle Desc: " + currentDesc, Debug.INFO);
         
         for(int i = 0; i < subtitles.size(); i++)
         {
             if(subtitles.get(i).GetDescription().equals(currentDesc))
             {
+                Debug.Writeln("Subtitle found in collection: " + subtitles.get(i), Debug.INFO);
                 return subtitles.get(i);
             }
         }
         
+        Debug.Writeln("Subtitle not found in collection returning null track", Debug.INFO);
         return MediaFileSubtitleTrack.GetNullTrack();
     }
     
     public static ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks(UIContext context) throws SageCallApiException
     {
-        ArrayList<MediaFileSubtitleTrack> subtitles = new ArrayList<MediaFileSubtitleTrack>(); 
+        Debug.Writeln("GetSubtitleTracks Called", Debug.INFO);
         
+        ArrayList<MediaFileSubtitleTrack> subtitles = new ArrayList<MediaFileSubtitleTrack>(); 
+    
         String [] temp = (String [])MediaPlayer.callApiArray("GetDVDAvailableSubpictures");
+        
+        Debug.Writeln("Getting subtitles count: " + temp.length, Debug.INFO);
         
         for(int i = 0; i < temp.length; i++)
         {
+            Debug.Writeln("Adding subtitle to collection: " + temp[i], Debug.INFO);
+            
             subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
         }   
         
         //Add the none selected track as position 0
+        Debug.Writeln("Adding Null Track to collection: ", Debug.INFO);
         subtitles.add(0, MediaFileSubtitleTrack.GetNullTrack());
         
         return subtitles;
@@ -89,16 +103,20 @@ public class MediaPlayer extends SageAPI
     
     public static void SetSubtitleTrack(UIContext context, int tracknum) throws SageCallApiException
     {
+        Debug.Writeln("SetSubtitleTrack Called", Debug.INFO);
         //If it is -1 than turn off subtitles
         if(tracknum == -1)
         {
+            Debug.Writeln("Null Track Passed, checking to see if subtitles should be turned off", Debug.INFO);
             if(!MediaPlayer.GetCurrentSubtitleTrack(context).equals(MediaFileSubtitleTrack.GetNullTrack()))
             {
+                Debug.Writeln("Subtitles on. Toggling display off", Debug.INFO);
                 MediaPlayer.callApi(context, "DVDSubtitleToggle");
             }
         }
         else
         {
+            Debug.Writeln("Setting subtitle track", Debug.INFO);
             MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
         }
     }

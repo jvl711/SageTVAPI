@@ -275,6 +275,8 @@ public class Timebar extends Thread
     
     public ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks() throws SageCallApiException
     {
+        
+        
         return MediaPlayer.GetSubtitleTracks(context);
     }
     
