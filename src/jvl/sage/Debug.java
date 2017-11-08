@@ -183,7 +183,8 @@ public class Debug
             }
             catch(Exception ex)
             {
-                System.out.println("Error writing to JVL Debug File." + ex.getMessage());   
+                System.out.println("Error writing to JVL Debug File.");   
+                ex.printStackTrace();
             }
         }
     }
