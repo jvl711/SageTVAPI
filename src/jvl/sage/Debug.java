@@ -3,6 +3,7 @@ package jvl.sage;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 
 public class Debug 
@@ -23,16 +24,46 @@ public class Debug
     private static String fileName = "JVL_SageAPI_Debug";
     private static String fileExt = "txt";
     
+    /* Debug File */
+    private static FileWriter output;
+    
+    private static ArrayList<String> classFilters;
+    
     static
     {
+        
+        
         Debug.debugfile = new File(fileName + "." + fileExt);
         Debug.debugLevel = Debug.INFO;
         Debug.maxDebugFileSize = 10240 * 1024; /* Defaulting to 10MB */
         Debug.isDebug = false;
         
-        System.out.println("**********STATIC CONSTRUCTOR CALLED***************");
+        try
+        {
+            Debug.output = new FileWriter(Debug.debugfile, true);
+        }
+        catch(Exception ex) { }
+        
+        System.out.println("********** jvl.sage.Debug Static Constructor ***************");
         System.out.println("jvl.sage.Debug");
         System.out.println("Debug File Location: " + Debug.debugfile.getPath());
+        
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
+        {
+            public void run() 
+            {
+                System.out.println("Deubg shutdown hook called!");
+                
+                try
+                {
+                    output.close();
+                }
+                catch(Exception ex) { }
+                
+            }
+        }, "JVL-Debug-Shutdown-Thread"));
+        
         
     }
     
@@ -49,6 +80,16 @@ public class Debug
     public static void SetDebugLevel(int level)
     {
         Debug.debugLevel = level;
+    }
+    
+    public static void AddClassFilter(String classFilter)
+    {
+        Debug.classFilters.add(classFilter);
+    }
+    
+    public static void RemoveClassFilter(String classFilter)
+    {
+        Debug.classFilters.remove(classFilter);
     }
     
     /**
@@ -105,20 +146,37 @@ public class Debug
         return ret;
     }
     
+    
     public static void Writeln(String line, int level)
+    {
+        String callingClass = "";
+        callingClass = sun.reflect.Reflection.getCallerClass().getName();
+        
+        Debug.Writeln(callingClass, line, level);
+    }
+    
+    public static void Writeln(String callingClass, String line, int level)
     {
         
         if(Debug.isDebug &&  level >= Debug.debugLevel)
         {
-            String formatedLine = Debug.GetDebugLevelString(level) + " - " + line;
+            String formatedLine = Debug.GetDebugLevelString(level) + "[" + callingClass + "]" + " - " + line;
             
             try
             {
+                //Check for class filter
+                if(Debug.classFilters.size() > 0 && !callingClass.equalsIgnoreCase(""))
+                {
+                    if(!Debug.classFilters.contains(callingClass))
+                    {
+                        return;
+                    }
+                }    
+                
                 Debug.CheckForFileRotation();
                 
-                FileWriter output = new FileWriter(debugfile, true);
                 output.write(formatedLine + System.getProperty("line.separator"));
-                output.close();
+                output.flush();
             }
             catch(Exception ex)
             {
@@ -130,17 +188,29 @@ public class Debug
     public static void WriteStackTrace(Exception exception, int level)
     {
         String formattedLine = "";
+        String callingClass = "";
+        
+        callingClass = sun.reflect.Reflection.getCallerClass().getName();
         
         if(Debug.isDebug && level >= Debug.debugLevel)
         { 
-            StackTraceElement [] stack = exception.getStackTrace();
+            if(Debug.classFilters.size() > 0 && !callingClass.equalsIgnoreCase(""))
+            {
+                if(!Debug.classFilters.contains(callingClass))
+                {
+                    return;
+                }
+            }    
             
+            StackTraceElement [] stack = exception.getStackTrace();
+
             for(int i = 0; i < stack.length; i++)
             {
                 formattedLine += stack[i].toString();
             }
+
+            Debug.Writeln(callingClass, formattedLine, level);
             
-            Debug.Writeln(formattedLine, level);
         }
     }
 }

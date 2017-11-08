@@ -374,12 +374,12 @@ public class Show extends SageObject
                 }
                 catch(IllegalArgumentException ex1)
                 {
-                    Debug.Writeln("jvl.sage.api.Show.ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
+                    Debug.Writeln("ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
                     Debug.WriteStackTrace(ex1, Debug.ERROR);
                 }
                 catch(IOException ex2)
                 {
-                    Debug.Writeln("jvl.sage.api.Show.ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
+                    Debug.Writeln("ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
                     Debug.WriteStackTrace(ex2, Debug.ERROR);
                 }
             }
