@@ -43,7 +43,7 @@ public class MediaFileSubtitleTrack
     
     public static MediaFileSubtitleTrack GetNullTrack()
     {
-        return new MediaFileSubtitleTrack(1, "None");
+        return new MediaFileSubtitleTrack(-1, "None");
     }
     
     @Override
