@@ -103,7 +103,8 @@ public class MediaPlayer extends SageAPI
     
     public static void SetSubtitleTrack(UIContext context, int tracknum) throws SageCallApiException
     {
-        Debug.Writeln("SetSubtitleTrack Called", Debug.INFO);
+        Debug.Writeln("SetSubtitleTrack Called: " + tracknum, Debug.INFO);
+        
         //If it is -1 than turn off subtitles
         if(tracknum == -1)
         {
@@ -116,13 +117,15 @@ public class MediaPlayer extends SageAPI
         }
         else
         {
-            Debug.Writeln("Setting subtitle track", Debug.INFO);
+            Debug.Writeln("Setting subtitle track: " + tracknum, Debug.INFO);
             MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
         }
     }
     
     public static void SetSubtitleTrack(UIContext context, MediaFileSubtitleTrack sub) throws SageCallApiException
     {
+        Debug.Writeln("SetSubtitleTrack called with TrackNum: " + sub.GetTrackNumber(), Debug.INFO);
+        
         MediaPlayer.SetSubtitleTrack(context, sub.GetTrackNumber());
     }
     
