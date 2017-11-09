@@ -83,19 +83,19 @@ public class MediaPlayer extends SageAPI
         
         ArrayList<MediaFileSubtitleTrack> subtitles = new ArrayList<MediaFileSubtitleTrack>(); 
     
-        String [] temp = (String [])MediaPlayer.callApiArray("GetDVDAvailableSubpictures");
+        String [] temp = (String [])MediaPlayer.callApiArray(context, "GetDVDAvailableSubpictures");
         
-        Debug.Writeln("Getting subtitles count: " + temp.length, Debug.INFO);
+        Debug.Writeln("\tGetting subtitles count: " + temp.length, Debug.INFO);
         
         for(int i = 0; i < temp.length; i++)
         {
-            Debug.Writeln("Adding subtitle to collection: " + temp[i], Debug.INFO);
+            Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
             
             subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
         }   
         
         //Add the none selected track as position 0
-        Debug.Writeln("Adding Null Track to collection: ", Debug.INFO);
+        Debug.Writeln("\tAdding Null Track to collection", Debug.INFO);
         subtitles.add(0, MediaFileSubtitleTrack.GetNullTrack());
         
         return subtitles;
@@ -108,16 +108,16 @@ public class MediaPlayer extends SageAPI
         //If it is -1 than turn off subtitles
         if(tracknum == -1)
         {
-            Debug.Writeln("Null Track Passed, checking to see if subtitles should be turned off", Debug.INFO);
+            Debug.Writeln("\tNull Track Passed, checking to see if subtitles should be turned off", Debug.INFO);
             if(!MediaPlayer.GetCurrentSubtitleTrack(context).equals(MediaFileSubtitleTrack.GetNullTrack()))
             {
-                Debug.Writeln("Subtitles on. Toggling display off", Debug.INFO);
+                Debug.Writeln("\tSubtitles on. Toggling display off", Debug.INFO);
                 MediaPlayer.callApi(context, "DVDSubtitleToggle");
             }
         }
         else
         {
-            Debug.Writeln("Setting subtitle track: " + tracknum, Debug.INFO);
+            Debug.Writeln("\tSetting subtitle track: " + tracknum, Debug.INFO);
             MediaPlayer.callApi(context, "DVDSubtitleChange", tracknum);
         }
     }
