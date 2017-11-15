@@ -4,6 +4,7 @@ package jvl.sage;
 import java.util.ArrayList;
 import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
+import jvl.sage.api.MediaFileAudioTrack;
 import jvl.sage.api.MediaFileSubtitleTrack;
 import jvl.sage.api.MediaPlayer;
 import jvl.sage.api.UIContext;
@@ -274,9 +275,7 @@ public class Timebar extends Thread
     //<editor-fold defaultstate="collapsed" desc="Subtitle Calls">
     
     public ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks() throws SageCallApiException
-    {
-        
-        
+    {   
         return MediaPlayer.GetSubtitleTracks(context);
     }
     
@@ -298,6 +297,41 @@ public class Timebar extends Thread
         for(int i = 0; i < subtitles.size(); i++)
         {
             if(subtitles.get(i).equals(current))
+            {
+                return i;
+            }
+        }
+        
+        return -1;
+    }
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Audio Track Calls">
+    
+    public ArrayList<MediaFileAudioTrack> GetAudioTracks() throws SageCallApiException
+    {   
+        return MediaPlayer.GetAudioTracks(context);
+    }
+    
+    public void SetAudioTrack(MediaFileSubtitleTrack subtitle) throws SageCallApiException
+    {
+        MediaPlayer.SetSubtitleTrack(context, subtitle);
+    }
+    
+    public MediaFileAudioTrack GetCurrentAudioTrack() throws SageCallApiException
+    {
+        return MediaPlayer.GetCurrentAudioTrack(context);
+    }
+    
+    public int GetCurrentAudioTrackIndex() throws SageCallApiException
+    {
+        MediaFileAudioTrack current = MediaPlayer.GetCurrentAudioTrack(context);
+        ArrayList<MediaFileAudioTrack> audio = this.GetAudioTracks();
+        
+        for(int i = 0; i < audio.size(); i++)
+        {
+            if(audio.get(i).equals(current))
             {
                 return i;
             }

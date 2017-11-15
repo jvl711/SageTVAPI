@@ -94,7 +94,7 @@ public class MediaPlayer extends SageAPI
             subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
         }   
         
-        //Add the none selected track as position 0
+        //Add the null selected track as position 0
         Debug.Writeln("\tAdding Null Track to collection", Debug.INFO);
         subtitles.add(0, MediaFileSubtitleTrack.GetNullTrack());
         
@@ -129,19 +129,50 @@ public class MediaPlayer extends SageAPI
         MediaPlayer.SetSubtitleTrack(context, sub.GetTrackNumber());
     }
     
-    public static String GetCurrentAudioTrack(UIContext context) throws SageCallApiException
+    public static MediaFileAudioTrack GetCurrentAudioTrack(UIContext context) throws SageCallApiException
     {
-        return MediaPlayer.callApiString("GetDVDCurrentLanguage");
+        String current = MediaPlayer.callApiString("GetDVDCurrentLanguage");
+        ArrayList<MediaFileAudioTrack> audio = MediaPlayer.GetAudioTracks(context);
+        
+        for(int i = 0; i < audio.size(); i++)
+        {
+            if(audio.get(i).GetDescription().equals(current))
+            {
+                return audio.get(i);
+            }
+        }
+        
+        return MediaFileAudioTrack.GetNullTrack();
     }
     
-    public static String [] GetAudioTracks(UIContext context) throws SageCallApiException
+    public static ArrayList<MediaFileAudioTrack> GetAudioTracks(UIContext context) throws SageCallApiException
     {
-        return (String [])MediaPlayer.callApiArray("GetDVDAvailableLanguages");
+        String [] temp = (String [])MediaPlayer.callApiArray("GetDVDAvailableLanguages");
+        ArrayList<MediaFileAudioTrack> audio = new ArrayList<MediaFileAudioTrack>();
+        
+        
+        for(int i = 0; i < temp.length; i++)
+        {
+            audio.add(new MediaFileAudioTrack(i, temp[i]));
+        }
+        
+        return audio;
     }
     
     public static void SetAudioTrack(UIContext context, int tracknum) throws SageCallApiException
     {
         MediaPlayer.callApi(context, "DVDAudioChange", tracknum);
+    }
+    
+    public static void SetAudioTrack(UIContext context, MediaFileAudioTrack audio) throws SageCallApiException
+    {
+        //Can not curently turn off audio
+        if(audio.equals(MediaFileAudioTrack.GetNullTrack()))
+        {
+            return;
+        }
+        
+        MediaPlayer.callApi(context, "DVDAudioChange", audio.GetTrackNumber());
     }
     
     public static void Seek(UIContext context, long time) throws SageCallApiException
