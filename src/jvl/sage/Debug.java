@@ -75,6 +75,11 @@ public class Debug
         Debug.isDebug = state;
     }
     
+    public static boolean GetDebug()
+    {
+        return Debug.isDebug;
+    }
+    
     /**
      * Sets at what level items are written to the debug log
      * 
@@ -87,7 +92,10 @@ public class Debug
     
     public static void AddClassFilter(String classFilter)
     {
-        Debug.classFilters.add(classFilter);
+        if(!Debug.classFilters.contains(classFilter))
+        {
+            Debug.classFilters.add(classFilter);
+        }
     }
     
     public static void RemoveClassFilter(String classFilter)
@@ -116,6 +124,18 @@ public class Debug
         {
             Debug.maxDebugFileSize = size;
         }
+    }
+    
+    public static void RotateLogFile()
+    {
+        File temp = new File(Debug.fileName + "_1." + Debug.fileExt);
+            
+        if(temp.exists())
+        {
+            temp.delete();
+        }
+
+        Debug.debugfile.renameTo(temp);
     }
     
     private static void CheckForFileRotation()
