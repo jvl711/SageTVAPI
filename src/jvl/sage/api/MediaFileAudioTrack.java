@@ -7,7 +7,8 @@ public class MediaFileAudioTrack
     private int tracknum;
     private String description;
     private String codec;
-    private String channels;
+    private int channels;
+    private String channelsDisplay;
     private String language;
     
     
@@ -15,8 +16,21 @@ public class MediaFileAudioTrack
     {
         this.tracknum = tracknum;
         this.description = description;
+        
+        if(codec.equalsIgnoreCase("DCA"))
+        {
+            this.codec = "DTS";
+        }
+        
         this.codec = codec;
-        this.channels = channels;
+        
+        try{ this.channels = Integer.parseInt(channels); } catch(Exception ex) { this.channels = 0; }
+        
+        if(this.channels > 2)
+        {
+            this.channelsDisplay = (this.channels - 1) + ".1";
+        }
+        
         this.language = language;
     }
     
@@ -35,9 +49,14 @@ public class MediaFileAudioTrack
         return this.codec;
     }
     
-    public String GetChannels()
+    public int GetChannels()
     {
         return this.channels;
+    }
+    
+    public String GetChannelString()
+    {
+        return this.channelsDisplay;
     }
     
     public String GetLanguages()
@@ -72,11 +91,11 @@ public class MediaFileAudioTrack
     @Override
     public String toString()
     {
-        String temp = this.codec + " " + this.channels;
+        String temp = this.codec + " " + this.channelsDisplay;
         
         if (!this.language.isEmpty())
         {
-            temp += " [" + this.language + "]";
+            temp += " - " + this.language;
         }
         
         return temp;
