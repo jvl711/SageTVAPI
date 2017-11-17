@@ -6,11 +6,18 @@ public class MediaFileAudioTrack
 {
     private int tracknum;
     private String description;
+    private String codec;
+    private String channels;
+    private String language;
     
-    public MediaFileAudioTrack(int tracknum, String description)
+    
+    public MediaFileAudioTrack(int tracknum, String description, String codec, String channels, String language)
     {
         this.tracknum = tracknum;
         this.description = description;
+        this.codec = codec;
+        this.channels = channels;
+        this.language = language;
     }
     
     public int GetTrackNumber()
@@ -23,9 +30,24 @@ public class MediaFileAudioTrack
         return this.description;
     }
     
+    public String GetCodec()
+    {
+        return this.codec;
+    }
+    
+    public String GetChannels()
+    {
+        return this.channels;
+    }
+    
+    public String GetLanguages()
+    {
+        return this.language;
+    }
+    
     public static MediaFileAudioTrack GetNullTrack()
     {
-        return new MediaFileAudioTrack(-1, "Off");
+        return new MediaFileAudioTrack(-1, "Off", "", "", "");
     }
     
     @Override
@@ -50,6 +72,13 @@ public class MediaFileAudioTrack
     @Override
     public String toString()
     {
-        return this.description;
+        String temp = this.codec + " " + this.channels;
+        
+        if (!this.language.isEmpty())
+        {
+            temp += " [" + this.language + "]";
+        }
+        
+        return temp;
     }
 }

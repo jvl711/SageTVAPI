@@ -136,6 +136,12 @@ public class MediaPlayer extends SageAPI
         Debug.Writeln("\tcurrent: " + current, Debug.INFO);
         ArrayList<MediaFileAudioTrack> audio = MediaPlayer.GetAudioTracks(context);
         
+        //Work around where sage says empty when there is only one track
+        if(current.isEmpty() && audio.size() == 1)
+        {
+            return audio.get(0);
+        }
+        
         for(int i = 0; i < audio.size(); i++)
         {
             if(audio.get(i).GetDescription().equals(current))
@@ -157,9 +163,17 @@ public class MediaPlayer extends SageAPI
         
         Debug.Writeln("\tAudio tracks returned: " + tracks.length, Debug.INFO);
         
+        MediaFile mediaFile = new MediaFile(MediaPlayer.GetCurrentMediaFile(context));
+        
         for(int i = 0; i < tracks.length; i++)
         {
-            audio.add(new MediaFileAudioTrack(i, tracks[i]));
+            audio.add(new MediaFileAudioTrack(i, tracks[i], mediaFile.GetAudioCodec(i), mediaFile.GetAudioChannels(i), mediaFile.GetAudioLanguage(i)));
+        }
+    
+        //Check to see if MediaFile has Audio Data
+        if(tracks.length == 0 && (!mediaFile.GetAudioChannels(0).isEmpty()))
+        {
+            audio.add(new MediaFileAudioTrack(0, mediaFile.GetAudioCodec(0) + " " + mediaFile.GetAudioChannels(0) , mediaFile.GetAudioCodec(0), mediaFile.GetAudioChannels(0), mediaFile.GetAudioLanguage(0)));
         }
         
         return audio;

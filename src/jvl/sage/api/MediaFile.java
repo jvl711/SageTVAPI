@@ -133,6 +133,63 @@ public class MediaFile extends SageObject
         return new Airing(this.UnwrapObject());
     }
     
+    /*
+    Format.Audio[.#].Codec
+    Format.Audio[.#].Channels
+    Format.Audio[.#].Language
+    Format.Audio[.#].SampleRate
+    Format.Audio[.#].BitsPerSample
+    Format.Audio[.#].Index
+    Format.Audio[.#].ID
+    */
+    
+    public String GetAudioBitsPerSample(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".BitsPerSample");
+        
+        return ret;
+    }
+    
+    public String GetAudioSampleRate(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".SampleRate");
+        
+        return ret;
+    }
+    
+    public String GetAudioLanguage(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".Language");
+        
+        return ret;
+    }
+    
+    public String GetAudioChannels(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".Channels");
+        
+        return ret;
+    }
+    
+    public String GetAudioCodec(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".Codec");
+        
+        return ret;
+    }
+    
+    
+    
     public String GetVideoResolution() throws SageCallApiException
     {
         String ret;
