@@ -21,14 +21,20 @@ public class MediaFileAudioTrack
         {
             this.codec = "DTS";
         }
-        
-        this.codec = codec;
+        else
+        {
+            this.codec = codec;
+        }
         
         try{ this.channels = Integer.parseInt(channels); } catch(Exception ex) { this.channels = 0; }
         
         if(this.channels > 2)
         {
             this.channelsDisplay = (this.channels - 1) + ".1";
+        }
+        else 
+        {
+            this.channelsDisplay = channels;
         }
         
         this.language = language;
