@@ -136,7 +136,6 @@ public class MediaPlayer extends SageAPI
         Debug.Writeln("\tcurrent: " + current, Debug.INFO);
         ArrayList<MediaFileAudioTrack> audio = MediaPlayer.GetAudioTracks(context);
         
-        
         for(int i = 0; i < audio.size(); i++)
         {
             if(audio.get(i).GetDescription().equals(current))
@@ -151,13 +150,16 @@ public class MediaPlayer extends SageAPI
     public static ArrayList<MediaFileAudioTrack> GetAudioTracks(UIContext context) throws SageCallApiException
     {
         Debug.Writeln("GetAudioTracks Called", Debug.INFO);
-        String [] temp = (String [])MediaPlayer.callApiArray(context, "GetDVDAvailableLanguages");
-        ArrayList<MediaFileAudioTrack> audio = new ArrayList<MediaFileAudioTrack>();
-        Debug.Writeln("\tAudio tracks returned: " + temp.length, Debug.INFO);
+                
+        String [] tracks = (String [])MediaPlayer.callApiArray(context, "GetDVDAvailableLanguages");
         
-        for(int i = 0; i < temp.length; i++)
+        ArrayList<MediaFileAudioTrack> audio = new ArrayList<MediaFileAudioTrack>();
+        
+        Debug.Writeln("\tAudio tracks returned: " + tracks.length, Debug.INFO);
+        
+        for(int i = 0; i < tracks.length; i++)
         {
-            audio.add(new MediaFileAudioTrack(i, temp[i]));
+            audio.add(new MediaFileAudioTrack(i, tracks[i]));
         }
         
         return audio;
