@@ -30,7 +30,8 @@ public class MediaPlayer extends SageAPI
     
     public static Object GetCurrentMediaFile(UIContext context) throws SageCallApiException
     {
-        return MediaPlayer.callAPIBoolean(context, "GetCurrentMediaFile");
+        return MediaPlayer.callApiObject(context, "GetCurrentMediaFile");
+
     }
     
     public static int GetChapterCount(UIContext context) throws SageCallApiException

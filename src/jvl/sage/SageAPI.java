@@ -38,15 +38,21 @@ public class SageAPI
         callAPIBase(context, method, new Object [] {arg1, arg2});
     }
     
+    protected static Object callApiObject(UIContext context, String method, Object arg1) throws SageCallApiException
+    {
+        return callAPIBase(context, method, new Object [] {arg1});
+    }
+    
     protected static Object callApiObject(String method, Object arg1) throws SageCallApiException
     {
         return callAPIBase(method, new Object [] {arg1});
     }
     
-    protected static Object callApiObject(UIContext context, String method, Object arg1) throws SageCallApiException
+    protected static Object callApiObject(UIContext context, String method) throws SageCallApiException
     {
-        return callAPIBase(context, method, new Object [] {arg1});
+        return callAPIBase(context, method, null);
     }
+    
     
     protected static Object callApiObject(String method, Object arg1, Object arg2) throws SageCallApiException
     {
