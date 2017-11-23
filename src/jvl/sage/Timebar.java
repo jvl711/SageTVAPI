@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import jvl.comskip.Marker;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFileAudioTrack;
+import jvl.sage.api.MediaFileSegment;
 import jvl.sage.api.MediaFileSubtitleTrack;
 import jvl.sage.api.MediaPlayer;
 import jvl.sage.api.UIContext;
@@ -203,6 +204,11 @@ public class Timebar extends Thread
                 MediaPlayer.Seek(this.context, markerTime);
             }
         }
+    }
+    
+    public MediaFileSegment [] GetMediaFileSegments() throws SageCallApiException
+    {
+        return this.mediaFile.GetMediaFileSegments();
     }
     
     public Marker [] GetMarkers()
