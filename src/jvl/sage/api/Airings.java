@@ -382,18 +382,30 @@ public class Airings extends SageArrayObject<Airing>
     }
     
     /**
-     * Goes through each object in the list and tries to determine if they are
-     * still valid files on disk for each.  If not the airings are removed from
-     * the list
+     * Modifying this to not worry about if the file is on disk, instead check
+     * if it still has a media file in the database
      */
     public void Verify()
     {
         for(int i = this.size() - 1; i >= 0; i--)
         {
-            if(!this.get(i).ExistsOnDisk())
+            boolean exists = false;
+            
+            try
+            {
+                Object airing = this.get(i).UnwrapObject();
+                Object mediaFile = Airing.GetMediaFileForAiring(airing);
+                exists = MediaFile.IsMediaFileObject(mediaFile);
+            }
+            catch(Exception ex)
+            {
+                exists = false;
+            }
+            
+            if(!exists)
             {
                 Airing deletedAiring = this.remove(i);
-                Debug.Writeln("Airings.Verify - Item does not exist on disk and is being removed. Index = " + i, Debug.INFO);
+                Debug.Writeln("Airings.Verify - Item does not exist in DB removed. Index = " + i, Debug.INFO);
                 
                 randomAirings.remove(deletedAiring);
             }
