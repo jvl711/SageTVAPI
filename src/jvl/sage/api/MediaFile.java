@@ -495,6 +495,18 @@ public class MediaFile extends SageObject
         return mediaFiles;
     }
     
+    public static MediaFiles GetRecordingFiles() throws SageCallApiException
+    {
+        Object [] objects;
+        MediaFiles mediaFiles;
+        
+        objects = MediaFile.callApiArray("GetMediaFiles", "T");
+        
+        mediaFiles = new MediaFiles(objects);
+        
+        return mediaFiles;
+    }
+    
     /*********************************************************************************************/
     
     @Override

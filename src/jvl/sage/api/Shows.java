@@ -217,7 +217,7 @@ public class Shows extends SageArrayObject<Show>
      */
     public void SortByDateAdded(boolean desc)
     {
-        Collections.sort(this, new SortableShowDateAddedCompaator());
+        Collections.sort(this, new SortableShowDateAddedComparator());
         
         if(desc)
         {

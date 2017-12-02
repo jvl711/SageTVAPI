@@ -422,7 +422,7 @@ class SortableShowTitleCompaator implements Comparator<Show>
     
 }
 
-class SortableShowDateAddedCompaator implements Comparator<Show>
+class SortableShowDateAddedComparator implements Comparator<Show>
 {
 
     @Override
@@ -445,6 +445,7 @@ class SortableShowDateAddedCompaator implements Comparator<Show>
     }
     
 }
+
 
 /**
  * First checks for year, than checks sortable title. If there is no year
