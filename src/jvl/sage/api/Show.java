@@ -188,12 +188,12 @@ public class Show extends SageObject
         return callApiString("GetShowYear", this.lookupObject);
     }
  
-    public String GetShowCatagoriesString() throws SageCallApiException
+    public String GetShowCategoriesString() throws SageCallApiException
     {
-        return this.GetShowCatagoriesString("/");
+        return this.GetShowCategoriesString("/");
     }
     
-    public String GetShowCatagoriesString(String Delimiter) throws SageCallApiException
+    public String GetShowCategoriesString(String Delimiter) throws SageCallApiException
     {
         return  "(JVL)" + Show.callApiString("GetShowCategoriesString", this.lookupObject, Delimiter);
     }
