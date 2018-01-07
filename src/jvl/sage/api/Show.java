@@ -98,10 +98,89 @@ public class Show extends SageObject
         
         return response;
     }
+    
+    public String GetEpisodeNumberString() throws SageCallApiException
+    {
+        int episodeNumber = this.GetEpisodeNumber();
+        
+        return "Episode " + episodeNumber;
+    }
+    
+    public String GetSeasonNumberString() throws SageCallApiException
+    {
+        int seasonNumber = this.GetSeasonNumber();
+        
+        return "Season " + seasonNumber;
+    }
 
+    public String GetSeasonEpisodeString() throws SageCallApiException
+    {
+       return GetSeasonEpisodeString(0);
+    }
+    
+    /**
+     * Formats the Season Episode info into a formated string
+     * 
+     * Format 0: Season 1 Episode 1
+     * Format 1: S01E01
+     * 
+     * @param format a number of the format
+     * @return A formated string with Season Episode information
+     * @throws SageCallApiException 
+     */
+    public String GetSeasonEpisodeString(int format) throws SageCallApiException
+    {
+       switch(format)
+       {
+           case 0:
+               return this.GetSeasonNumberString() + " " + this.GetEpisodeNumberString();
+
+           case 1:
+               int season = this.GetSeasonNumber();
+               int episode = this.GetEpisodeNumber();
+               String seasonString;
+               String episodeString;
+               
+               if(season < 10)
+               {
+                   seasonString = "0" + season;
+               }
+               else
+               {
+                   seasonString = season + "";
+               }
+               
+               if(episode < 10)
+               {
+                   episodeString = "0" + episode;
+               }
+               else
+               {
+                    episodeString = episode + "";
+               }
+               
+               return "S" + seasonString + "E" + episodeString;
+               
+           default:
+               return "(JVL)" + this.GetSeasonNumberString() + " " + this.GetEpisodeNumberString();
+               
+               
+       }
+    }
+    
+    public String GetShowEpisodeName() throws SageCallApiException
+    {
+        return "(JVL)" + callApiString("GetShowEpisode", this.lookupObject).trim();
+    }
+    
     public String GetShowTitle() throws SageCallApiException
     {
-        return callApiString("GetShowTitle", this.lookupObject);
+        return "(JVL)" + callApiString("GetShowTitle", this.lookupObject).trim();
+    }
+    
+    public String GetShowDescription() throws SageCallApiException
+    {
+        return "(JVL)" + callApiString("GetShowDescription", this.lookupObject).trim();
     }
     
     public String GetShowYear() throws SageCallApiException
@@ -109,6 +188,16 @@ public class Show extends SageObject
         return callApiString("GetShowYear", this.lookupObject);
     }
  
+    public String GetShowCatagoriesString() throws SageCallApiException
+    {
+        return this.GetShowCatagoriesString("/");
+    }
+    
+    public String GetShowCatagoriesString(String Delimiter) throws SageCallApiException
+    {
+        return  "(JVL)" + Show.callApiString("GetShowCategoriesString", this.lookupObject, Delimiter);
+    }
+    
     public String [] GetShowCategories() throws SageCallApiException
     {
         return (String []) Show.callApiArray("GetShowCategoriesList", this.lookupObject);
