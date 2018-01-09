@@ -80,7 +80,7 @@ public class Shows extends SageArrayObject<Show>
         
         for(int i = 0; i < this.size(); i++)
         {
-            String [] temp = this.get(i).GetShowCategories();
+            String [] temp = this.get(i).GetCategories();
             
             for(int j = 0; j < temp.length; j++)
             {
@@ -103,7 +103,7 @@ public class Shows extends SageArrayObject<Show>
         
         for(int i = 0; i < this.size(); i++)
         {
-            String [] categories = this.get(i).GetShowCategories();
+            String [] categories = this.get(i).GetCategories();
             
             for(int j = 0; j < categories.length; j++)
             {
@@ -283,11 +283,11 @@ public class Shows extends SageArrayObject<Show>
         
         for(int i = 1; i < this.size(); i++)
         {
-            if(this.get(i).GetSortableShowTitle().toUpperCase().charAt(0) < searchChar)
+            if(this.get(i).GetSortableTitle().toUpperCase().charAt(0) < searchChar)
             {
                 lastShow = this.get(i);
             }
-            else if(this.get(i).GetSortableShowTitle().toUpperCase().charAt(0) == searchChar)
+            else if(this.get(i).GetSortableTitle().toUpperCase().charAt(0) == searchChar)
             {
                 lastShow = this.get(i);
                 break;
@@ -350,7 +350,7 @@ public class Shows extends SageArrayObject<Show>
                 {
                     shows.get(i).ScalePosters(width);
                     
-                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetShowTitle());
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetTitle());
                 }
                 
                 this.jobStatus.SetComplete();
@@ -387,7 +387,7 @@ public class Shows extends SageArrayObject<Show>
                 {
                     shows.get(i).CleanPosters(width);
                     
-                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetShowTitle());
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetTitle());
                 }
                 
                 this.jobStatus.SetComplete();

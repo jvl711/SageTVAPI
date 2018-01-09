@@ -162,54 +162,54 @@ public class Show extends SageObject
                return "S" + seasonString + "E" + episodeString;
                
            default:
-               return "(JVL)" + this.GetSeasonNumberString() + " " + this.GetEpisodeNumberString();
+               return this.GetSeasonNumberString() + " " + this.GetEpisodeNumberString();
                
                
        }
     }
     
-    public String GetShowEpisodeName() throws SageCallApiException
+    public String GetEpisodeName() throws SageCallApiException
     {
-        return "(JVL)" + callApiString("GetShowEpisode", this.lookupObject).trim();
+        return callApiString("GetShowEpisode", this.lookupObject).trim();
     }
     
-    public String GetShowTitle() throws SageCallApiException
+    public String GetTitle() throws SageCallApiException
     {
-        return "(JVL)" + callApiString("GetShowTitle", this.lookupObject).trim();
+        return callApiString("GetShowTitle", this.lookupObject).trim();
     }
     
-    public String GetShowDescription() throws SageCallApiException
+    public String GetDescription() throws SageCallApiException
     {
-        return "(JVL)" + callApiString("GetShowDescription", this.lookupObject).trim();
+        return callApiString("GetShowDescription", this.lookupObject).trim();
     }
     
-    public String GetShowYear() throws SageCallApiException
+    public String GetYear() throws SageCallApiException
     {
         return callApiString("GetShowYear", this.lookupObject);
     }
  
-    public String GetShowCategoriesString() throws SageCallApiException
+    public String GetCategoriesString() throws SageCallApiException
     {
-        return this.GetShowCategoriesString("/");
+        return this.GetCategoriesString(" / ");
     }
     
-    public String GetShowCategoriesString(String Delimiter) throws SageCallApiException
+    public String GetCategoriesString(String Delimiter) throws SageCallApiException
     {
-        return  "(JVL)" + Show.callApiString("GetShowCategoriesString", this.lookupObject, Delimiter);
+        return Show.callApiString("GetShowCategoriesString", this.lookupObject, Delimiter);
     }
     
-    public String [] GetShowCategories() throws SageCallApiException
+    public String [] GetCategories() throws SageCallApiException
     {
         return (String []) Show.callApiArray("GetShowCategoriesList", this.lookupObject);
     }
     
-    public char GetShowTitleSearchChar() throws SageCallApiException
+    public char GetTitleSearchChar() throws SageCallApiException
     {
-        String title = this.GetSortableShowTitle();
+        String title = this.GetSortableTitle();
         
         if(title.length() > 0)
         {
-            return this.GetSortableShowTitle().charAt(0);
+            return this.GetSortableTitle().charAt(0);
         }
         else
         {
@@ -217,9 +217,9 @@ public class Show extends SageObject
         }
     }
     
-    public String GetSortableShowTitle() throws SageCallApiException
+    public String GetSortableTitle() throws SageCallApiException
     {
-        String title = this.GetShowTitle();
+        String title = this.GetTitle();
         String ret = title;
         
         if(title.startsWith("The "))
@@ -497,7 +497,7 @@ class SortableShowTitleCompaator implements Comparator<Show>
     {
         try 
         {   
-            return t.GetSortableShowTitle().toUpperCase().compareTo(t1.GetSortableShowTitle().toUpperCase());
+            return t.GetSortableTitle().toUpperCase().compareTo(t1.GetSortableTitle().toUpperCase());
             
         } 
         catch (SageCallApiException ex) 
@@ -551,14 +551,14 @@ class SortableShowYearReleasedCompaator implements Comparator<Show>
             int first = 0;
             int second = 0;
             
-            try{ first = Integer.parseInt(t.GetShowYear()); } catch(Exception ex) { }
-            try{ second = Integer.parseInt(t1.GetShowYear()); } catch(Exception ex) { }
+            try{ first = Integer.parseInt(t.GetYear()); } catch(Exception ex) { }
+            try{ second = Integer.parseInt(t1.GetYear()); } catch(Exception ex) { }
             
             
             //if they are the same than use title
             if(first == second)
             {
-                return t.GetSortableShowTitle().toUpperCase().compareTo(t1.GetSortableShowTitle().toUpperCase());
+                return t.GetSortableTitle().toUpperCase().compareTo(t1.GetSortableTitle().toUpperCase());
             }
             else if(first > second)
             {
