@@ -7,7 +7,6 @@ import jvl.sage.api.*;
  * Holds a list of airings and manages iterating through the list
  * Keeps track of the current position
  * 
- * @author jolewis
  */
 public class Playlist 
 {
