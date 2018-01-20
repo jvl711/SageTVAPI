@@ -1,4 +1,3 @@
-
 package jvl.sage;
 
 import jvl.sage.api.*;
@@ -7,11 +6,18 @@ import jvl.sage.api.*;
  * Holds a list of airings and manages iterating through the list
  * Keeps track of the current position
  * 
+ * Keeps track of auto playback properties
+ * 
  */
 public class Playlist 
 {
+    private static final int DEFAULT_PLAYNEXT_WAIT_TIME_SECONDS = 15;
+    
     private Airings airings;
     private int currentIndex;
+    
+    private boolean autoPlayNext;
+    private int autoPlayWaitTime = DEFAULT_PLAYNEXT_WAIT_TIME_SECONDS;
 
     public Playlist(Shows shows) throws SageCallApiException
     {
@@ -29,7 +35,8 @@ public class Playlist
             }
         }
         
-        currentIndex = 0;
+        this.autoPlayNext = false;
+        this.currentIndex = 0;
     }
     
     public Playlist(Airings airings) throws SageCallApiException
@@ -49,7 +56,8 @@ public class Playlist
             }
         }
         
-        currentIndex = 0;
+        this.autoPlayNext = false;
+        this.currentIndex = 0;
     }
             
     /**
@@ -79,13 +87,27 @@ public class Playlist
             throw new RuntimeException("Index is outside of the bounds");
         }
         
-        Airing airing = airings.get(currentIndex);
         currentIndex++;
+        Airing airing = airings.get(currentIndex);
+        
         
         return airing;
     }
     
-
+    public Airing PeekNextAiring()
+    {
+        //Check to see if incrementing would go beyond
+        if(!this.HasMoreAirings())
+        {
+            throw new RuntimeException("Index is outside of the bounds");
+        }
+        
+        Airing airing = airings.get(currentIndex + 1);
+        //currentIndex++;
+        
+        return airing;
+    }
+    
     public Object GetCurrenttAiringUnwrapped()
     {
         return airings.get(currentIndex).UnwrapObject();
@@ -99,5 +121,48 @@ public class Playlist
     public void ResetIndex()
     {
         currentIndex = 0;
+    }
+
+    /**
+     * Returns if auto playback is on or off
+     * 
+     * @return True if auto playback is on
+     */
+    public boolean IsAutoPlayNext() 
+    {
+        return autoPlayNext;
+    }
+
+    /**
+     * Set if auto playback of the next item in the playlist is on
+     * or off for the playlist
+     * 
+     * @param autoPlayNext turn auto playback on or off
+     */
+    public void SetAutoPlayNext(boolean autoPlayNext) 
+    {
+        this.autoPlayNext = autoPlayNext;
+    }
+
+    /**
+     * Returns the amount of time to wait before playing the next
+     * video
+     * 
+     * @return Amount of time in seonds
+     */
+    public int GetAutoPlayWaitTime() 
+    {
+        return autoPlayWaitTime;
+    }
+
+    /**
+     * Set the amount of time to wait before playing the next
+     * video in the playlist
+     * 
+     * @param autoPlayWaitTime time in seconds
+     */
+    public void SetAutoPlayWaitTime(int autoPlayWaitTime) 
+    {
+        this.autoPlayWaitTime = autoPlayWaitTime;
     }
 }
