@@ -320,6 +320,28 @@ public class Airings extends SageArrayObject<Airing>
 
     }
     
+    public boolean DeleteMissingFromDisk() throws SageCallApiException
+    {
+        for(int i = this.size() - 1; i >= 0; i--)
+        {
+        
+            if(!this.get(i).ExistsOnDisk())
+            {
+                if(this.get(i).GetMediaFile().DeleteFile())
+                {
+                    this.remove(i);
+                }
+                else
+                {
+                    Debug.Writeln("Airings.DeleteMissingFromDisk - Error Deleting Item. Index = " + i, Debug.ERROR);
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
     /**
      * Will delete all of the airings that are watched.  Will stop deleting
      * if one of the files errors when attempting to delete.  Will remove the
