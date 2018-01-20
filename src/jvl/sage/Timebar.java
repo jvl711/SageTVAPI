@@ -118,6 +118,21 @@ public class Timebar extends Thread
     {
         double temp;
         
+        //TODO: For some reason when an import moves this gets all messed up.
+        
+        
+        
+        /*
+         * When a recording moves the import time changes, so that probable changes
+         * the playback time
+        */
+        
+        if(mediaFile.GetAiring().IsWatched())
+        {
+            return 100.0;
+        }
+        
+        
         if(mediaFile.IsFileCurrentlyRecording())
         {            
             //temp = ((this.GetPlaybackTime() * 1.0) / (this.GetDuration() * 1.0) * 100.0) - this.GetPlaybackStartPercent();
