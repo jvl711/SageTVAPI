@@ -151,6 +151,25 @@ public class Airings extends SageArrayObject<Airing>
     }
     
     /**
+     * If any of the airings are missing files than this will return true
+     * 
+     * @return True if any of the airings are missing on disk
+     * @throws jvl.sage.SageCallApiException
+     */
+    public boolean IsMissingFiles() throws SageCallApiException
+    {
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(!this.get(i).ExistsOnDisk())
+            {
+                return true;
+            }   
+        }
+        
+        return true;
+    }
+    
+    /**
      * Uses the random class to pick a random airing in the set of airings.
      * The class keeps track of the random airings picked, and will not pick
      * the same airing twice until the set of airings is empty.  Then it will
