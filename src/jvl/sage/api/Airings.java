@@ -166,7 +166,7 @@ public class Airings extends SageArrayObject<Airing>
             }   
         }
         
-        return true;
+        return false;
     }
     
     /**
