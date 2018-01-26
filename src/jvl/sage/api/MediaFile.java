@@ -143,6 +143,36 @@ public class MediaFile extends SageObject
     Format.Audio[.#].ID
     */
     
+    public MediaFileAudioTrack[] MediaFileAudioTracks() throws SageCallApiException
+    {
+        MediaFileAudioTrack [] tracks = new MediaFileAudioTrack[this.GetAudioTrackCount()];
+        
+        for(int i = 0; i < tracks.length; i++)
+        {
+            tracks[i] = new MediaFileAudioTrack(i, "", this.GetAudioCodec(i), this.GetAudioChannels(i), this.GetAudioLanguage(i));
+        }
+        
+        return tracks;
+    }
+    
+    public int GetAudioTrackCount() throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio.NumStreams");
+        
+        //If the string is empty assume no audio tracks
+        if(ret.equals(""))
+        {
+            return 0;
+        }
+        else
+        {
+            return Integer.parseInt(ret);
+        }
+    }
+            
+    
     public String GetAudioBitsPerSample(int tracknum) throws SageCallApiException
     {
         String ret;

@@ -39,6 +39,12 @@ public class MediaFileSegment
 //        return mediaFile.GetAiring().GetScheduleEndTime() - mediaFile.GetAiring().GetScheduleStartTime();
 //    }
     
+    
+    public String GetFilePath()
+    {
+        return this.filePath;
+    }
+    
     public long GetStartTime() throws SageCallApiException
     {
         return this.mediaFile.GetStartForSegment(this.segment);
