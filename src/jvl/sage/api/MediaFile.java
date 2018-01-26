@@ -143,7 +143,7 @@ public class MediaFile extends SageObject
     Format.Audio[.#].ID
     */
     
-    public MediaFileAudioTrack[] MediaFileAudioTracks() throws SageCallApiException
+    public MediaFileAudioTrack[] GetAudioTracks() throws SageCallApiException
     {
         MediaFileAudioTrack [] tracks = new MediaFileAudioTrack[this.GetAudioTrackCount()];
         
