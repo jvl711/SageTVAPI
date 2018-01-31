@@ -149,10 +149,30 @@ public class MediaFile extends SageObject
         
         for(int i = 0; i < tracks.length; i++)
         {
-            tracks[i] = new MediaFileAudioTrack(i, "", this.GetAudioCodec(i), this.GetAudioChannels(i), this.GetAudioLanguage(i));
+            tracks[i] = this.GetAudioTrack(i);
         }
         
         return tracks;
+    }
+    
+    public MediaFileAudioTrack GetAudioTrack(int index) throws SageCallApiException
+    {
+        
+        return this.GetAudioTrack(index, this.GetAudioCodec(index) + " " + this.GetAudioChannels(index));
+    }
+    
+    public MediaFileAudioTrack GetAudioTrack(int index, String description) throws SageCallApiException
+    {
+        MediaFileAudioTrack track;
+        
+        if(index > this.GetAudioTrackCount())
+        {
+            throw new IndexOutOfBoundsException();
+        }
+        
+        track = new MediaFileAudioTrack(index, description, this.GetAudioCodec(index), this.GetAudioChannels(index), this.GetAudioBitrate(index), this.GetAudioSampleRate(index),  this.GetAudioLanguage(index));
+        
+        return track;
     }
     
     public int GetAudioTrackCount() throws SageCallApiException
@@ -172,26 +192,50 @@ public class MediaFile extends SageObject
         }
     }
             
+    //TODO: Look deeper into Sage to see why this does not appear to be working
     
-    public String GetAudioBitsPerSample(int tracknum) throws SageCallApiException
+//    public String GetAudioBitsPerSample(int tracknum) throws SageCallApiException
+//    {
+//        String ret;
+//        
+//        ret = this.GetMetadata("Format.Audio." + tracknum + ".BitsPerSample");
+//        
+//        return ret;
+//    }
+    
+    private int GetAudioBitrate(int tracknum) throws SageCallApiException
     {
         String ret;
+        int intRet = 0;
         
-        ret = this.GetMetadata("Format.Audio." + tracknum + ".BitsPerSample");
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".Bitrate");
         
-        return ret;
+        try
+        {
+            intRet = Integer.parseInt(ret) * 1024;
+        } 
+        catch(Exception ex) { } 
+        
+        return intRet;
     }
     
-    public String GetAudioSampleRate(int tracknum) throws SageCallApiException
+    private int GetAudioSampleRate(int tracknum) throws SageCallApiException
     {
         String ret;
+        int intRet = 0;
         
         ret = this.GetMetadata("Format.Audio." + tracknum + ".SampleRate");
+     
+        try
+        {
+            intRet = Integer.parseInt(ret);
+        } 
+        catch(Exception ex) { } 
         
-        return ret;
+        return intRet;
     }
     
-    public String GetAudioLanguage(int tracknum) throws SageCallApiException
+    private String GetAudioLanguage(int tracknum) throws SageCallApiException
     {
         String ret;
         
@@ -200,7 +244,7 @@ public class MediaFile extends SageObject
         return ret;
     }
     
-    public String GetAudioChannels(int tracknum) throws SageCallApiException
+    private String GetAudioChannels(int tracknum) throws SageCallApiException
     {
         String ret;
         
@@ -209,7 +253,7 @@ public class MediaFile extends SageObject
         return ret;
     }
     
-    public String GetAudioCodec(int tracknum) throws SageCallApiException
+    private String GetAudioCodec(int tracknum) throws SageCallApiException
     {
         String ret;
         

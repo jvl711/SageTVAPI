@@ -168,13 +168,15 @@ public class MediaPlayer extends SageAPI
         
         for(int i = 0; i < tracks.length; i++)
         {
-            audio.add(new MediaFileAudioTrack(i, tracks[i], mediaFile.GetAudioCodec(i), mediaFile.GetAudioChannels(i), mediaFile.GetAudioLanguage(i)));
+            audio.add(mediaFile.GetAudioTrack(i, tracks[i]));
+            //audio.add(new MediaFileAudioTrack(i, tracks[i], mediaFile.GetAudioCodec(i), mediaFile.GetAudioChannels(i), mediaFile.GetAudioLanguage(i)));
         }
     
         //Check to see if MediaFile has Audio Data
-        if(tracks.length == 0 && (!mediaFile.GetAudioChannels(0).isEmpty()))
+        if(tracks.length == 0 && (mediaFile.GetAudioTrackCount() != 0))
         {
-            audio.add(new MediaFileAudioTrack(0, mediaFile.GetAudioCodec(0) + " " + mediaFile.GetAudioChannels(0) , mediaFile.GetAudioCodec(0), mediaFile.GetAudioChannels(0), mediaFile.GetAudioLanguage(0)));
+            audio.add(mediaFile.GetAudioTrack(0));
+            //audio.add(new MediaFileAudioTrack(0, mediaFile.GetAudioCodec(0) + " " + mediaFile.GetAudioChannels(0) , mediaFile.GetAudioCodec(0), mediaFile.GetAudioChannels(0), mediaFile.GetAudioLanguage(0)));
         }
         
         return audio;

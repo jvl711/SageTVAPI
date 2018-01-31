@@ -4,22 +4,27 @@ package jvl.sage.api;
 
 public class MediaFileAudioTrack 
 {
-    private int tracknum;
     private String description;
+    private int tracknum;
     private String codec;
+    private String codecDisplay;
     private int channels;
     private String channelsDisplay;
     private String language;
+    private int bitrate;
+    private int samplerate;
     
     
-    public MediaFileAudioTrack(int tracknum, String description, String codec, String channels, String language)
+    
+    public MediaFileAudioTrack(int tracknum, String description, String codec, String channels, int bitrate, int samplerate, String language)
     {
         this.tracknum = tracknum;
         this.description = description;
         
+        this.codec = codec;
         if(codec.equalsIgnoreCase("DCA"))
         {
-            this.codec = "DTS";
+            this.codecDisplay = "DTS";
         }
         else
         {
@@ -36,6 +41,9 @@ public class MediaFileAudioTrack
         {
             this.channelsDisplay = channels;
         }
+        
+        this.bitrate = bitrate;
+        this.samplerate = samplerate;
         
         this.language = language;
     }
@@ -72,7 +80,7 @@ public class MediaFileAudioTrack
     
     public static MediaFileAudioTrack GetNullTrack()
     {
-        return new MediaFileAudioTrack(-1, "Off", "", "", "");
+        return new MediaFileAudioTrack(-1, "Off", "", "", 0, 0, "");
     }
     
     @Override
@@ -92,6 +100,30 @@ public class MediaFileAudioTrack
         hash = 23 * hash + this.tracknum;
         hash = 23 * hash + (this.description != null ? this.description.hashCode() : 0);
         return hash;
+    }
+    
+    public String toString(int format)
+    {
+        String temp;
+        
+        if(format == 1)
+        {
+            temp = this.codec + " " + this.channelsDisplay;
+
+            if (!this.language.isEmpty())
+            {
+                temp += " - " + this.language;
+            }   
+        }
+        else
+        {
+            String rate = (this.bitrate / 1024) + " kbps";
+            //temp = this.codecDisplay + " " + this.channelsDisplay;
+            
+            temp = this.language + ", " + rate + ", " + this.samplerate + ", " + this.channelsDisplay + " channels, " + this.codecDisplay; 
+        }
+        
+        return temp;
     }
     
     @Override
