@@ -32,11 +32,43 @@ public class MediaFileAudioTrack
         this.language = language;
     }
     
+    public int GetBitrate()
+    {
+        return this.bitrate;
+    }
+    
+    public String GetBitrateString()
+    {
+        if(this.bitrate > 0)
+        {
+            return (this.bitrate / 1024) + " kbps";
+        }
+        
+        return "";
+    }
+    
+    public int GetSampleRate()
+    {
+        return this.samplerate;
+    }
+    
+    public String GetSampleRateString()
+    {
+        if(this.samplerate > 0)
+        {
+            return (this.samplerate / 1000) + ".0 KHz";
+        }
+        
+        return "";
+    }
+    
     public int GetTrackNumber()
     {
         return this.tracknum;
     }
 
+    
+    
     public String GetDescription()
     {
         return this.description;
@@ -91,6 +123,14 @@ public class MediaFileAudioTrack
         {
             return "English";
         }
+        else if(this.GetLanguage().equalsIgnoreCase("fre"))
+        {
+            return "French";
+        }
+        else if(this.GetLanguage().equalsIgnoreCase("spa"))
+        {
+            return "Spanish";
+        }
         if(this.GetLanguage().equals(""))
         {
             return "Unknown";
@@ -132,10 +172,19 @@ public class MediaFileAudioTrack
         
         if(format == 1)
         {
-            String rate = (this.bitrate / 1024) + " kbps";
-            String sampleRateDisplay = (this.samplerate / 1000) + ".0 KHz";
+            temp = this.GetLanguageString();
+            
+            if(!this.GetBitrateString().equals(""))
+            {
+                temp += ", " + this.GetBitrateString();
+            }
+                
+            if(!this.GetSampleRateString().equalsIgnoreCase(""))
+            {
+                temp += ", " + this.GetSampleRateString();
+            }
                    
-            temp = this.GetLanguageString() + ", " + rate + ", " + sampleRateDisplay + ", " + this.GetChannelString() + " channels, " + this.GetCodecString(); 
+            temp +=  ", " + this.GetChannelString() + " channels, " + this.GetCodecString(); 
         }
         else
         {
