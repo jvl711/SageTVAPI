@@ -208,10 +208,9 @@ public class MediaFile extends SageObject
         String ret;
         int intRet = 0;
         
-        ret = this.GetMetadata("Format.Audio." + tracknum + ".Bitrate");
-        
         try
         {
+            ret = this.GetMetadata("Format.Audio." + tracknum + ".Bitrate").split(" ")[0];
             intRet = Integer.parseInt(ret) * 1024;
         } 
         catch(Exception ex) { } 

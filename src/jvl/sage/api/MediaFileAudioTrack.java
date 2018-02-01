@@ -28,7 +28,7 @@ public class MediaFileAudioTrack
         }
         else
         {
-            this.codec = codec;
+            this.codecDisplay = codec;
         }
         
         try{ this.channels = Integer.parseInt(channels); } catch(Exception ex) { this.channels = 0; }
@@ -108,19 +108,19 @@ public class MediaFileAudioTrack
         
         if(format == 1)
         {
+            String rate = (this.bitrate / 1024) + " kbps";
+            String sampleRateDisplay = (this.samplerate / 1000) + ".0 KHz";
+                   
+            temp = this.language + ", " + rate + ", " + sampleRateDisplay + ", " + this.channelsDisplay + " channels, " + this.codecDisplay; 
+        }
+        else
+        {
             temp = this.codec + " " + this.channelsDisplay;
 
             if (!this.language.isEmpty())
             {
                 temp += " - " + this.language;
-            }   
-        }
-        else
-        {
-            String rate = (this.bitrate / 1024) + " kbps";
-            //temp = this.codecDisplay + " " + this.channelsDisplay;
-            
-            temp = this.language + ", " + rate + ", " + this.samplerate + ", " + this.channelsDisplay + " channels, " + this.codecDisplay; 
+            }
         }
         
         return temp;
@@ -129,13 +129,6 @@ public class MediaFileAudioTrack
     @Override
     public String toString()
     {
-        String temp = this.codec + " " + this.channelsDisplay;
-        
-        if (!this.language.isEmpty())
-        {
-            temp += " - " + this.language;
-        }
-        
-        return temp;
+        return toString(-1);
     }
 }
