@@ -14,12 +14,15 @@ public class MediaFileSegment
     private int segment;
     //private long mediaFileDuration;
     private String filePath;
+    private String fileName;
     
     
     public MediaFileSegment(MediaFile mediaFile, int segment, String filePath) throws SageCallApiException
     {
         this.mediaFile = mediaFile;
         this.segment = segment;
+        
+        
         
 //        if(mediaFile.IsFileCurrentlyRecording())
 //        {
@@ -32,6 +35,8 @@ public class MediaFileSegment
         
 
         this.filePath = filePath;
+        File file = new File(filePath);
+        this.fileName = file.getName();
     }
     
 //    public long GetMediaDuration() throws SageCallApiException
@@ -43,6 +48,11 @@ public class MediaFileSegment
     public String GetFilePath()
     {
         return this.filePath;
+    }
+    
+    public String GetFileName()
+    {
+        return this.fileName;
     }
     
     public long GetStartTime() throws SageCallApiException

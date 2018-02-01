@@ -77,6 +77,21 @@ public class MediaFile extends SageObject
         return MediaFile.callApiObject("GetMediaFileAiring", this.mediafile);
     }
     
+    public String GetRelativePath() throws SageCallApiException
+    {
+        return MediaFile.callApiString("GetMediaFileRelativePath", mediafile);
+    }
+    
+    public String GetFileName() throws SageCallApiException
+    {
+        return this.GetMediaFileSegments()[0].GetFileName();
+    }
+    
+    public String GetFilePath() throws SageCallApiException
+    {
+        return this.GetMediaFileSegments()[0].GetFilePath();
+    }
+    
     /**
      * This will be the earlier of the Media Start or Scheduled start.
      * 
