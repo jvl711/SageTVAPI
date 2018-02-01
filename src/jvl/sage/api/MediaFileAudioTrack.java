@@ -7,9 +7,9 @@ public class MediaFileAudioTrack
     private String description;
     private int tracknum;
     private String codec;
-    private String codecDisplay;
+    //private String codecDisplay;
     private int channels;
-    private String channelsDisplay;
+    //private String channelsDisplay;
     private String language;
     private int bitrate;
     private int samplerate;
@@ -22,25 +22,9 @@ public class MediaFileAudioTrack
         this.description = description;
         
         this.codec = codec;
-        if(codec.equalsIgnoreCase("DCA"))
-        {
-            this.codecDisplay = "DTS";
-        }
-        else
-        {
-            this.codecDisplay = codec;
-        }
+        
         
         try{ this.channels = Integer.parseInt(channels); } catch(Exception ex) { this.channels = 0; }
-        
-        if(this.channels > 2)
-        {
-            this.channelsDisplay = (this.channels - 1) + ".1";
-        }
-        else 
-        {
-            this.channelsDisplay = channels;
-        }
         
         this.bitrate = bitrate;
         this.samplerate = samplerate;
@@ -63,6 +47,18 @@ public class MediaFileAudioTrack
         return this.codec;
     }
     
+    public String GetCodecString()
+    {
+        if(codec.equalsIgnoreCase("DCA"))
+        {
+            return "DTS";
+        }
+        else
+        {
+            return codec;
+        }
+    }
+    
     public int GetChannels()
     {
         return this.channels;
@@ -70,12 +66,40 @@ public class MediaFileAudioTrack
     
     public String GetChannelString()
     {
-        return this.channelsDisplay;
+        if(this.channels > 2)
+        {
+            return (this.channels - 1) + ".1";
+        }
+        else 
+        {
+            return this.channels + "";
+        }
     }
     
-    public String GetLanguages()
+    public String GetLanguage()
     {
         return this.language;
+    }
+    
+    public String GetLanguageString()
+    {
+        
+        //https://www.loc.gov/standards/iso639-2/php/code_list.php
+        //This may be the full list
+        
+        if(this.GetLanguage().equalsIgnoreCase("eng"))
+        {
+            return "English";
+        }
+        if(this.GetLanguage().equals(""))
+        {
+            return "Unknown";
+        }
+        else
+        {
+            return this.GetLanguage();
+        }
+        
     }
     
     public static MediaFileAudioTrack GetNullTrack()
@@ -111,16 +135,11 @@ public class MediaFileAudioTrack
             String rate = (this.bitrate / 1024) + " kbps";
             String sampleRateDisplay = (this.samplerate / 1000) + ".0 KHz";
                    
-            temp = this.language + ", " + rate + ", " + sampleRateDisplay + ", " + this.channelsDisplay + " channels, " + this.codecDisplay; 
+            temp = this.GetLanguageString() + ", " + rate + ", " + sampleRateDisplay + ", " + this.GetChannelString() + " channels, " + this.GetCodecString(); 
         }
         else
         {
-            temp = this.codec + " " + this.channelsDisplay;
-
-            if (!this.language.isEmpty())
-            {
-                temp += " - " + this.language;
-            }
+            temp = this.GetLanguageString() + ", " + this.GetCodecString() + ", " + this.GetChannelString();
         }
         
         return temp;
