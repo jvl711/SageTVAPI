@@ -41,7 +41,7 @@ public class MediaFileAudioTrack
     {
         if(this.bitrate > 0)
         {
-            return (this.bitrate / 1024) + " kbps";
+            return (this.bitrate / 1000) + " kbps";
         }
         
         return "";

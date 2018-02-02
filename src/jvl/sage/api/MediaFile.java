@@ -53,6 +53,8 @@ public class MediaFile extends SageObject
         return MediaFile.callAPIBoolean("IsMediaFileObject", testObject);
     }
     
+    
+    
     /**
      * Returns true if the specified object is a MediaFile object. No automatic 
      * type conversion will be performed on the argument. This will return false 
@@ -67,6 +69,21 @@ public class MediaFile extends SageObject
 //        return MediaFile.callAPIBoolean("IsMediaFileObject", this.mediafile);
 //    }
 
+    public boolean IsVideoFile() throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsVideoFile", this.mediafile);
+    }
+    
+    public boolean IsDVDFile() throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsDVDFile", this.mediafile);
+    }
+    
+    public boolean IsBluRay() throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsBluRay", this.mediafile);
+    }
+    
     public static Object GetMediaFileAiring(Object mediaFile) throws SageCallApiException
     {
         return MediaFile.callApiObject("GetMediaFileAiring", mediaFile);
@@ -147,6 +164,8 @@ public class MediaFile extends SageObject
     {
         return new Airing(this.UnwrapObject());
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Audio Track Methods">
     
     /*
     Format.Audio[.#].Codec
@@ -276,9 +295,48 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    // </editor-fold>
     
+    /**
+     * Making an assumption that if this media file is VideoFile or DVDFile
+     * or IsBluRay.  This is being built in anticipation of multiple video tracks
+     * in the future.
+     * 
+     * @return 1 if VideoFile or DVDFile or BluRay file returns 1
+     * @throws SageCallApiException 
+     */
+    public int GetVideoTrackCount() throws SageCallApiException
+    {
+        if(this.IsVideoFile() || this.IsDVDFile() || this.IsBluRay())
+        {
+            return 1;
+        }
+        
+        return 0;
+    }
     
-    public String GetVideoResolution() throws SageCallApiException
+    public MediaFileVideoTrack GetVideoTrack(int index) throws SageCallApiException
+    {
+        if(index >= 0 || index < this.GetVideoTrackCount())
+        {
+            return new MediaFileVideoTrack(index, this.GetVideoCodec(), this.GetVideoWidth(), this.GetVideoHeight(), this.GetVideoFPS(), this.GetVideoProgressive());
+        }
+        else
+        {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+    
+    private boolean GetVideoProgressive() throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Video.Resolution");
+        
+        return ret.equalsIgnoreCase("true");
+    }
+    
+    private String GetVideoResolution() throws SageCallApiException
     {
         String ret;
         
@@ -286,7 +344,8 @@ public class MediaFile extends SageObject
         
         return ret;
     }
-    public String GetVideoAspect() throws SageCallApiException
+    
+    private String GetVideoAspect() throws SageCallApiException
     {
         String ret;
         
@@ -295,16 +354,27 @@ public class MediaFile extends SageObject
         return ret;
     }
     
-    public String GetVideoBitrate() throws SageCallApiException
+    /**
+     * Returns the bitrate of the video stream
+     * @return Bitrate in bytes.  0 means it is undefined
+     * @throws SageCallApiException 
+     */
+    private int GetVideoBitrate() throws SageCallApiException
     {
         String ret;
+        int retInt = 0;
         
-        ret = this.GetMetadata("Format.Video.Bitrate");
+        try
+        {
+            ret = this.GetMetadata("Format.Video.Bitrate").split(" ")[0];
+            retInt = Integer.parseInt(ret) * 1024 * 1024;
+        }
+        catch(Exception ex) { }
         
-        return ret;
+        return retInt;
     }
     
-    public String GetVideoCodec() throws SageCallApiException
+    private String GetVideoCodec() throws SageCallApiException
     {
         String ret;
         
@@ -313,31 +383,52 @@ public class MediaFile extends SageObject
         return ret;
     }
     
-    public String GetVideoHeight() throws SageCallApiException
+    private int GetVideoHeight() throws SageCallApiException
     {
         String ret;
+        int retInt = 0;
         
         ret = this.GetMetadata("Format.Video.Height");
         
-        return ret;
+        try
+        {
+            retInt = Integer.parseInt(ret);
+        }
+        catch(Exception ex) { }
+        
+        return retInt;
     }
     
-    public String GetVideoWidth() throws SageCallApiException
+    private int GetVideoWidth() throws SageCallApiException
     {
         String ret;
+        int retInt = 0;
         
         ret = this.GetMetadata("Format.Video.Width");
         
-        return ret;
+        try
+        {
+            retInt = Integer.parseInt(ret);
+        }
+        catch(Exception ex) { }
+        
+        return retInt;
     }
     
-    public String GetVideoFPS() throws SageCallApiException
+    private double GetVideoFPS() throws SageCallApiException
     {
         String ret;
+        double retDouble = 0.0;
         
         ret = this.GetMetadata("Format.Video.FPS");
         
-        return ret;
+        try
+        {
+            retDouble = Double.parseDouble(ret);
+        }
+        catch(Exception ex) { }
+        
+        return retDouble;
     }
     
     /*
