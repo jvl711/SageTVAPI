@@ -335,9 +335,9 @@ public class Timebar extends Thread
         return MediaPlayer.GetAudioTracks(context);
     }
     
-    public void SetAudioTrack(MediaFileSubtitleTrack subtitle) throws SageCallApiException
+    public void SetAudioTrack(MediaFileAudioTrack audio) throws SageCallApiException
     {
-        MediaPlayer.SetSubtitleTrack(context, subtitle);
+        MediaPlayer.SetAudioTrack(context, audio);
     }
     
     public MediaFileAudioTrack GetCurrentAudioTrack() throws SageCallApiException
