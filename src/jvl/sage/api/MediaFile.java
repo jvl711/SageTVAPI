@@ -319,7 +319,7 @@ public class MediaFile extends SageObject
     {
         if(index >= 0 || index < this.GetVideoTrackCount())
         {
-            return new MediaFileVideoTrack(index, this.GetVideoCodec(), this.GetVideoWidth(), this.GetVideoHeight(), this.GetVideoFPS(), this.GetVideoProgressive());
+            return new MediaFileVideoTrack(index, this.GetVideoCodec(), this.GetVideoAspect() ,this.GetVideoWidth(), this.GetVideoHeight(), this.GetVideoFPS(), this.GetVideoProgressive());
         }
         else
         {
