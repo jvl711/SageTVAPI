@@ -130,19 +130,35 @@ public class MediaPlayer extends SageAPI
         MediaPlayer.SetSubtitleTrack(context, sub.GetTrackNumber());
     }
     
+    
+    /**
+     * Get current audio track. If there is only one track than return that track
+     * 
+     * Note: Function works around the fact that SageTV media player get audio track
+     * calls do not seem to work correctly when there is only one track
+     * @param context The UI context we are controlling
+     * @return Current audio track, or the null track if there is no audio
+     * @throws SageCallApiException 
+     */
     public static MediaFileAudioTrack GetCurrentAudioTrack(UIContext context) throws SageCallApiException
     {
+        MediaFile mediaFile = new MediaFile(MediaPlayer.GetCurrentMediaFile(context));
+        
         Debug.Writeln("GetCurrentAudioTrack Called", Debug.INFO);
+        
+        if(mediaFile.GetAudioTrackCount() == 1)
+        {
+            Debug.Writeln("\tMediaFile state only one track present (WORK AROUND SAGE BUG)", Debug.INFO);
+            MediaFileAudioTrack track = mediaFile.GetAudioTrack(0);
+            Debug.Writeln("\tReturning first audio track from MediaFile: " + track, Debug.INFO);
+            return track;
+        }
+        
         String current = MediaPlayer.callApiString(context, "GetDVDCurrentLanguage");
         Debug.Writeln("\tcurrent: " + current, Debug.INFO);
         ArrayList<MediaFileAudioTrack> audio = MediaPlayer.GetAudioTracks(context);
         
-        //Work around where sage says empty when there is only one track
-        if(current.isEmpty() && audio.size() == 1)
-        {
-            return audio.get(0);
-        }
-        
+        //If there is more than 1 track, search and return selected track
         for(int i = 0; i < audio.size(); i++)
         {
             if(audio.get(i).GetDescription().equals(current))
@@ -151,32 +167,34 @@ public class MediaPlayer extends SageAPI
             }
         }
         
+        //If there are no tracks retrun null track
+        Debug.Writeln("\tNo matching track found returning null track: " + current, Debug.WARNING);
         return MediaFileAudioTrack.GetNullTrack();
     }
     
     public static ArrayList<MediaFileAudioTrack> GetAudioTracks(UIContext context) throws SageCallApiException
     {
+        ArrayList<MediaFileAudioTrack> audio = new ArrayList<MediaFileAudioTrack>();
+        MediaFile mediaFile = new MediaFile(MediaPlayer.GetCurrentMediaFile(context));
+        
         Debug.Writeln("GetAudioTracks Called", Debug.INFO);
+        
+        if(mediaFile.GetAudioTrackCount() == 1)
+        {
+            Debug.Writeln("\tMediaFile state only one track present (WORK AROUND SAGE BUG)", Debug.INFO);
+            MediaFileAudioTrack track = mediaFile.GetAudioTrack(0);
+            Debug.Writeln("\tReturning first audio track from MediaFile: " + track, Debug.INFO);
+            audio.add(track);
+            return audio;
+        }
                 
         String [] tracks = (String [])MediaPlayer.callApiArray(context, "GetDVDAvailableLanguages");
         
-        ArrayList<MediaFileAudioTrack> audio = new ArrayList<MediaFileAudioTrack>();
-        
         Debug.Writeln("\tAudio tracks returned: " + tracks.length, Debug.INFO);
-        
-        MediaFile mediaFile = new MediaFile(MediaPlayer.GetCurrentMediaFile(context));
         
         for(int i = 0; i < tracks.length; i++)
         {
             audio.add(mediaFile.GetAudioTrack(i, tracks[i]));
-            //audio.add(new MediaFileAudioTrack(i, tracks[i], mediaFile.GetAudioCodec(i), mediaFile.GetAudioChannels(i), mediaFile.GetAudioLanguage(i)));
-        }
-    
-        //Check to see if MediaFile has Audio Data
-        if(tracks.length == 0 && (mediaFile.GetAudioTrackCount() != 0))
-        {
-            audio.add(mediaFile.GetAudioTrack(0));
-            //audio.add(new MediaFileAudioTrack(0, mediaFile.GetAudioCodec(0) + " " + mediaFile.GetAudioChannels(0) , mediaFile.GetAudioCodec(0), mediaFile.GetAudioChannels(0), mediaFile.GetAudioLanguage(0)));
         }
         
         return audio;
