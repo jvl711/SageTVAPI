@@ -165,6 +165,76 @@ public class MediaFile extends SageObject
         return new Airing(this.UnwrapObject());
     }
     
+    /*
+     * Format.Subtitle.NumStreams
+     * Format.Subtitle[.#].Codec
+     * Format.Subtitle[.#].Language
+     , Format.Subtitle[.#].Index
+     , Format.Subtitle[.#].ID
+     */
+    
+    public int GetSubtitleTrackCount() throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Subtitle.NumStreams");
+        
+        //If the string is empty assume no subtitle tracks
+        if(ret.equals(""))
+        {
+            return 0;
+        }
+        else
+        {
+            return Integer.parseInt(ret);
+        }
+    }
+    
+    private String GetSubtitleCode(int index) throws SageCallApiException
+    {
+        String ret = this.GetMetadata("Format.Subtitle." + index + ".Codec");
+        
+        return ret;
+    }
+    
+    private String GetSubtitleLanguage(int index) throws SageCallApiException
+    {
+        String ret = this.GetMetadata("Format.Subtitle." + index + ".Language");
+        
+        return ret;
+    }
+    
+    public MediaFileSubtitleTrack[] GetSubtitleTracks() throws SageCallApiException
+    {
+        MediaFileSubtitleTrack[] tracks = new MediaFileSubtitleTrack[this.GetSubtitleTrackCount()];
+        
+        for(int i = 0; i < this.GetSubtitleTrackCount(); i++)
+        {
+            tracks[i] = this.GetSubtitleTrack(i);
+        }
+        
+        return tracks;
+    }
+    
+    public MediaFileSubtitleTrack GetSubtitleTrack(int index) throws SageCallApiException
+    {
+        return GetSubtitleTrack(index, (index + 1) + " - " + this.GetSubtitleLanguage(index) + ", " + this.GetSubtitleCode(index));
+    }
+    
+    public MediaFileSubtitleTrack GetSubtitleTrack(int index, String description) throws SageCallApiException
+    {
+        if(index < this.GetSubtitleTrackCount() && index >= 0)
+        {
+            return new MediaFileSubtitleTrack(index, description, this.GetSubtitleCode(index), this.GetSubtitleLanguage(index));
+        }
+        else
+        {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+    
+   
+    
     // <editor-fold defaultstate="collapsed" desc="Audio Track Methods">
     
     /*

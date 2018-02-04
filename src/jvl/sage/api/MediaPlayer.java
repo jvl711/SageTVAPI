@@ -83,16 +83,20 @@ public class MediaPlayer extends SageAPI
         Debug.Writeln("GetSubtitleTracks Called", Debug.INFO);
         
         ArrayList<MediaFileSubtitleTrack> subtitles = new ArrayList<MediaFileSubtitleTrack>(); 
-    
+        MediaFile mediaFile = new MediaFile(MediaPlayer.GetCurrentMediaFile(context));
         String [] temp = (String [])MediaPlayer.callApiArray(context, "GetDVDAvailableSubpictures");
-        
+                
         Debug.Writeln("\tGetting subtitles count: " + temp.length, Debug.INFO);
-        
+
         for(int i = 0; i < temp.length; i++)
         {
             Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
             
-            subtitles.add(new MediaFileSubtitleTrack(i, temp[i]));
+            //Making an assumption that if the media player see a track, that
+            //the index will match the one from the media file.  This may be a
+            //bad assumption.
+            
+            subtitles.add(mediaFile.GetSubtitleTrack(i, temp[i]));
         }   
         
         //Add the null selected track as position 0

@@ -7,6 +7,8 @@ public class MediaFileSubtitleTrack
     //private MediaFile mediaFile;
     private int tracknum;
     private String description;
+    private String codec;
+    private String language;
     
     /*
     public MediaFileSubtitle(MediaFile mediaFile, int tracknum, String description)
@@ -17,19 +19,14 @@ public class MediaFileSubtitleTrack
     }
     */
     
-    public MediaFileSubtitleTrack(int tracknum, String description)
+    public MediaFileSubtitleTrack(int tracknum, String description, String codec, String language)
     {
         
         this.tracknum = tracknum;
         this.description = description;
+        this.codec = codec;
+        this.language = language;
     }
-    
-    /*
-    public MediaFile GetMediaFile()
-    {
-        return this.mediaFile;
-    }
-    */
     
     public int GetTrackNumber()
     {
@@ -41,9 +38,48 @@ public class MediaFileSubtitleTrack
         return this.description;
     }
     
+    public String GetLanguage()
+    {
+        return this.language;
+    }
+    
+    public String GetCodec()
+    {
+        return this.GetCodec();
+    }
+    
+    public String GetLanguageString()
+    {
+        
+        //https://www.loc.gov/standards/iso639-2/php/code_list.php
+        //This may be the full list
+        
+        if(this.GetLanguage().equalsIgnoreCase("eng"))
+        {
+            return "English";
+        }
+        else if(this.GetLanguage().equalsIgnoreCase("fre"))
+        {
+            return "French";
+        }
+        else if(this.GetLanguage().equalsIgnoreCase("spa"))
+        {
+            return "Spanish";
+        }
+        if(this.GetLanguage().equals(""))
+        {
+            return "Unknown";
+        }
+        else
+        {
+            return this.GetLanguage();
+        }
+        
+    }
+    
     public static MediaFileSubtitleTrack GetNullTrack()
     {
-        return new MediaFileSubtitleTrack(-1, "Off");
+        return new MediaFileSubtitleTrack(-1, "Off", "", "");
     }
     
     @Override
@@ -66,9 +102,21 @@ public class MediaFileSubtitleTrack
         return hash;
     }
     
+    public String toString(int format)
+    {
+        if(format == 1)
+        {
+            return this.GetLanguageString() + ", " + this.GetCodec();
+        }
+        else
+        {
+            return (this.tracknum + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodec();
+        }
+    }
+    
     @Override
     public String toString()
     {
-        return this.description;
+        return this.toString(-1);
     }
 }
