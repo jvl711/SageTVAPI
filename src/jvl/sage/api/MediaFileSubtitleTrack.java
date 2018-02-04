@@ -45,7 +45,7 @@ public class MediaFileSubtitleTrack
     
     public String GetCodec()
     {
-        return this.GetCodec();
+        return this.codec;
     }
     
     public String GetLanguageString()
