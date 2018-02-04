@@ -43,6 +43,18 @@ public class MediaFileSubtitleTrack
         return this.language;
     }
     
+    public String GetCodecString()
+    {
+        if(this.GetCodec().equalsIgnoreCase("0x0000"))
+        {
+            return "TEXT";
+        }
+        else
+        {
+            return this.GetCodec();
+        }
+    }
+    
     public String GetCodec()
     {
         return this.codec;
@@ -106,11 +118,10 @@ public class MediaFileSubtitleTrack
     {
         if(format == 1)
         {
-            return this.GetLanguageString() + ", " + this.GetCodec();
+            return this.GetLanguageString() + ", " + this.GetCodecString();
         }
         else
         {
-            //return (this.tracknum + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodec();
             return this.GetDescription();
         }
     }
