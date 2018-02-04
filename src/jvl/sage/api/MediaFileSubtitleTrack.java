@@ -110,7 +110,8 @@ public class MediaFileSubtitleTrack
         }
         else
         {
-            return (this.tracknum + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodec();
+            //return (this.tracknum + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodec();
+            return this.GetDescription();
         }
     }
     

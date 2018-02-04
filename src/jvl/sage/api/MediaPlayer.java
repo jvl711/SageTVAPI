@@ -96,7 +96,9 @@ public class MediaPlayer extends SageAPI
             //the index will match the one from the media file.  This may be a
             //bad assumption.
             
-            subtitles.add(mediaFile.GetSubtitleTrack(i, temp[i]));
+            subtitles.add(new MediaFileSubtitleTrack(i, temp[i], "", ""));
+            
+            //subtitles.add(mediaFile.GetSubtitleTrack(i, temp[i]));
         }   
         
         //Add the null selected track as position 0
