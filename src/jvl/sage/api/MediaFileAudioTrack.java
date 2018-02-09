@@ -188,7 +188,7 @@ public class MediaFileAudioTrack
         }
         else
         {
-            temp = this.GetLanguageString() + ", " + this.GetCodecString() + ", " + this.GetChannelString();
+            temp = (this.GetTrackNumber() + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodecString() + ", " + this.GetChannelString();
         }
         
         return temp;

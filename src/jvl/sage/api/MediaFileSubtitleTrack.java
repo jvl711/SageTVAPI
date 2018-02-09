@@ -122,7 +122,14 @@ public class MediaFileSubtitleTrack
         }
         else
         {
-            return this.GetDescription();
+            if(!this.GetLanguageString().equals("") && !this.GetCodecString().equals(""))
+            {
+                return (this.GetTrackNumber() + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodecString();
+            }
+            else
+            {    
+                return this.GetDescription();
+            }
         }
     }
     

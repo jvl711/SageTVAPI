@@ -78,6 +78,19 @@ public class MediaPlayer extends SageAPI
         return MediaFileSubtitleTrack.GetNullTrack();
     }
     
+    /**
+     * Returns a list of subtitles the current player is able to play
+     *
+     * Adds a null track to the collection to use for turning off subtitles
+     * 
+     * If the MediaFile Subtitle Count and the player subtitle count are equal
+     * that it will use the additional info from the MediaFile.  Other wise it
+     * will only use the data returned from MediaPlayer
+     *
+     * @param context Current media player context
+     * @return ArrayList of MediaFileSubtitleTracks
+     * @throws SageCallApiException 
+     */
     public static ArrayList<MediaFileSubtitleTrack> GetSubtitleTracks(UIContext context) throws SageCallApiException
     {
         Debug.Writeln("GetSubtitleTracks Called", Debug.INFO);
@@ -88,18 +101,24 @@ public class MediaPlayer extends SageAPI
                 
         Debug.Writeln("\tGetting subtitles count: " + temp.length, Debug.INFO);
 
-        for(int i = 0; i < temp.length; i++)
+        if(temp.length == mediaFile.GetSubtitleTrackCount())
         {
-            Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
-            
-            //Making an assumption that if the media player see a track, that
-            //the index will match the one from the media file.  This may be a
-            //bad assumption.
-            
-            subtitles.add(new MediaFileSubtitleTrack(i, temp[i], "", ""));
-            
-            //subtitles.add(mediaFile.GetSubtitleTrack(i, temp[i]));
-        }   
+            //If MediaFile count and MediaPlayer count are equal, build the greater inf
+            for(int i = 0; i < temp.length; i++)
+            {
+                Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
+                subtitles.add(mediaFile.GetSubtitleTrack(i, temp[i]));
+            }   
+        }
+        else
+        {
+            //Build minimal info
+            for(int i = 0; i < temp.length; i++)
+            {
+                Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
+                subtitles.add(new MediaFileSubtitleTrack(i, temp[i], "", ""));
+            }   
+        }
         
         //Add the null selected track as position 0
         Debug.Writeln("\tAdding Null Track to collection", Debug.INFO);
