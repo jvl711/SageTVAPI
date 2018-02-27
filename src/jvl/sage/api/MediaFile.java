@@ -3,7 +3,8 @@ package jvl.sage.api;
 
 import java.io.File;
 import java.util.ArrayList;
-import jvl.comskip.Marker;
+import jvl.playback.Marker;
+import jvl.playback.MarkerType;
 import jvl.sage.SageAPI;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
@@ -654,7 +655,7 @@ public class MediaFile extends SageObject
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
-                    Marker marker = new Marker(startTime, endTime, segments[i].GetStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
+                    Marker marker = new Marker(MarkerType.COMMERCIAL, startTime, endTime, segments[i].GetStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
                     temp.add(marker);
                 }                
             }
