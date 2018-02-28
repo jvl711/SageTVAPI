@@ -3,6 +3,8 @@ package jvl.sage.api;
 
 import java.io.File;
 import java.util.ArrayList;
+import jvl.chapterdb.ChapterSearch;
+import jvl.chapterdb.ChapterSet;
 import jvl.playback.Marker;
 import jvl.playback.MarkerType;
 import jvl.sage.SageAPI;
@@ -634,7 +636,48 @@ public class MediaFile extends SageObject
         
         return segments;
     }
-    
+    public Marker [] GetChapterMarkers() throws SageCallApiException
+    {
+        long timeAllowance = 120000; //Difference in time that is allowed for an exact match
+        
+        ChapterSearch search = new ChapterSearch();
+        ArrayList<ChapterSet> chapterSets;
+        ChapterSet hit;
+        
+        // First - Look for saved chapter list
+        
+        // Second - Look for a direct match (Title and Duration)
+        try
+        {
+            String results = search.Execute(this.GetShow().GetTitle());
+            chapterSets = search.ParseResult(results);
+        
+            for(int i = 0; i < chapterSets.size(); i++)
+            {
+                if(chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle()))
+                {
+                    //See if there is a duration that is within time allowance
+                    if((this.GetAiring().GetDuration() - timeAllowance) <= chapterSets.get(i).getSourceDuration() 
+                            && (this.GetAiring().GetDuration() + timeAllowance) >= chapterSets.get(i).getSourceDuration())
+                    {
+                        hit = chapterSets.get(i);
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        // Third - Look for closest match without going over duration.  May need to use chapter times
+        
+        
+        //Fourth if there is a hit create markers and return them
+        
+        
+        return null;
+    }
+            
     public Marker [] GetCommercialMarkers() throws SageCallApiException
     {
         MediaFileSegment [] segments = this.GetMediaFileSegments();
