@@ -640,7 +640,7 @@ public class MediaFile extends SageObject
     {
         long timeAllowance = 120000; //Difference in time that is allowed for an exact match
         
-        ChapterSearch search = new ChapterSearch();
+        ChapterSearch search; 
         ArrayList<ChapterSet> chapterSets;
         Marker[] markers = null;
         ChapterSet hit = null;
@@ -650,6 +650,7 @@ public class MediaFile extends SageObject
         // Second - Look for a direct match (Title and Duration)
         try
         {
+            search = new ChapterSearch();
             String results = search.Execute(this.GetShow().GetTitle());
             chapterSets = search.ParseResult(results);
         
@@ -680,28 +681,36 @@ public class MediaFile extends SageObject
         
         //Fourth if there is a hit create markers and return them
         
-        if(hit != null)
+        try
         {
-            long startTime = 0;
-            markers = new Marker[hit.getChapterCount()];
-            
-            for(int i = 0; i < hit.getChapterCount(); i++)
+            if(hit != null)
             {
-                Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapter(i).getName(), startTime, hit.getChapter(i).getDuration(), 0, this.GetMediaStartTime(), this.GetMediaEndTime());
-                startTime = hit.getChapter(i).getDuration();
+                long startTime = 0;
+                markers = new Marker[hit.getChapterCount()];
 
-                markers[i] = marker;
+                for(int i = 0; i < hit.getChapterCount(); i++)
+                {
+                    Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapter(i).getName(), startTime, hit.getChapter(i).getDuration(), 0, this.GetMediaStartTime(), this.GetMediaEndTime());
+                    startTime = hit.getChapter(i).getDuration();
+
+                    markers[i] = marker;
+                }
+            }
+            else
+            {
+                System.out.println("NO CHAPTER HIT!");
             }
         }
-        else
+        catch(Exception ex)
         {
-            System.out.println("NO CHAPTER HIT!");
+            System.out.println("Error creating markers! " + ex.getMessage());
         }
-        
         
         return markers;
     }
             
+    //GetCommercialMarkers
+    
     public Marker [] GetCommercialMarkers() throws SageCallApiException
     {
         MediaFileSegment [] segments = this.GetMediaFileSegments();
