@@ -67,9 +67,28 @@ public class Marker
         return endTime + offsetTime;
     }
     
+    /**
+     * Determines if the time is within the start time plus the range 
+     * 
+     * testime beteen starttime and startime + range
+     * 
+     * @param testtime Time to test
+     * @param range How far past start time and still a hit
+     * @return true if it is a hit
+     */
     public boolean IsHit(long testtime, long range)
     {
         if(testtime >= this.GetStartTime() && (testtime) <= (this.GetStartTime() + range))
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean IsInside(long testtime)
+    {
+        if(testtime >= this.GetStartTime() && testtime <= this.GetEndTime())
         {
             return true;
         }
