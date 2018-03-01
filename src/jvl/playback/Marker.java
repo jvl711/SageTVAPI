@@ -101,4 +101,10 @@ public class Marker
     {
         return this.GetEndPercent() - this.GetStartPercent();
     }
+    
+    @Override
+    public String toString()
+    {
+        return this.GetName();
+    }
 }

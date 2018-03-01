@@ -36,6 +36,8 @@ public class Timebar extends Thread
         this.context = new UIContext(context);
         this.mediaFile = mediaFile;
      
+        String mediaType = mediaFile.GetMetadata("MediaType");
+        
         try
         {    
             this.commercials = mediaFile.GetCommercialMarkers();
@@ -47,6 +49,20 @@ public class Timebar extends Thread
             this.commercials = null;
         }
        
+        //If it is a movie attempt to load chapters
+        if(mediaType.equalsIgnoreCase("movie"))
+        {
+            try
+            {
+                chapters = mediaFile.GetChapterMarkers();
+            }
+            catch(Exception ex)
+            {
+                System.out.println("JVL - Exception getting chapter markers.  Setting chapters to null.");
+                System.out.println("JVL - Error Message: " + ex.getMessage());
+                this.chapters = null;
+            }
+        }
         
         
         this.comThreadRun = false;
@@ -194,6 +210,23 @@ public class Timebar extends Thread
         return -1;
     }
     
+    public Marker GetCurrentChapterMarker() throws SageCallApiException
+    {
+        if(this.HasChapterMarkers())
+        {
+            for(int i = 0; i < chapters.length; i++)
+            {
+                if(chapters[i].IsHit(MediaPlayer.GetMediaTime(this.context), 0))
+                {
+                    return chapters[i];
+                }
+            }
+                
+        }
+        
+        return null;
+    }
+    
     public long GetNextCommercialMarkerEnd() throws SageCallApiException
     {
         if(this.HasCommercialMarkers())
@@ -237,6 +270,11 @@ public class Timebar extends Thread
     public boolean HasCommercialMarkers()
     {
         return (this.commercials != null && this.commercials.length > 0);
+    }
+    
+    public boolean HasChapterMarkers()
+    {
+        return (this.chapters != null && this.chapters.length > 0);
     }
     
     public void SkipToPreviousMarker() throws SageCallApiException
