@@ -642,7 +642,8 @@ public class MediaFile extends SageObject
         
         ChapterSearch search = new ChapterSearch();
         ArrayList<ChapterSet> chapterSets;
-        ChapterSet hit;
+        Marker[] markers = null;
+        ChapterSet hit = null;
         
         // First - Look for saved chapter list
         
@@ -657,25 +658,48 @@ public class MediaFile extends SageObject
                 if(chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle()))
                 {
                     //See if there is a duration that is within time allowance
-                    if((this.GetAiring().GetDuration() - timeAllowance) <= chapterSets.get(i).getSourceDuration() 
-                            && (this.GetAiring().GetDuration() + timeAllowance) >= chapterSets.get(i).getSourceDuration())
+                    if((this.GetMediaDuration() - timeAllowance) <= chapterSets.get(i).getSourceDuration() 
+                            && (this.GetMediaDuration() + timeAllowance) >= chapterSets.get(i).getSourceDuration())
                     {
                         hit = chapterSets.get(i);
+                        System.out.println("Hit found index: " + i);
+                        System.out.println("\tTitle: " + chapterSets.get(i).getTitle());
+                        System.out.println("\tDuration: " + chapterSets.get(i).getSourceDuration());
+                        System.out.println("\tMediaFile Duration: " + this.GetMediaDuration());
+                        break;
                     }
                 }
             }
         }
         catch(Exception ex)
         {
-            
+            System.out.println("EXCEPTION SEARCHING FOR CHAPTERS! " + ex.getMessage());
         }
         // Third - Look for closest match without going over duration.  May need to use chapter times
         
         
         //Fourth if there is a hit create markers and return them
         
+        if(hit != null)
+        {
+            long startTime = 0;
+            markers = new Marker[hit.getChapterCount()];
+            
+            for(int i = 0; i < hit.getChapterCount(); i++)
+            {
+                Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapter(i).getName(), startTime, hit.getChapter(i).getDuration(), 0, this.GetMediaStartTime(), this.GetMediaEndTime());
+                startTime = hit.getChapter(i).getDuration();
+
+                markers[i] = marker;
+            }
+        }
+        else
+        {
+            System.out.println("NO CHAPTER HIT!");
+        }
         
-        return null;
+        
+        return markers;
     }
             
     public Marker [] GetCommercialMarkers() throws SageCallApiException

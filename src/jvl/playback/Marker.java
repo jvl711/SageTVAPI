@@ -8,6 +8,7 @@ public class Marker
     private long mediaStartTime;
     private long mediaEndTime;
     private long mediaFileDuration;
+    private String name;
     private MarkerType markerType;
     
     /**
@@ -16,10 +17,10 @@ public class Marker
      * @param markerType The type of marker.  For instance Commercial vs Chapter
      * @param startTime Start of the marker
      * @param endTime End of the marker
-     * @param offsetTime A time offset of where the marker is in relation to the
+     * @param offsetTime A time offset of where the marker is in relation to the recording time of the file
      * @param mediaStartTime The start time of the mediaFile
      * @param mediaEndTime The end time of the mediaFile
-     *                   recording time of the file
+     *                   
      */
     public Marker(MarkerType markerType, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
     {
@@ -30,6 +31,25 @@ public class Marker
         this.mediaEndTime = mediaEndTime;
         this.mediaStartTime = mediaStartTime;
         this.mediaFileDuration = this.mediaEndTime - this.mediaStartTime;
+        this.name = "";
+    }
+    
+    public Marker(MarkerType markerType, String name, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
+    {
+        this.markerType = markerType;
+        this.name = name;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.offsetTime = offsetTime;
+        this.mediaEndTime = mediaEndTime;
+        this.mediaStartTime = mediaStartTime;
+        this.mediaFileDuration = this.mediaEndTime - this.mediaStartTime;
+        
+    }
+    
+    public String GetName()
+    {
+        return this.name;
     }
     
     public MarkerType GetMarkerType()
