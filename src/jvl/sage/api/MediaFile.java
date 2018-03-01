@@ -700,15 +700,23 @@ public class MediaFile extends SageObject
             if(hit != null)
             {
                 long startTime = 0;
+                String name = "";
                 markers = new Marker[hit.getChapterCount()];
 
                 for(int i = 0; i < hit.getChapterCount(); i++)
                 {
-                    Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapter(i).getName(), startTime, hit.getChapter(i).getDuration(), 0, this.GetMediaStartTime(), this.GetMediaEndTime());
+                    if(i != 0)
+                    {
+                        Marker marker = new Marker(MarkerType.COMMERCIAL, name, startTime, hit.getChapter(i).getDuration(), this.GetFileStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
+                        markers[i - 1] = marker;
+                    }
+                    
+                    name = hit.getChapter(i).getName();
                     startTime = hit.getChapter(i).getDuration();
-
-                    markers[i] = marker;
                 }
+                
+                Marker marker = new Marker(MarkerType.COMMERCIAL, name, startTime, this.GetMediaDuration(), this.GetStartForSegment(0), this.GetMediaStartTime(), this.GetMediaEndTime());
+                markers[hit.getChapterCount() - 1] = marker;
             }
             else
             {
