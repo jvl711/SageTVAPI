@@ -636,6 +636,20 @@ public class MediaFile extends SageObject
         
         return segments;
     }
+    
+    
+    public void Basic()
+    {
+        try
+        {
+            GetChapterMarkers();
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL: " + ex.getMessage());
+        }
+    }
+    
     public Marker [] GetChapterMarkers() throws SageCallApiException
     {
         long timeAllowance = 120000; //Difference in time that is allowed for an exact match
