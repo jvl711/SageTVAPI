@@ -2,6 +2,7 @@ package jvl.playback;
 
 public class Marker
 {
+    private int index;
     private long startTime;
     private long endTime;
     private long offsetTime;
@@ -15,6 +16,7 @@ public class Marker
      * Constructs a marker object
      * 
      * @param markerType The type of marker.  For instance Commercial vs Chapter
+     * @param index The index relative to the other markers
      * @param startTime Start of the marker
      * @param endTime End of the marker
      * @param offsetTime A time offset of where the marker is in relation to the recording time of the file
@@ -22,9 +24,10 @@ public class Marker
      * @param mediaEndTime The end time of the mediaFile
      *                   
      */
-    public Marker(MarkerType markerType, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
+    public Marker(MarkerType markerType, int index, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
     {
         this.markerType = markerType;
+        this.index = index;
         this.startTime = startTime;
         this.endTime = endTime;
         this.offsetTime = offsetTime;
@@ -34,9 +37,10 @@ public class Marker
         this.name = "";
     }
     
-    public Marker(MarkerType markerType, String name, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
+    public Marker(MarkerType markerType, int index, String name, long startTime, long endTime, long offsetTime, long mediaStartTime, long mediaEndTime)
     {
         this.markerType = markerType;
+        this.index = index;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -45,6 +49,11 @@ public class Marker
         this.mediaStartTime = mediaStartTime;
         this.mediaFileDuration = this.mediaEndTime - this.mediaStartTime;
         
+    }
+    
+    public int GetIndex()
+    {
+        return index;
     }
     
     public String GetName()
@@ -129,6 +138,14 @@ public class Marker
     @Override
     public String toString()
     {
-        return this.GetName();
+        if(this.GetName().equalsIgnoreCase("chapter " + (index + 1)))
+        {
+            return this.GetName();
+        }
+        else
+        {
+            return "Chapter " + (index + 1) + " - " + this.GetName();
+        }
+        
     }
 }

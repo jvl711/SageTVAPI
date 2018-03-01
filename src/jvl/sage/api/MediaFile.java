@@ -707,7 +707,7 @@ public class MediaFile extends SageObject
                 {
                     if(i != 0)
                     {
-                        Marker marker = new Marker(MarkerType.COMMERCIAL, name, startTime, hit.getChapter(i).getDuration(), this.GetFileStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
+                        Marker marker = new Marker(MarkerType.COMMERCIAL, i - 1, name, startTime, hit.getChapter(i).getDuration(), this.GetFileStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
                         markers[i - 1] = marker;
                     }
                     
@@ -715,7 +715,7 @@ public class MediaFile extends SageObject
                     startTime = hit.getChapter(i).getDuration();
                 }
                 
-                Marker marker = new Marker(MarkerType.COMMERCIAL, name, startTime, this.GetMediaDuration(), this.GetStartForSegment(0), this.GetMediaStartTime(), this.GetMediaEndTime());
+                Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapterCount() - 1, name, startTime, this.GetMediaDuration(), this.GetStartForSegment(0), this.GetMediaStartTime(), this.GetMediaEndTime());
                 markers[hit.getChapterCount() - 1] = marker;
             }
             else
@@ -753,7 +753,7 @@ public class MediaFile extends SageObject
                     long startTime = (long)(Double.parseDouble(cuttimes[0]) * 1000);
                     long endTime = (long)(Double.parseDouble(cuttimes[1]) * 1000);
                    
-                    Marker marker = new Marker(MarkerType.COMMERCIAL, startTime, endTime, segments[i].GetStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
+                    Marker marker = new Marker(MarkerType.COMMERCIAL, j, startTime, endTime, segments[i].GetStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
                     temp.add(marker);
                 }                
             }

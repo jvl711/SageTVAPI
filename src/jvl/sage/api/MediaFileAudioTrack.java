@@ -62,6 +62,10 @@ public class MediaFileAudioTrack
         return "";
     }
     
+    /**
+     * 0 based index
+     * @return returns the index relative to the other tracks
+     */
     public int GetTrackNumber()
     {
         return this.tracknum;

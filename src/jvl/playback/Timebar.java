@@ -247,6 +247,8 @@ public class Timebar extends Thread
     {
         if(this.HasCommercialMarkers())
         {
+        if(this.HasCommercialMarkers())
+        {
             this.SleepCommThread();
             long markerTime = this.GetNextCommercialMarker();
 
@@ -254,6 +256,7 @@ public class Timebar extends Thread
             {
                 MediaPlayer.Seek(this.context, markerTime);
             }
+        }
         }
     }
     
@@ -279,28 +282,46 @@ public class Timebar extends Thread
     
     public void SkipToPreviousMarker() throws SageCallApiException
     {
-        if(this.HasCommercialMarkers())
+        if(this.HasChapterMarkers())
         {
-            this.SleepCommThread();
-            long markerTime = this.GetPreviousMarker();
-
-            if(markerTime > 0 )
+            Marker curMarker = this.GetCurrentChapterMarker();
+            
+            MediaPlayer.Seek(this.context, curMarker.GetStartTime());    
+        }
+        else
+        {
+            if(this.HasCommercialMarkers())
             {
-                MediaPlayer.Seek(this.context, markerTime);
+                this.SleepCommThread();
+                long markerTime = this.GetPreviousMarker();
+
+                if(markerTime > 0 )
+                {
+                    MediaPlayer.Seek(this.context, markerTime);
+                }
             }
         }
     }
     
     public void SkipToNextMarkerEnd() throws SageCallApiException
     {
-        if(this.HasCommercialMarkers())
+        if(this.HasChapterMarkers())
         {
-            this.SleepCommThread();
-            long markerTime = this.GetNextCommercialMarkerEnd();
-
-            if(markerTime > 0 )
+            Marker curMarker = this.GetCurrentChapterMarker();
+            
+            MediaPlayer.Seek(this.context, curMarker.GetEndTime());
+        }
+        else
+        {
+            if(this.HasCommercialMarkers())
             {
-                MediaPlayer.Seek(this.context, markerTime);
+                this.SleepCommThread();
+                long markerTime = this.GetNextCommercialMarkerEnd();
+
+                if(markerTime > 0 )
+                {
+                    MediaPlayer.Seek(this.context, markerTime);
+                }
             }
         }
     }
