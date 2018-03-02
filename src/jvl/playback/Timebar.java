@@ -245,19 +245,26 @@ public class Timebar extends Thread
     
     public void SkipToNextMarker() throws SageCallApiException
     {
-        if(this.HasCommercialMarkers())
+        if(this.HasChapterMarkers())
         {
-        if(this.HasCommercialMarkers())
+            Marker curMarker = this.GetCurrentChapterMarker();
+            
+            MediaPlayer.Seek(this.context, curMarker.GetEndTime());
+        }
+        else
         {
-            this.SleepCommThread();
-            long markerTime = this.GetNextCommercialMarker();
-
-            if(markerTime > 0 )
+            if(this.HasCommercialMarkers())
             {
-                MediaPlayer.Seek(this.context, markerTime);
+                this.SleepCommThread();
+                long markerTime = this.GetNextCommercialMarker();
+
+                if(markerTime > 0 )
+                {
+                    MediaPlayer.Seek(this.context, markerTime);
+                }
             }
         }
-        }
+        
     }
     
     public MediaFileSegment [] GetMediaFileSegments() throws SageCallApiException
@@ -284,9 +291,23 @@ public class Timebar extends Thread
     {
         if(this.HasChapterMarkers())
         {
+            
+            
             Marker curMarker = this.GetCurrentChapterMarker();
             
-            MediaPlayer.Seek(this.context, curMarker.GetStartTime());    
+            if(curMarker.IsHit(MediaPlayer.GetMediaTime(this.context), 5000))
+            {
+                if(curMarker.GetIndex() > 0)
+                {
+                    curMarker = chapters[curMarker.GetIndex() - 1];
+                    MediaPlayer.Seek(this.context, curMarker.GetStartTime());    
+                }
+            }
+            else
+            {
+                MediaPlayer.Seek(this.context, curMarker.GetStartTime());    
+            }
+            
         }
         else
         {
@@ -305,25 +326,19 @@ public class Timebar extends Thread
     
     public void SkipToNextMarkerEnd() throws SageCallApiException
     {
-        if(this.HasChapterMarkers())
+        
+        
+        if(this.HasCommercialMarkers())
         {
-            Marker curMarker = this.GetCurrentChapterMarker();
-            
-            MediaPlayer.Seek(this.context, curMarker.GetEndTime());
-        }
-        else
-        {
-            if(this.HasCommercialMarkers())
-            {
-                this.SleepCommThread();
-                long markerTime = this.GetNextCommercialMarkerEnd();
+            this.SleepCommThread();
+            long markerTime = this.GetNextCommercialMarkerEnd();
 
-                if(markerTime > 0 )
-                {
-                    MediaPlayer.Seek(this.context, markerTime);
-                }
+            if(markerTime > 0 )
+            {
+                MediaPlayer.Seek(this.context, markerTime);
             }
         }
+        
     }
 
     private void SleepCommThread()
