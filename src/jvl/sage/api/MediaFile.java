@@ -670,7 +670,8 @@ public class MediaFile extends SageObject
         
             for(int i = 0; i < chapterSets.size(); i++)
             {
-                if(chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle()))
+                if(chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle()) 
+                        || chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle() + " (" + this.GetShow().GetYear() + ")"))
                 {
                     //See if there is a duration that is within time allowance
                     if((this.GetMediaDuration() - timeAllowance) <= chapterSets.get(i).getSourceDuration() 
@@ -707,7 +708,7 @@ public class MediaFile extends SageObject
                 {
                     if(i != 0)
                     {
-                        Marker marker = new Marker(MarkerType.COMMERCIAL, i - 1, name, startTime, hit.getChapter(i).getDuration(), this.GetFileStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
+                        Marker marker = new Marker(MarkerType.COMMERCIAL, i - 1, name, startTime, hit.getChapter(i).getDuration() - 1, this.GetFileStartTime(), this.GetMediaStartTime(), this.GetMediaEndTime());
                         markers[i - 1] = marker;
                     }
                     
@@ -715,7 +716,7 @@ public class MediaFile extends SageObject
                     startTime = hit.getChapter(i).getDuration();
                 }
                 
-                Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapterCount() - 1, name, startTime, this.GetMediaDuration(), this.GetStartForSegment(0), this.GetMediaStartTime(), this.GetMediaEndTime());
+                Marker marker = new Marker(MarkerType.COMMERCIAL, hit.getChapterCount() - 1, name, startTime, this.GetMediaDuration() - 1, this.GetStartForSegment(0), this.GetMediaStartTime(), this.GetMediaEndTime());
                 markers[hit.getChapterCount() - 1] = marker;
             }
             else
