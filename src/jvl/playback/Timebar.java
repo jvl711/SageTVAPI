@@ -277,6 +277,11 @@ public class Timebar extends Thread
         return this.commercials;
     }
     
+    public Marker [] GetChapterMarkers()
+    {
+        return this.chapters;
+    }
+    
     public boolean HasCommercialMarkers()
     {
         return (this.commercials != null && this.commercials.length > 0);
