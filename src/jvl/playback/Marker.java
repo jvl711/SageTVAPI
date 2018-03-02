@@ -97,11 +97,6 @@ public class Marker
     
     public boolean IsInside(long testtime)
     {
-        System.out.println("TestTime: " + testtime);
-        System.out.println("StartTime: " + this.GetStartTime());
-        System.out.println("EndTime: " + this.GetEndTime());
-        System.out.println("Name: " + this.GetName());
-        
         if(testtime >= this.GetStartTime() && testtime <= this.GetEndTime())
         {
             return true;

@@ -216,9 +216,19 @@ public class Timebar extends Thread
         {
             for(int i = 0; i < chapters.length; i++)
             {
-                if(chapters[i].IsInside(MediaPlayer.GetMediaTime(this.context)))
+                if(!MediaPlayer.IsMediaPlayerLoaded(context))
                 {
-                    return chapters[i];
+                    if(chapters[i].IsInside(mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime()))
+                    {
+                        return chapters[i];
+                    }
+                }
+                else
+                {
+                    if(chapters[i].IsInside(MediaPlayer.GetMediaTime(this.context)))
+                    {
+                        return chapters[i];
+                    }
                 }
             }
                 
