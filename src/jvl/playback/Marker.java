@@ -137,6 +137,10 @@ public class Marker
         {
             return this.GetName();
         }
+        else if(this.GetName().equalsIgnoreCase(""))
+        {
+            return "Chapter " + (index + 1);
+        }
         else
         {
             return "Chapter " + (index + 1) + " - " + this.GetName();
