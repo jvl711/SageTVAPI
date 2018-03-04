@@ -52,6 +52,7 @@ public class Timebar extends Thread
         //If it is a movie attempt to load chapters
         if(mediaType.equalsIgnoreCase("movie"))
         {
+            
             try
             {
                 chapters = mediaFile.GetChapterMarkers();
@@ -112,7 +113,7 @@ public class Timebar extends Thread
      * When playback is at the end of the file it will return a value = to the
      * duration.
      * 
-     * @return
+     * @return Current time playback is inside the file
      * @throws SageCallApiException 
      */
     public long GetPlaybackTime() throws SageCallApiException
@@ -138,8 +139,6 @@ public class Timebar extends Thread
         double temp;
         
         //TODO: For some reason when an import moves this gets all messed up.
-        
-        
         
         /*
          * When a recording moves the import time changes, so that probable changes
@@ -169,6 +168,8 @@ public class Timebar extends Thread
     {
         return this.mediaFile.GetMediaFileSegments()[0].GetStartPercent();
     }
+    
+    
     
     public long GetPreviousMarker() throws SageCallApiException
     {
@@ -460,37 +461,41 @@ public class Timebar extends Thread
     @Override
     public void run() 
     {
-        System.out.println("jvl.sage.Timebar - Commercial Skipping thread started");
-        
-        while(comThreadRun)
+        //Run the comskip thread
+        if(comThreadRun)
         {
-            try 
-            {
-                if(this.sleepCommThread <= 0)
-                {
-                    for(int i = 0; i < commercials.length; i++)
-                    {
-                        if(commercials[i].IsHit(MediaPlayer.GetMediaTime(this.context), this.commHitRange))
-                        {
-                            //System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
-                            this.SleepCommThread();
-                            MediaPlayer.Seek(this.context, commercials[i].GetEndTime());
+            System.out.println("jvl.sage.Timebar - Commercial Skipping thread started");
 
+            while(comThreadRun)
+            {
+                try 
+                {
+                    if(this.sleepCommThread <= 0)
+                    {
+                        for(int i = 0; i < commercials.length; i++)
+                        {
+                            if(commercials[i].IsHit(MediaPlayer.GetMediaTime(this.context), this.commHitRange))
+                            {
+                                //System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
+                                this.SleepCommThread();
+                                MediaPlayer.Seek(this.context, commercials[i].GetEndTime());
+
+                            }
                         }
                     }
-                }
-                else
-                {
-                    this.sleepCommThread = this.sleepCommThread - 1000;
-                }
-                
-                Thread.sleep(1000);
-            } 
-            catch (SageCallApiException ex){ }
-            catch(InterruptedException ex2){ }
+                    else
+                    {
+                        this.sleepCommThread = this.sleepCommThread - 1000;
+                    }
+
+                    Thread.sleep(1000);
+                } 
+                catch (SageCallApiException ex){ }
+                catch(InterruptedException ex2){ }
+            }
+
+            System.out.println("jvl.sage.Timebar - Commercial Skipping thread stopped");
         }
-        
-        System.out.println("jvl.sage.Timebar - Commercial Skipping thread stopped");
     }
     //</editor-fold>
 }
