@@ -17,6 +17,8 @@ import jvl.sage.api.UIContext;
  */
 public class Playback 
 {
+    private static final int DEFAULT_PLAYNEXT_TIME_SECONDS = 15;
+    private int playnextTime;
     private Airings airings;
     private int index;
     private PlaybackOptions playbackOptions;
@@ -25,7 +27,7 @@ public class Playback
     /**
      * Attempts to determine the object type of the media passed in.  The index
      * of the created instance will be defaulted to 0
-     
+
      * @see jvl.sage.api.MediaFile
      * @see jvl.sage.api.MediaFiles
      * @see jvl.sage.api.Airing
@@ -58,11 +60,13 @@ public class Playback
      * @param playbackOptions How to handle playback of multiple files
      * @param index The index in the file to start playback at
      * 
+     * @throws SageCallApiException
      */
     public Playback(String context, Object media, PlaybackOptions playbackOptions,  int index) throws SageCallApiException
     {
         this.index = index;
         this.uicontext = new UIContext(context);
+        this.playnextTime = Playback.DEFAULT_PLAYNEXT_TIME_SECONDS;
         
         if(media instanceof MediaFile)
         {
@@ -112,9 +116,11 @@ public class Playback
     }
     
     /**
+     * Returns the current MediaFile that the playback is pointing to, or 
+     * if playing live tv it pulls back the current media file from the
+     * MediaPlayer, and does not increment the index
      * 
-     * 
-     * @return
+     * @return MediaFile object
      * @throws SageCallApiException 
      */
     public MediaFile GetCurrnetMediaFile() throws SageCallApiException
@@ -129,19 +135,86 @@ public class Playback
         }
     }
     
-    public MediaFile GetNextMediaFile() throws SageCallApiException
+    /**
+     * Increments the index to the next position and return the next MediaFile
+     * 
+     * Live TV returns current media file
+     * 
+     * @return Returns MediaFile object
+     * @throws SageCallApiException 
+     */
+    public MediaFile NextMediaFile() throws SageCallApiException
     {
         if(PlaybackOptions.LIVE_TV == this.playbackOptions)
         {
+            //TODO: Enhance this to get the next airing in the EPG
             return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
         }
         else if(PlaybackOptions.MULTIPLE_RANDOM == this.playbackOptions)
         {
+            if(index >= (this.airings.size() - 1))
+            {
+                throw new IndexOutOfBoundsException();
+            }
+            
+            index++;
             return this.airings.GetRandomAiring().GetMediaFile();
         }
         else
         {
+            if(index >= (this.airings.size() - 1))
+            {
+                throw new IndexOutOfBoundsException();
+            }
+            
             return this.airings.get(index++).GetMediaFile();
+        }
+    }
+    
+    public boolean HasMoreMediaFiles()
+    {
+        if(PlaybackOptions.LIVE_TV == this.playbackOptions)
+        {
+            return false;
+        }
+        else
+        {
+            if(index < (this.airings.size() - 1))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * Gets the amount of time it waits before playing the next airing in the 
+     * list
+     * 
+     * @return Time in seconds
+     */
+    public int GetPlayNextTime()
+    {
+        return this.playnextTime;
+    }
+    
+    /**
+     * Sets the amount of time to wait before playing the next file in the list
+     * 
+     * @param seconds Time in seconds.  Values less than 0 are set to zero.
+     */
+    public void SetPlayNextTime(int seconds)
+    {
+        if(seconds < 0)
+        {
+            this.playnextTime = 0;
+        }
+        else
+        {
+            this.playnextTime = seconds;
         }
     }
 }
