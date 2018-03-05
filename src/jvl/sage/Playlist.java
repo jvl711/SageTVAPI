@@ -1,5 +1,6 @@
 package jvl.sage;
 
+import jvl.playback.Playback;
 import jvl.sage.api.*;
 
 /**
@@ -20,7 +21,7 @@ public class Playlist
     private int autoPlayWaitTime = DEFAULT_PLAYNEXT_WAIT_TIME_SECONDS;
 
     public Playlist(Shows shows) throws SageCallApiException
-    {
+    {   
         airings = new Airings();
         
         Integer [] seasons = shows.GetSeasons();
