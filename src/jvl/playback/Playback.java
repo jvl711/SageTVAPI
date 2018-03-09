@@ -1,5 +1,7 @@
 package jvl.playback;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
 import jvl.sage.api.Airings;
@@ -15,7 +17,7 @@ import jvl.sage.api.UIContext;
  * 
  * @author jvl711
  */
-public class Playback 
+public class Playback extends Thread
 {
     private static final int DEFAULT_PLAYNEXT_TIME_SECONDS = 15;
     private int playnextTime;
@@ -23,6 +25,9 @@ public class Playback
     private int index;
     private PlaybackOptions playbackOptions;
     private UIContext uicontext;
+    private boolean cancelPlayNext;
+    
+    private int currentPlayNextTime;
     
     /**
      * Attempts to determine the object type of the media passed in.  The index
@@ -215,6 +220,69 @@ public class Playback
         else
         {
             this.playnextTime = seconds;
+        }
+    }
+    
+    private void PlayNextFile() throws SageCallApiException
+    {    
+        switch (this.playbackOptions) 
+        {
+        
+            case LIVE_TV:
+                
+                //Do nothing
+                break;
+        
+            case SINGLE:
+                
+                //Do nothing
+                break;
+                
+            default:
+                
+                if(this.HasMoreMediaFiles())
+                {
+                    MediaFile mediaFile = this.NextMediaFile();
+                    MediaPlayer.Watch(uicontext, mediaFile);
+                }   break;
+        }        
+    }
+    
+    public int GetCurrentPlayNextTime()
+    {
+        return currentPlayNextTime;
+    }
+    
+    public void StartPlayNextThread()
+    {
+        cancelPlayNext = false;
+        this.start();
+    }
+    
+    public void CancelPlayNextThread()
+    {
+        cancelPlayNext = true;
+    }
+    
+    @Override
+    public void run()
+    {
+        //Set CurrentPlayNext time
+        this.currentPlayNextTime = this.playnextTime;
+        
+        while(currentPlayNextTime > 0 && !cancelPlayNext)
+        {
+            try { Thread.sleep(1000); } catch (InterruptedException ex) { }
+            this.currentPlayNextTime = this.currentPlayNextTime - 1000;
+        }
+        
+        try 
+        {
+            this.PlayNextFile();
+        } 
+        catch (SageCallApiException ex) 
+        {
+            System.out.println("JVL Playback - Error attempting to playnext: " +  ex.getMessage());
         }
     }
 }
