@@ -36,10 +36,17 @@ public class Timebar extends Thread
     public Timebar(String context, Airing airing) throws SageCallApiException
     {
         this.context = new UIContext(context);
-        this.mediaFile = airing.GetMediaFile();
         this.airing = airing;
+        this.mediaFile = null;
         String mediaType = "";
-     
+        
+        //If it has not been recored then there will not be a media file
+        try
+        {
+            this.mediaFile = airing.GetMediaFile();
+        }
+        catch(Exception ex) { }
+        
         if(mediaFile != null)
         {
             mediaType = mediaFile.GetMetadata("MediaType");
