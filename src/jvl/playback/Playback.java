@@ -69,6 +69,7 @@ public class Playback extends Thread
     {
         this.index = index;
         this.uicontext = new UIContext(context);
+        this.playbackOptions = playbackOptions;
         this.playnextTime = Playback.DEFAULT_PLAYNEXT_TIME_SECONDS;
         
         if(media instanceof MediaFile)
