@@ -1,7 +1,5 @@
 package jvl.playback;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
 import jvl.sage.api.Airings;
@@ -121,23 +119,35 @@ public class Playback extends Thread
     }
     
     /**
-     * Returns the current MediaFile that the playback is pointing to, or 
-     * if playing live tv it pulls back the current media file from the
-     * MediaPlayer, and does not increment the index
+     * Returns the current MediaFile that the playback is pointing to.
      * 
      * @return MediaFile object
      * @throws SageCallApiException 
      */
     public MediaFile GetCurrnetMediaFile() throws SageCallApiException
     {
-        if(PlaybackOptions.LIVE_TV == this.playbackOptions)
-        {
-            return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
-        }
-        else
-        {
-            return this.airings.get(index).GetMediaFile();
-        }
+        //if(PlaybackOptions.LIVE_TV == this.playbackOptions)
+        //{
+            //return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
+            
+        //}
+        //else
+        //{
+        return this.airings.get(index).GetMediaFile();
+        //}
+    }
+    
+     /**
+     * Returns the current Airing that the playback is pointing to.
+     * 
+     * @return Airing object
+     * @throws SageCallApiException 
+     */
+    public Airing GetCurrnetAiring() throws SageCallApiException
+    {
+        
+        return this.airings.get(index);
+        
     }
     
     /**
