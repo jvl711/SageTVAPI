@@ -73,6 +73,8 @@ public class Playback extends Thread
         
         if(media instanceof MediaFile)
         {
+            System.out.println("JVL Playback - Constructor creating from jvl.sage.MediaFile");
+            
             airings = new Airings();
             airings.add(((MediaFile)media).GetAiring());
             
@@ -80,6 +82,8 @@ public class Playback extends Thread
         }
         else if(media instanceof Airing)
         {
+            System.out.println("JVL Playback - Constructor creating from jvl.sage.Airing");
+            
             airings = new Airings();
             airings.add((Airing)media);
             
@@ -87,17 +91,23 @@ public class Playback extends Thread
         }
         else if(media instanceof MediaFiles)
         {
+            System.out.println("JVL Playback - Constructor creating from jvl.sage.MediaFiles");
+            
             MediaFiles mediaFiles = (MediaFiles)media;
             airings = mediaFiles.GetAirings();
         }
         else if(media instanceof Airings)
         {
+            System.out.println("JVL Playback - Constructor creating from jvl.sage.Airings");
+            
             airings = ((Airings)media);
         }
         else
         {
             if(MediaFile.IsMediaFileObject(media))
             {
+                System.out.println("JVL Playback - Constructor creating from Sage MediaFile");
+                
                 airings = new Airings();
                 MediaFile mediaFile = new MediaFile(media);
                 airings.add(mediaFile.GetAiring());
@@ -105,9 +115,16 @@ public class Playback extends Thread
             }
             else if(Airing.IsAiringObject(media))
             {
+                System.out.println("JVL Playback - Constructor creating from Sage Airing");
+                
                 airings = new Airings();
                 airings.add(new Airing(media));
                 index = 0;
+            }
+            else
+            {
+                System.out.println("JVL Playback - Constructor unknown object type passed!");
+                throw new RuntimeException("JVL Playback - Unknown media type passed to constructor");
             }
         }
         
@@ -133,6 +150,8 @@ public class Playback extends Thread
         //}
         //else
         //{
+        System.out.println("JVL Playback - GetCurrnetMediaFile()");
+        
         return this.airings.get(index).GetMediaFile();
         //}
     }
@@ -143,8 +162,9 @@ public class Playback extends Thread
      * @return Airing object
      * @throws SageCallApiException 
      */
-    public Airing GetCurrnetAiring() throws SageCallApiException
+    public Airing GetCurrentAiring() throws SageCallApiException
     {
+        System.out.println("JVL Playback - GetCurrnetAiring()");
         
         return this.airings.get(index);
         
