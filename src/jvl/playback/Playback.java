@@ -303,6 +303,19 @@ public class Playback extends Thread
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
                 
+            case MULTIPLE_RANDOM:
+                
+                System.out.println("JVL Playback - PlayNextFile OTHER");
+                
+                if(this.HasMoreMediaFiles())
+                {
+                    MediaFile mediaFile = this.NextMediaFile();
+                    mediaFile.GetAiring().SetWatchedStatus(false);
+                    MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
+                }   
+                
+                break;
+                
             default:
                 
                 System.out.println("JVL Playback - PlayNextFile OTHER");
@@ -311,7 +324,9 @@ public class Playback extends Thread
                 {
                     MediaFile mediaFile = this.NextMediaFile();
                     MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
-                }   break;
+                }   
+                
+                break;
         }        
     }
     
@@ -355,7 +370,7 @@ public class Playback extends Thread
         while(currentPlayNextTime > 0 && !cancelPlayNext)
         {
             try { Thread.sleep(1000); } catch (InterruptedException ex) { }
-            this.currentPlayNextTime = this.currentPlayNextTime - 1000;
+            this.currentPlayNextTime = this.currentPlayNextTime - 1;
         }
         
         try 
