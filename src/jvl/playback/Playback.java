@@ -141,7 +141,7 @@ public class Playback extends Thread
      * @return MediaFile object
      * @throws SageCallApiException 
      */
-    public MediaFile GetCurrnetMediaFile() throws SageCallApiException
+    public MediaFile GetCurrentMediaFile() throws SageCallApiException
     {
         //if(PlaybackOptions.LIVE_TV == this.playbackOptions)
         //{
@@ -177,7 +177,7 @@ public class Playback extends Thread
      */
     public Timebar CreateTimebarInstance() throws SageCallApiException
     {
-        return new Timebar(uicontext.GetName(), this.GetCurrnetMediaFile());
+        return new Timebar(uicontext.GetName(), this.GetCurrentMediaFile());
     }
     
     /**
