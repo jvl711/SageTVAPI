@@ -79,7 +79,7 @@ public class Airing extends SageObject
     
     public Show GetShow() throws SageCallApiException
     {
-        return new Show(Airing.GetMediaFileForAiring(airing));
+        return new Show(airing);
     }
     
     public MediaFile GetMediaFile() throws SageCallApiException

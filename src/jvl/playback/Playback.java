@@ -135,6 +135,11 @@ public class Playback extends Thread
         
     }
     
+    public PlaybackOptions GetPlaybackOption()
+    {
+        return this.playbackOptions;
+    }
+    
     /**
      * Returns the current MediaFile that the playback is pointing to.
      * 
@@ -177,6 +182,7 @@ public class Playback extends Thread
      */
     public Timebar CreateTimebarInstance() throws SageCallApiException
     {
+        
         return new Timebar(uicontext.GetName(), this.GetCurrentMediaFile());
     }
     
