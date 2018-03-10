@@ -3,6 +3,7 @@ package jvl.playback;
 
 import java.util.ArrayList;
 import jvl.sage.SageCallApiException;
+import jvl.sage.api.Airing;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFileAudioTrack;
 import jvl.sage.api.MediaFileSegment;
@@ -20,6 +21,7 @@ public class Timebar extends Thread
 {
     private UIContext context;
     private MediaFile mediaFile;
+    private Airing airing;
     private Marker [] commercials;
     private Marker [] chapters;
     private boolean comThreadRun;
@@ -31,13 +33,17 @@ public class Timebar extends Thread
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
     
 
-    public Timebar(String context, MediaFile mediaFile) throws SageCallApiException
+    public Timebar(String context, Airing airing) throws SageCallApiException
     {
         this.context = new UIContext(context);
-        this.mediaFile = mediaFile;
+        this.mediaFile = airing.GetMediaFile();
+        this.airing = airing;
+        String mediaType = "";
      
-        String mediaType = mediaFile.GetMetadata("MediaType");
-        
+        if(mediaFile != null)
+        {
+            mediaType = mediaFile.GetMetadata("MediaType");
+        }
         try
         {    
             this.commercials = mediaFile.GetCommercialMarkers();
@@ -78,12 +84,21 @@ public class Timebar extends Thread
      * This is the time the timebar starts at. This will include the padding, 
      * and scheduled recording time where a portion of the recording may have been missed.
      * 
+     * If this is an airing that does not yet have a media file than it will use scheduledStart
+     * 
      * @return Returns A time in ticks of when the recording started or when it was imported
      * @throws SageCallApiException 
      */
     public long GetStartTime() throws SageCallApiException
     {
-        return this.mediaFile.GetMediaStartTime();
+        if(mediaFile != null)
+        {
+            return this.mediaFile.GetMediaStartTime();
+        }
+        else
+        {
+            return this.airing.GetAiringStartTime();
+        }
     }
     
     /**
@@ -95,7 +110,14 @@ public class Timebar extends Thread
      */
     public long GetEndTime() throws SageCallApiException
     {
-        return this.mediaFile.GetMediaEndTime();
+        if(mediaFile != null)
+        {
+            return this.mediaFile.GetMediaEndTime();
+        }
+        else
+        {
+            return this.airing.GetAiringEndTime();
+        }
     }
     
     public long GetDuration() throws SageCallApiException 
@@ -128,7 +150,7 @@ public class Timebar extends Thread
         else
         {
             //The watchedduration is in relation to the start time of the airing.  This converts to the timebar start time.
-            long airingCurrnetWathcedTime = mediaFile.GetAiring().GetWatchedDuration() + mediaFile.GetAiring().GetAiringStartTime();
+            long airingCurrnetWathcedTime = this.airing.GetWatchedDuration() + this.airing.GetAiringStartTime();
             return airingCurrnetWathcedTime - this.GetStartTime();
         }
         
@@ -145,11 +167,10 @@ public class Timebar extends Thread
          * the playback time
         */
         
-        if(mediaFile.GetAiring().IsWatched())
+        if(mediaFile != null && mediaFile.GetAiring().IsWatched())
         {
             return 100.0;
         }
-        
         
         if(mediaFile.IsFileCurrentlyRecording())
         {            
@@ -166,7 +187,14 @@ public class Timebar extends Thread
     
     public double GetPlaybackStartPercent() throws SageCallApiException
     {
-        return this.mediaFile.GetMediaFileSegments()[0].GetStartPercent();
+        if(this.mediaFile != null)
+        {
+            return this.mediaFile.GetMediaFileSegments()[0].GetStartPercent();
+        }
+        else
+        {
+            return 0;
+        }
     }
     
     
@@ -280,7 +308,14 @@ public class Timebar extends Thread
     
     public MediaFileSegment [] GetMediaFileSegments() throws SageCallApiException
     {
+        if(mediaFile != null)
+        {
         return this.mediaFile.GetMediaFileSegments();
+        }
+        else
+        {
+            return new MediaFileSegment[0];
+        }
     }
     
     public Marker [] GetCommercialMarkers()

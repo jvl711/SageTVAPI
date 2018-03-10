@@ -182,8 +182,7 @@ public class Playback extends Thread
      */
     public Timebar CreateTimebarInstance() throws SageCallApiException
     {
-        
-        return new Timebar(uicontext.GetName(), this.GetCurrentMediaFile());
+        return new Timebar(uicontext.GetName(), this.GetCurrentAiring());
     }
     
     /**
