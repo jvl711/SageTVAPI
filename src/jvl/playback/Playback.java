@@ -292,6 +292,7 @@ public class Playback extends Thread
                 
                 System.out.println("JVL Playback - PlayNextFile LIVE_TV: " + this.airings.get(index).GetShow().GetTitle());
                 
+                //Call GetCurrent????
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
         
@@ -330,6 +331,7 @@ public class Playback extends Thread
      */
     public void StartPlayNextThread()
     {
+        currentPlayNextTime = 0;
         cancelPlayNext = false;
         this.start();
     }
@@ -340,6 +342,7 @@ public class Playback extends Thread
      */
     public void CancelPlayNextThread()
     {
+        currentPlayNextTime = 0;
         cancelPlayNext = true;
     }
     
@@ -366,5 +369,7 @@ public class Playback extends Thread
         {
             System.out.println("JVL Playback - Error attempting to playnext: " +  ex.getMessage());
         }
+        
+        currentPlayNextTime = 0;
     }
 }
