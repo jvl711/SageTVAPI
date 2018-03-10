@@ -246,9 +246,9 @@ public class MediaPlayer extends SageAPI
         MediaPlayer.callApi(context, "Seek", time);
     }
     
-    public static void Watch(UIContext context, Object media) throws SageCallApiException
+    public static void Watch(UIContext context, Airing airing) throws SageCallApiException
     {
-        MediaPlayer.callApi(context, "Watch", media);
+        MediaPlayer.callApi(context, "Watch", airing.UnwrapObject());
     }
     
 }

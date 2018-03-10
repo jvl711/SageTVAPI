@@ -309,7 +309,7 @@ public class Playback extends Thread
                 if(this.HasMoreMediaFiles())
                 {
                     MediaFile mediaFile = this.NextMediaFile();
-                    MediaPlayer.Watch(uicontext, mediaFile);
+                    MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
                 }   break;
         }        
     }
