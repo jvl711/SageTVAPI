@@ -290,15 +290,21 @@ public class Playback extends Thread
         
             case LIVE_TV:
                 
+                System.out.println("JVL Playback - PlayNextFile LIVE_TV: " + this.airings.get(index).GetShow().GetTitle());
+                
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
         
             case SINGLE:
                 
+                System.out.println("JVL Playback - PlayNextFile SINGLE: " + this.airings.get(index).GetShow().GetTitle());
+                
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
                 
             default:
+                
+                System.out.println("JVL Playback - PlayNextFile OTHER");
                 
                 if(this.HasMoreMediaFiles())
                 {
