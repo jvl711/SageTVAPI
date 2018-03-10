@@ -24,6 +24,7 @@ public class Playback extends Thread
     private PlaybackOptions playbackOptions;
     private UIContext uicontext;
     private boolean cancelPlayNext;
+    private Airing lastRandom;
     
     private int currentPlayNextTime;
     
@@ -71,6 +72,7 @@ public class Playback extends Thread
         this.uicontext = new UIContext(context);
         this.playbackOptions = playbackOptions;
         this.playnextTime = Playback.DEFAULT_PLAYNEXT_TIME_SECONDS;
+        this.lastRandom = null;
         
         if(media instanceof MediaFile)
         {
@@ -149,17 +151,11 @@ public class Playback extends Thread
      */
     public MediaFile GetCurrentMediaFile() throws SageCallApiException
     {
-        //if(PlaybackOptions.LIVE_TV == this.playbackOptions)
-        //{
-            //return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
-            
-        //}
-        //else
-        //{
-        System.out.println("JVL Playback - GetCurrnetMediaFile()");
         
-        return this.airings.get(index).GetMediaFile();
-        //}
+        System.out.println("JVL Playback - GetCurrentMediaFile()");
+        
+        return this.GetCurrentAiring().GetMediaFile();
+        
     }
     
      /**
@@ -172,8 +168,19 @@ public class Playback extends Thread
     {
         System.out.println("JVL Playback - GetCurrnetAiring()");
         
-        return this.airings.get(index);
-        
+        if(this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
+        {
+            if(index == 0 && this.lastRandom == null)
+            {
+                lastRandom = airings.GetRandomAiring();
+            }
+            
+            return lastRandom;
+        }
+        else
+        {
+            return this.airings.get(index);
+        }
     }
     
     /**
@@ -210,13 +217,22 @@ public class Playback extends Thread
         }
         else if(PlaybackOptions.MULTIPLE_RANDOM == this.playbackOptions)
         {
-            if(index >= (this.airings.size() - 1))
+            if(this.lastRandom != null && index == 0)
             {
-                throw new IndexOutOfBoundsException();
+                index++;
+                return lastRandom.GetMediaFile();
             }
-            
-            index++;
-            return this.airings.GetRandomAiring().GetMediaFile();
+            else
+            {
+                if(index >= (this.airings.size() - 1))
+                {
+                    throw new IndexOutOfBoundsException();
+                }
+
+                index++;
+                lastRandom = this.airings.GetRandomAiring();
+                return this.lastRandom.GetMediaFile();
+            }
         }
         else
         {
@@ -276,6 +292,16 @@ public class Playback extends Thread
         }
     }
     
+    public void PlayCurrentFile() throws SageCallApiException
+    {
+        if(this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_RANDOM)
+        {
+            this.GetCurrentAiring().SetWatchedStatus(false);
+        }
+        
+        MediaPlayer.Watch(uicontext, this.GetCurrentAiring());
+    }
+    
     /**
      * Attempts to play the next file now.
      * @throws SageCallApiException 
@@ -311,6 +337,7 @@ public class Playback extends Thread
                 {
                     MediaFile mediaFile = this.NextMediaFile();
                     mediaFile.GetAiring().SetWatchedStatus(false);
+                    
                     MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
                 }   
                 
