@@ -141,6 +141,16 @@ public class Playback extends Thread
     }
     
     /**
+     * Creates a timebar instance for the current mediafile
+     * @return Timebar instance
+     * @throws SageCallApiException 
+     */
+    public Timebar CreateTimebarInstance() throws SageCallApiException
+    {
+        return new Timebar(uicontext.GetName(), this.GetCurrnetMediaFile());
+    }
+    
+    /**
      * Increments the index to the next position and return the next MediaFile
      * 
      * Live TV returns current media file
@@ -153,7 +163,14 @@ public class Playback extends Thread
         if(PlaybackOptions.LIVE_TV == this.playbackOptions)
         {
             //TODO: Enhance this to get the next airing in the EPG
-            return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
+            //if(MediaPlayer.HasMediaFile(uicontext) )
+            //{
+                return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
+            //}
+            //else
+            //{
+                //return this.airings.get(index).GetMediaFile();
+            //}
         }
         else if(PlaybackOptions.MULTIPLE_RANDOM == this.playbackOptions)
         {
@@ -183,7 +200,7 @@ public class Playback extends Thread
             return false;
         }
         else
-        {
+        {   
             if(index < (this.airings.size() - 1))
             {
                 return true;
@@ -223,19 +240,26 @@ public class Playback extends Thread
         }
     }
     
-    private void PlayNextFile() throws SageCallApiException
-    {    
+    /**
+     * Attempts to play the next file now.
+     * @throws SageCallApiException 
+     */
+    public void PlayNextFile() throws SageCallApiException
+    {
+        //In case the play next thread is running
+        this.CancelPlayNextThread();
+        
         switch (this.playbackOptions) 
         {
         
             case LIVE_TV:
                 
-                //Do nothing
+                MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
         
             case SINGLE:
                 
-                //Do nothing
+                MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
                 
             default:
@@ -248,17 +272,30 @@ public class Playback extends Thread
         }        
     }
     
+    /**
+     * Gets the amount of time before the next media file plays back
+     * @return Time in seconds
+     */
     public int GetCurrentPlayNextTime()
     {
         return currentPlayNextTime;
     }
     
+    /**
+     * Executes a timer thread that counts down PlayNextTime and then
+     * attemps to play next media file if it has an additional media file,
+     * and is supposed to play the next file.
+     */
     public void StartPlayNextThread()
     {
         cancelPlayNext = false;
         this.start();
     }
     
+    /**
+     * Tells the timer thread to stop.  If it is still in the wait look it
+     * will exit the wait loop and not play next file
+     */
     public void CancelPlayNextThread()
     {
         cancelPlayNext = true;
@@ -278,7 +315,10 @@ public class Playback extends Thread
         
         try 
         {
-            this.PlayNextFile();
+            if(!cancelPlayNext)
+            {
+                this.PlayNextFile();
+            }
         } 
         catch (SageCallApiException ex) 
         {
