@@ -238,7 +238,8 @@ public class Playback
                 throw new IndexOutOfBoundsException();
             }
             
-            return this.airings.get(index++).GetMediaFile();
+            index++;
+            return this.airings.get(index).GetMediaFile();
         }
     }
     
