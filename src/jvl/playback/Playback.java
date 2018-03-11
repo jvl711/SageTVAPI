@@ -15,7 +15,7 @@ import jvl.sage.api.UIContext;
  * 
  * @author jvl711
  */
-public class Playback extends Thread
+public class Playback
 {
     private static final int DEFAULT_PLAYNEXT_TIME_SECONDS = 15;
     private int playnextTime;
@@ -24,7 +24,7 @@ public class Playback extends Thread
     private PlaybackOptions playbackOptions;
     private UIContext uicontext;
     private boolean cancelPlayNext;
-    private Airing lastRandom;
+    private PlayNextThread playNextThread;
     
     private int currentPlayNextTime;
     
@@ -72,7 +72,6 @@ public class Playback extends Thread
         this.uicontext = new UIContext(context);
         this.playbackOptions = playbackOptions;
         this.playnextTime = Playback.DEFAULT_PLAYNEXT_TIME_SECONDS;
-        this.lastRandom = null;
         
         if(media instanceof MediaFile)
         {
@@ -131,11 +130,29 @@ public class Playback extends Thread
             }
         }
         
+        /*
+         * Preload with all unwatched
+        */
         if(PlaybackOptions.MULTIPLE_UNWATCHED == playbackOptions)
         {
             airings = airings.GetUnwatchedAirings();
+            index = 0;
         }
-        
+        /*
+         * Preload with random order of airings
+        */
+        if(PlaybackOptions.MULTIPLE_RANDOM == playbackOptions)
+        {
+            Airings randomAirings = new Airings();
+            
+            for(int i = 0; i < airings.size(); i++)
+            {
+                randomAirings.add(airings.GetRandomAiring());
+            }
+            
+            airings = randomAirings;
+            index = 0;
+        }
     }
     
     public PlaybackOptions GetPlaybackOption()
@@ -151,11 +168,7 @@ public class Playback extends Thread
      */
     public MediaFile GetCurrentMediaFile() throws SageCallApiException
     {
-        
-        System.out.println("JVL Playback - GetCurrentMediaFile()");
-        
-        return this.GetCurrentAiring().GetMediaFile();
-        
+        return this.GetCurrentAiring().GetMediaFile();   
     }
     
      /**
@@ -166,22 +179,33 @@ public class Playback extends Thread
      */
     public Airing GetCurrentAiring() throws SageCallApiException
     {
-        System.out.println("JVL Playback - GetCurrnetAiring()");
-        
-        if(this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
+        return this.airings.get(index);   
+    }
+    
+    public MediaFile PeekNextMediaFile() throws SageCallApiException
+    {
+        if(this.HasMoreMediaFiles())
         {
-            if(index == 0 && this.lastRandom == null)
-            {
-                lastRandom = airings.GetRandomAiring();
-            }
-            
-            return lastRandom;
+            return this.airings.get(index + 1).GetMediaFile();
         }
         else
         {
-            return this.airings.get(index);
+            return null;
         }
     }
+    
+    public Airing PeekNextAiring()
+    {
+        if(this.HasMoreMediaFiles())
+        {
+            return this.airings.get(index + 1);
+        }
+        else
+        {
+            return null;
+        }
+    }
+            
     
     /**
      * Creates a timebar instance for the current mediafile
@@ -205,34 +229,7 @@ public class Playback extends Thread
     {
         if(PlaybackOptions.LIVE_TV == this.playbackOptions)
         {
-            //TODO: Enhance this to get the next airing in the EPG
-            //if(MediaPlayer.HasMediaFile(uicontext) )
-            //{
-                return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));
-            //}
-            //else
-            //{
-                //return this.airings.get(index).GetMediaFile();
-            //}
-        }
-        else if(PlaybackOptions.MULTIPLE_RANDOM == this.playbackOptions)
-        {
-            if(this.lastRandom != null && index == 0)
-            {
-                index++;
-                return lastRandom.GetMediaFile();
-            }
-            else
-            {
-                if(index >= (this.airings.size() - 1))
-                {
-                    throw new IndexOutOfBoundsException();
-                }
-
-                index++;
-                lastRandom = this.airings.GetRandomAiring();
-                return this.lastRandom.GetMediaFile();
-            }
+            return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));   
         }
         else
         {
@@ -373,9 +370,18 @@ public class Playback extends Thread
      */
     public void StartPlayNextThread()
     {
-        currentPlayNextTime = 0;
-        cancelPlayNext = false;
-        this.start();
+        if(this.playNextThread != null && this.playNextThread.isAlive())
+        {
+            //Thread is still running.  I think it is best to do nothing....
+        }
+        else
+        {
+            this.playNextThread = new PlayNextThread(this);
+            currentPlayNextTime = 0;
+            cancelPlayNext = false;
+            this.playNextThread.start();
+        }
+        
     }
     
     /**
@@ -388,30 +394,40 @@ public class Playback extends Thread
         cancelPlayNext = true;
     }
     
-    @Override
-    public void run()
+    private class PlayNextThread extends Thread
     {
-        //Set CurrentPlayNext time
-        this.currentPlayNextTime = this.playnextTime;
+        private Playback playback;
         
-        while(currentPlayNextTime > 0 && !cancelPlayNext)
+        public PlayNextThread(Playback playback)
         {
-            try { Thread.sleep(1000); } catch (InterruptedException ex) { }
-            this.currentPlayNextTime = this.currentPlayNextTime - 1;
+            this.playback = playback;
         }
         
-        try 
+        @Override
+        public void run()
         {
-            if(!cancelPlayNext)
+            //Set CurrentPlayNext time
+            this.playback.currentPlayNextTime = this.playback.playnextTime;
+
+            while(currentPlayNextTime > 0 && !cancelPlayNext)
             {
-                this.PlayNextFile();
+                try { Thread.sleep(1000); } catch (InterruptedException ex) { }
+                this.playback.currentPlayNextTime = this.playback.currentPlayNextTime - 1;
             }
-        } 
-        catch (SageCallApiException ex) 
-        {
-            System.out.println("JVL Playback - Error attempting to playnext: " +  ex.getMessage());
+
+            try 
+            {
+                if(!cancelPlayNext)
+                {
+                    this.playback.PlayNextFile();
+                }
+            } 
+            catch (SageCallApiException ex) 
+            {
+                System.out.println("JVL Playback - Error attempting to playnext: " +  ex.getMessage());
+            }
+
+            currentPlayNextTime = 0;
         }
-        
-        currentPlayNextTime = 0;
     }
 }
