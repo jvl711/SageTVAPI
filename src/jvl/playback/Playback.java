@@ -290,9 +290,17 @@ public class Playback
         }
     }
     
+    /**
+     * Plays the file at the current index.  If it is a Multi playback option it
+     * will clear the watched status.
+     * 
+     * @throws SageCallApiException 
+     */
     public void PlayCurrentFile() throws SageCallApiException
     {
-        if(this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_RANDOM)
+        if(this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_RANDOM
+            || this.GetPlaybackOption() == PlaybackOptions.MULTIPLE
+            || this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_UNWATCHED)
         {
             this.GetCurrentAiring().SetWatchedStatus(false);
         }
@@ -326,8 +334,8 @@ public class Playback
                 
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
-                
-            case MULTIPLE_RANDOM:
+                    
+            default:
                 
                 System.out.println("JVL Playback - PlayNextFile OTHER");
                 
@@ -336,18 +344,6 @@ public class Playback
                     MediaFile mediaFile = this.NextMediaFile();
                     mediaFile.GetAiring().SetWatchedStatus(false);
                     
-                    MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
-                }   
-                
-                break;
-                
-            default:
-                
-                System.out.println("JVL Playback - PlayNextFile OTHER");
-                
-                if(this.HasMoreMediaFiles())
-                {
-                    MediaFile mediaFile = this.NextMediaFile();
                     MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
                 }   
                 
