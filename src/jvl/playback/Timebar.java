@@ -52,14 +52,15 @@ public class Timebar extends Thread
             mediaType = mediaFile.GetMetadata("MediaType");
         }
         try
-        {    
+        {
+            
             this.commercials = mediaFile.GetCommercialMarkers();
         }
         catch(Exception ex)
         {
             System.out.println("JVL - Exception getting commercial markers.  Setting markers to null.");
             System.out.println("JVL - Error Message: " + ex.getMessage());
-            this.commercials = null;
+            this.commercials = new Marker[0];
         }
        
         //If it is a movie attempt to load chapters
@@ -74,7 +75,7 @@ public class Timebar extends Thread
             {
                 System.out.println("JVL - Exception getting chapter markers.  Setting chapters to null.");
                 System.out.println("JVL - Error Message: " + ex.getMessage());
-                this.chapters = null;
+                this.chapters = new Marker[0];
             }
         }
         
