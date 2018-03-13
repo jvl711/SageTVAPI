@@ -205,7 +205,35 @@ public class Playback
             return null;
         }
     }
-            
+        
+    /**
+     * Returns the number of files available for playback based on the size
+     * of the media collection and the playbackoptions.  Live_TV and Single
+     * will return 1.
+     * 
+     * @return Size of media collection
+     */
+    public int GetSize()
+    {
+        if(this.playbackOptions == PlaybackOptions.LIVE_TV || this.playbackOptions == PlaybackOptions.SINGLE)
+        {
+            return 1;
+        }
+        else
+        {
+            return this.airings.size();
+        }
+             
+    }
+    
+    /**
+     * Returns the current index
+     * @return Index
+     */
+    public int GetIndex()
+    {
+        return this.index;
+    }
     
     /**
      * Creates a timebar instance for the current mediafile
