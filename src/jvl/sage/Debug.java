@@ -189,7 +189,7 @@ public class Debug
     public static void Writeln(String callingClass, String line, int level)
     {
         
-        if(Debug.isDebug &&  level >= Debug.debugLevel)
+        if(Debug.isDebug && level >= Debug.debugLevel)
         {
             String formatedLine = Debug.GetDebugLevelString(level) + "[" + callingClass + "]" + " - " + line;
             
@@ -214,6 +214,7 @@ public class Debug
             catch(Exception ex)
             {
                 //System.out.println("Error writing to JVL Debug File.");   
+                System.out.println("JVL ERROR WRITING TO LOG ------------------------------------------------");
                 ex.printStackTrace();
             }
         }
