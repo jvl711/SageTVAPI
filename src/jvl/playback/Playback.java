@@ -165,8 +165,11 @@ public class Playback
      */
     public void AddReturnMenu(Widget widget) throws SageCallApiException
     {
+        System.out.println("JVL - Playback.AddRetunMenu");
+        
         if(widget.GetType().equalsIgnoreCase("menu"))
         {
+            System.out.println("JVL - Widget is of type menu.  Adding widget");
             this.returnMenu = widget;
         }
     }
@@ -336,12 +339,20 @@ public class Playback
     
     public void Stop() throws SageCallApiException
     {
-        if(this.returnMenu != null)
-        {
-            this.returnMenu.LaunchMenu();
-        }
+        System.out.println("JVL - Playback.Stop called");
         
         MediaPlayer.Stop(uicontext);
+        
+        
+        if(this.returnMenu != null)
+        {
+            System.out.println("JVL - Return menu registered.  Launching menu");
+            this.returnMenu.LaunchMenu();
+        }
+        else
+        {
+            System.out.println("JVL - No retrun menu registered");
+        }
     }
     
     public void Pause() throws SageCallApiException

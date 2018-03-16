@@ -52,8 +52,7 @@ public class Timebar extends Thread
             mediaType = mediaFile.GetMetadata("MediaType");
         }
         try
-        {
-            
+        {   
             this.commercials = mediaFile.GetCommercialMarkers();
         }
         catch(Exception ex)
@@ -64,7 +63,7 @@ public class Timebar extends Thread
         }
        
         //If it is a movie attempt to load chapters
-        if(mediaType.equalsIgnoreCase("movie"))
+        if(mediaType != null && mediaType.equalsIgnoreCase("movie"))
         {
             
             try
