@@ -1,5 +1,6 @@
 package jvl.playback;
 
+import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
 import jvl.sage.api.Airings;
@@ -70,6 +71,8 @@ public class Playback
      */
     public Playback(String context, Object media, PlaybackOptions playbackOptions,  int index) throws SageCallApiException
     {
+        Debug.Writeln("Constructor", Debug.INFO);
+        
         this.index = index;
         this.uicontext = new UIContext(context);
         this.playbackOptions = playbackOptions;
@@ -77,7 +80,7 @@ public class Playback
         
         if(media instanceof MediaFile)
         {
-            System.out.println("JVL Playback - Constructor creating from jvl.sage.MediaFile");
+            Debug.Writeln("Constructor creating from jvl.sage.MediaFile", Debug.INFO);
             
             airings = new Airings();
             airings.add(((MediaFile)media).GetAiring());
@@ -86,7 +89,7 @@ public class Playback
         }
         else if(media instanceof Airing)
         {
-            System.out.println("JVL Playback - Constructor creating from jvl.sage.Airing");
+            Debug.Writeln("Constructor creating from jvl.sage.Airing", Debug.INFO);
             
             airings = new Airings();
             airings.add((Airing)media);
@@ -95,14 +98,14 @@ public class Playback
         }
         else if(media instanceof MediaFiles)
         {
-            System.out.println("JVL Playback - Constructor creating from jvl.sage.MediaFiles");
+            Debug.Writeln("Constructor creating from jvl.sage.MediaFiles", Debug.INFO);
             
             MediaFiles mediaFiles = (MediaFiles)media;
             airings = mediaFiles.GetAirings();
         }
         else if(media instanceof Airings)
         {
-            System.out.println("JVL Playback - Constructor creating from jvl.sage.Airings");
+            Debug.Writeln("Constructor creating from jvl.sage.Airings", Debug.INFO);
             
             airings = ((Airings)media);
         }
@@ -110,7 +113,7 @@ public class Playback
         {
             if(MediaFile.IsMediaFileObject(media))
             {
-                System.out.println("JVL Playback - Constructor creating from Sage MediaFile");
+                Debug.Writeln("Constructor creating from SageTV MedisFile", Debug.INFO);
                 
                 airings = new Airings();
                 MediaFile mediaFile = new MediaFile(media);
@@ -119,7 +122,7 @@ public class Playback
             }
             else if(Airing.IsAiringObject(media))
             {
-                System.out.println("JVL Playback - Constructor creating from Sage Airing");
+                Debug.Writeln("Constructor creating from SageTV Airing", Debug.INFO);
                 
                 airings = new Airings();
                 airings.add(new Airing(media));
@@ -127,8 +130,8 @@ public class Playback
             }
             else
             {
-                System.out.println("JVL Playback - Constructor unknown object type passed!");
-                throw new RuntimeException("JVL Playback - Unknown media type passed to constructor");
+                Debug.Writeln("Constructor passed unknown media type", Debug.ERROR);
+                throw new RuntimeException("JVL Playback - Unknown media type passed to constructor!");
             }
         }
         
@@ -137,6 +140,7 @@ public class Playback
         */
         if(PlaybackOptions.MULTIPLE_UNWATCHED == playbackOptions)
         {
+            Debug.Writeln("Constructor filtering airings for unwatched playback option", Debug.INFO);
             airings = airings.GetUnwatchedAirings();
             index = 0;
         }
@@ -145,6 +149,7 @@ public class Playback
         */
         if(PlaybackOptions.MULTIPLE_RANDOM == playbackOptions)
         {
+            Debug.Writeln("Constructor creating airings for random playback option", Debug.INFO);
             Airings randomAirings = new Airings();
             
             for(int i = 0; i < airings.size(); i++)
@@ -165,11 +170,11 @@ public class Playback
      */
     public void AddReturnMenu(Widget widget) throws SageCallApiException
     {
-        System.out.println("JVL - Playback.AddRetunMenu");
+        Debug.Writeln("AddReturnMenu called with " + widget, Debug.INFO);
         
         if(widget.GetType().equalsIgnoreCase("menu"))
         {
-            System.out.println("JVL - Widget is of type menu.  Adding widget");
+            Debug.Writeln("The widget passed was not of type Menu.  (Not adding it)" + widget, Debug.WARNING);
             this.returnMenu = widget;
         }
     }
@@ -196,14 +201,20 @@ public class Playback
      */
     public void UpdateLiveAiring() throws SageCallApiException
     {
+        
         if(this.playbackOptions == PlaybackOptions.LIVE_TV && MediaPlayer.HasMediaFile(uicontext))
         {
             Airing airing = new Airing(MediaPlayer.GetCurrentMediaFile(uicontext));
             
             airings = new Airings();
             airings.add(airing);
+            
+            Debug.Writeln("Current Airing has been updated", Debug.WARNING);
         }
-        
+        else
+        {
+            Debug.Writeln("UpdateLiveAiring called without being PlaybackOptions.LIVE_TV", Debug.WARNING);
+        }
     }
     
      /**
@@ -355,30 +366,43 @@ public class Playback
     
     public void Stop() throws SageCallApiException
     {
-        System.out.println("JVL - Playback.Stop called");
+        Debug.Writeln("Stop playback called", Debug.INFO);
         
         MediaPlayer.Stop(uicontext);
         
-        
         if(this.returnMenu != null)
         {
-            System.out.println("JVL - Return menu registered.  Launching menu");
+            Debug.Writeln("Return menu was registered. Lanuching Menu: " + this.returnMenu, Debug.INFO);
             this.returnMenu.LaunchMenu();
         }
         else
         {
-            System.out.println("JVL - No retrun menu registered");
+            Debug.Writeln("No return menu was specified", Debug.INFO);
         }
     }
     
     public void Pause() throws SageCallApiException
     {
+        Debug.Writeln("Pause playback called", Debug.INFO);
         MediaPlayer.Pause(uicontext);
     }
     
     public void Play() throws SageCallApiException
     {
-        MediaPlayer.Play(uicontext);
+        Debug.Writeln("Play called", Debug.INFO);
+        
+        if(MediaPlayer.IsMediaPlayerLoaded(uicontext))
+        {
+            Debug.Writeln("Media player is loaded. Calling MediaPlayer.Play", Debug.INFO);
+            MediaPlayer.Play(uicontext);
+        }
+        else
+        {
+            Debug.Writeln("Media player is not loaded. Calling MediaPlayer.Watch", Debug.INFO);
+            this.PlayCurrentFile();
+        }
+        
+        
     }
     
     /**
@@ -413,7 +437,7 @@ public class Playback
         
             case LIVE_TV:
                 
-                System.out.println("JVL Playback - PlayNextFile LIVE_TV: " + this.airings.get(index).GetShow().GetTitle());
+                Debug.Writeln("PlaybackOption.LIVE_TV, calling Watch on current airing.", Debug.INFO);
                 
                 //Call GetCurrent????
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
@@ -421,22 +445,27 @@ public class Playback
         
             case SINGLE:
                 
-                System.out.println("JVL Playback - PlayNextFile SINGLE: " + this.airings.get(index).GetShow().GetTitle());
+                Debug.Writeln("PlaybackOption.SINGLE, calling watch on " + this.airings.get(index).GetShow().GetTitle(), Debug.INFO);
                 
                 MediaPlayer.Watch(uicontext, this.airings.get(index));
                 break;
                     
             default:
                 
-                System.out.println("JVL Playback - PlayNextFile OTHER");
+                Debug.Writeln("PlaybackOption.MULTIPLE_*", Debug.INFO);
                 
                 if(this.HasMoreMediaFiles())
                 {
                     MediaFile mediaFile = this.NextMediaFile();
                     mediaFile.GetAiring().SetWatchedStatus(false);
                     
+                    Debug.Writeln("calling watch on " + this.airings.get(index).GetShow().GetTitle(), Debug.WARNING);
                     MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
                 }   
+                else
+                {
+                    Debug.Writeln("There are no more media files...  Not playing anything.", Debug.WARNING);
+                }
                 
                 break;
         }        
@@ -461,9 +490,11 @@ public class Playback
         if(this.playNextThread != null && this.playNextThread.isAlive())
         {
             //Thread is still running.  I think it is best to do nothing....
+            Debug.Writeln("PlayNextThread is already running.  Not starting another.", Debug.WARNING);
         }
         else
         {
+            Debug.Writeln("PlayNextThread is starting.", Debug.WARNING);
             this.playNextThread = new PlayNextThread(this);
             currentPlayNextTime = 0;
             cancelPlayNext = false;
@@ -478,6 +509,7 @@ public class Playback
      */
     public void CancelPlayNextThread()
     {
+        Debug.Writeln("Stopping play next thread.", Debug.WARNING);
         currentPlayNextTime = 0;
         cancelPlayNext = true;
     }
@@ -512,7 +544,7 @@ public class Playback
             } 
             catch (SageCallApiException ex) 
             {
-                System.out.println("JVL Playback - Error attempting to playnext: " +  ex.getMessage());
+                Debug.Writeln("Error attempting to play next file from the thread", Debug.ERROR);
             }
 
             currentPlayNextTime = 0;

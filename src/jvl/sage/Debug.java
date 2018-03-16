@@ -1,41 +1,42 @@
 
 package jvl.sage;
 
-import java.io.File;
-import java.io.FileWriter;
+//import java.io.File;
+//import java.io.FileWriter;
 import java.util.ArrayList;
 
 
 public class Debug 
 {
-    private static File debugfile;
+    //private static File debugfile;
     private static boolean isDebug;
     private static int debugLevel;
-    private static long maxDebugFileSize;
+    //private static long maxDebugFileSize;
     
     /* Minimum debug fileSize */
-    private static final long minDebugFileSizeAllowed = 10240;
+    //private static final long minDebugFileSizeAllowed = 10240;
     
     /* Debug Levels */
     public static final int INFO = 0;
     public static final int WARNING = 100;
     public static final int ERROR = 200;
     
-    private static String fileName = "JVL_SageAPI_Debug";
-    private static String fileExt = "txt";
+    //private static String fileName = "JVL_SageAPI_Debug";
+    //private static String fileExt = "txt";
     
     /* Debug File */
-    private static FileWriter output;
+    //private static FileWriter output;
     
     private static ArrayList<String> classFilters;
     
+    /*
     static
     {
         
         Debug.classFilters = new ArrayList<String>();
         Debug.debugfile = new File(fileName + "." + fileExt);
         Debug.debugLevel = Debug.INFO;
-        Debug.maxDebugFileSize = 10240 * 1024; /* Defaulting to 10MB */
+        Debug.maxDebugFileSize = 10240 * 1024; ///Defaulting to 10MB
         Debug.isDebug = false;
         
         try
@@ -69,6 +70,7 @@ public class Debug
         
         
     }
+    */
     
     public static void SetDebug(boolean state)
     {
@@ -109,6 +111,7 @@ public class Debug
      * 
      * @param size 
      */
+    /*
     public static void SetMaxFileSize(long size)
     {
         
@@ -125,7 +128,9 @@ public class Debug
             Debug.maxDebugFileSize = size;
         }
     }
+    */
     
+    /*
     public static void RotateLogFile()
     {
         File temp = new File(Debug.fileName + "_1." + Debug.fileExt);
@@ -137,7 +142,9 @@ public class Debug
 
         Debug.debugfile.renameTo(temp);
     }
+    */
     
+    /*
     private static void CheckForFileRotation()
     {
         if(Debug.maxDebugFileSize > -1 && Debug.debugfile.length() >= Debug.maxDebugFileSize)
@@ -152,6 +159,7 @@ public class Debug
             Debug.debugfile.renameTo(temp);
         }
     }
+    */
     
     private static String GetDebugLevelString(int level)
     {
@@ -196,14 +204,16 @@ public class Debug
                     }
                 }    
                 
-                Debug.CheckForFileRotation();
+                //Debug.CheckForFileRotation();
                 
-                output.write(formatedLine + System.getProperty("line.separator"));
-                output.flush();
+                System.out.println(formatedLine);
+                
+                //output.write(formatedLine + System.getProperty("line.separator"));
+                //output.flush();
             }
             catch(Exception ex)
             {
-                System.out.println("Error writing to JVL Debug File.");   
+                //System.out.println("Error writing to JVL Debug File.");   
                 ex.printStackTrace();
             }
         }
