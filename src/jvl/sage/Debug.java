@@ -27,7 +27,7 @@ public class Debug
     /* Debug File */
     //private static FileWriter output;
     
-    private static ArrayList<String> classFilters;
+    private static ArrayList<String> classFilters = new ArrayList<String>();
     
     /*
     static
