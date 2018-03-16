@@ -246,6 +246,42 @@ public class MediaPlayer extends SageAPI
         MediaPlayer.callApi(context, "Seek", time);
     }
     
+    /**
+     * Closes the file that is currently loaded by the MediaPlayer and waits for 
+     * the MediaPlayer to completely free all of its resources before returning.
+     * 
+     * Will need to call watch if you want to resume playback
+     * 
+     * @param context UIContext to execute on
+     * @throws SageCallApiException 
+     */
+    public static void Stop(UIContext context) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "CloseAndWaitUntilClosed");
+    }
+    
+    /**
+     * Resumes playback in the MediaPlayer
+     * 
+     * @param context UIContext to execute on
+     * @throws SageCallApiException 
+     */
+    public static void Play(UIContext context) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "Play");
+    }
+    
+    /**
+     * Pause playback in the MediaPlayer
+     * 
+     * @param context UIContext to execute on
+     * @throws SageCallApiException 
+     */
+    public static void Pause(UIContext context) throws SageCallApiException
+    {
+        MediaPlayer.callApi(context, "Pause");
+    }
+    
     public static void Watch(UIContext context, Airing airing) throws SageCallApiException
     {
         MediaPlayer.callApi(context, "Watch", airing.UnwrapObject());

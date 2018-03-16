@@ -7,6 +7,7 @@ import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
 import jvl.sage.api.MediaPlayer;
 import jvl.sage.api.UIContext;
+import jvl.sage.api.Widget;
 
 /**
  * This is used to describe playback options. What to do when playback finishes.
@@ -25,6 +26,7 @@ public class Playback
     private UIContext uicontext;
     private boolean cancelPlayNext;
     private PlayNextThread playNextThread;
+    private Widget returnMenu;
     
     private int currentPlayNextTime;
     
@@ -152,6 +154,20 @@ public class Playback
             
             airings = randomAirings;
             index = 0;
+        }
+    }
+
+    /**
+     * Add menu that you would like to return too when playback completes or
+     * stops
+     * @param widget Menu to return too
+     * @throws SageCallApiException 
+     */
+    public void AddReturnMenu(Widget widget) throws SageCallApiException
+    {
+        if(widget.GetType().equalsIgnoreCase("menu"))
+        {
+            this.returnMenu = widget;
         }
     }
     
@@ -316,6 +332,26 @@ public class Playback
         {
             this.playnextTime = seconds;
         }
+    }
+    
+    public void Stop() throws SageCallApiException
+    {
+        if(this.returnMenu != null)
+        {
+            this.returnMenu.LaunchMenu();
+        }
+        
+        MediaPlayer.Stop(uicontext);
+    }
+    
+    public void Pause() throws SageCallApiException
+    {
+        MediaPlayer.Pause(uicontext);
+    }
+    
+    public void Play() throws SageCallApiException
+    {
+        MediaPlayer.Play(uicontext);
     }
     
     /**

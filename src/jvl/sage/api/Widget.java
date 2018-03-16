@@ -54,6 +54,19 @@ public class Widget extends SageObject
     {
         return Widget.callApiString(this.uicontext, "GetWidgetType", this.widget);
     }
+  
+    /**
+     * Launches menu if it is a menu widget.  If it is not a menu widget no action
+     * is taken
+     * @throws SageCallApiException 
+     */
+    public void LaunchMenu() throws SageCallApiException
+    {
+        if(this.GetType().equalsIgnoreCase("menu"))
+        {
+            Widget.callApi(uicontext, "LaunchMenuWidget", widget);
+        }
+    }
     
     @Override
     public Object UnwrapObject() 
