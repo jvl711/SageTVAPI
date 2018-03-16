@@ -190,6 +190,22 @@ public class Playback
         return this.GetCurrentAiring().GetMediaFile();   
     }
     
+    /**
+     * If live tv than it will update the airing to the current media file
+     * loaded by the MediaPlayer
+     */
+    public void UpdateLiveAiring() throws SageCallApiException
+    {
+        if(this.playbackOptions == PlaybackOptions.LIVE_TV && MediaPlayer.HasMediaFile(uicontext))
+        {
+            Airing airing = new Airing(MediaPlayer.GetCurrentMediaFile(uicontext));
+            
+            airings = new Airings();
+            airings.add(airing);
+        }
+        
+    }
+    
      /**
      * Returns the current Airing that the playback is pointing to.
      * 
