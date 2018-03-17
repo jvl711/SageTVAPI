@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import jvl.sage.Debug;
 import jvl.sage.JobStatus;
 import jvl.sage.SageCallApiException;
 
@@ -338,27 +340,65 @@ public class Shows extends SageArrayObject<Show>
         @Override
         public void run() 
         {
+            HashMap<String, Show> map = new HashMap<String, Show>();
+            
+            Debug.Writeln("Scale posters thread is starting", Debug.INFO);
             this.jobStatus.SetRunning();
             
-            //Build a hashmap of Show Title + Season, and only process them once.
-            
+            //Build a hashmap of Show Title + Season, So that we only process them once...
+            //This should be fine for the movies as well.
+            try
+            {
+                for(int i = 0; i < this.shows.size(); i++)
+                {
+                    String key = shows.get(i).GetTitle() + shows.get(i).GetSeasonNumberString();
+                    
+                    if(!map.containsKey(key))
+                    {
+                        map.put(key, shows.get(i));
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.Writeln("Error building the hashmap for poster scaling thread.", Debug.ERROR);
+                Debug.WriteStackTrace(ex, Debug.ERROR);
+                //Exit the thread.  We are in an unknown state...
+                return;
+            }
             
             
             try
             {
+                String [] keys = map.keySet().toArray(new String[map.size()]);
+                
+                for(int i = 0; i < keys.length; i++)
+                {
+                    Show show = map.get(keys[i]);
+                    show.ScalePosters(width);
+                    
+                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + keys.length + " - " + show.GetTitle());
+                }
+                
+                /*
                 for(int i = 0; i < this.shows.size(); i++)
                 {
                     shows.get(i).ScalePosters(width);
                     
                     this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetTitle());
                 }
+                */
                 
                 this.jobStatus.SetComplete();
             }
             catch(Exception ex)
             {
+                Debug.Writeln("Error scaling posters", Debug.ERROR);
+                Debug.WriteStackTrace(ex, Debug.ERROR);
                 this.jobStatus.SetError("Error scaling posters: " + ex.getMessage());
             }
+            
+            Debug.Writeln("Scale posters thread has completed", Debug.INFO);
         }
         
     }

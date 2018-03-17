@@ -16,28 +16,6 @@ public class Airings extends SageArrayObject<Airing>
     ArrayList<Airing> randomAirings;
     
     
-
-    /*
-    public Airings(String MediaMask)
-    {
-        try
-        {
-            airings = new ArrayList();
-            Object [] temp = callApiArray("GetMediaFiles", MediaMask);
-     
-            for(int i = 0; i < temp.length; i++)
-            {
-                airings.add(new Airing(temp[0]));
-            }
-            
-        }
-        catch(Exception ex)
-        {
-            System.out.println("Error loading airings: " + ex.getMessage());
-        }
-    }
-    */
-    
     public Airings()
     {
         //airings = new ArrayList();
