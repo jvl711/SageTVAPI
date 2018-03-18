@@ -20,6 +20,9 @@ import jvl.sage.api.Widget;
 public class Playback
 {
     private static final int DEFAULT_PLAYNEXT_TIME_SECONDS = 15;
+    private static final int DEFAULT_SKIP_TIME_SECONDS = 10;
+    private static final int DEFAULT_SKIP2_TIME_SECONDS = 60;
+    private static final int DEFAULT_SKIP3_TIME_SECONDS = 120;
     private int playnextTime;
     private Airings airings;
     private int index;
@@ -28,6 +31,9 @@ public class Playback
     private boolean cancelPlayNext;
     private PlayNextThread playNextThread;
     private Widget returnMenu;
+    private Timebar timebar;
+   
+    
     
     private int currentPlayNextTime;
     
@@ -179,6 +185,16 @@ public class Playback
         }
     }
     
+    public Timebar GetTimebar() throws SageCallApiException
+    {
+        if(this.timebar == null)
+        {
+            this.timebar = this.CreateTimebarInstance();
+        }
+        
+        return this.timebar;
+    }
+    
     public PlaybackOptions GetPlaybackOption()
     {
         return this.playbackOptions;
@@ -288,7 +304,9 @@ public class Playback
      */
     public Timebar CreateTimebarInstance() throws SageCallApiException
     {
-        return new Timebar(uicontext.GetName(), this.GetCurrentAiring());
+        this.timebar = new Timebar(uicontext.GetName(), this.GetCurrentAiring());
+        
+        return timebar;
     }
     
     /**
@@ -313,6 +331,24 @@ public class Playback
             }
             
             index++;
+            return this.airings.get(index).GetMediaFile();
+        }
+    }
+    
+    public MediaFile PreviousMediaFile() throws SageCallApiException
+    {
+        if(PlaybackOptions.LIVE_TV == this.playbackOptions)
+        {
+            return new MediaFile(MediaPlayer.GetCurrentMediaFile(uicontext));   
+        }
+        else
+        {
+            if(index == 0)
+            {
+                throw new IndexOutOfBoundsException();
+            }
+            
+            index--;
             return this.airings.get(index).GetMediaFile();
         }
     }
@@ -363,6 +399,83 @@ public class Playback
             this.playnextTime = seconds;
         }
     }
+    
+    public void FastForward() throws SageCallApiException
+    {
+        long curTime = MediaPlayer.GetMediaTime(uicontext);
+        MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000));
+    }
+    
+    public void Rewind() throws SageCallApiException
+    {
+        long curTime = MediaPlayer.GetMediaTime(uicontext);
+        MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000));
+    }
+    
+    public void SkipForward() throws SageCallApiException
+    {
+        if(this.GetTimebar().HasChapterMarkers())
+        {
+            this.GetTimebar().SkipToNextMarker();
+        }
+        else if(this.GetTimebar().HasCommercialMarkers())
+        {
+            this.GetTimebar().SkipToNextMarker();
+        }
+        else
+        {
+            long curTime = MediaPlayer.GetMediaTime(uicontext);
+            MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000));
+        }
+    }
+    
+    public void SkipBackward() throws SageCallApiException
+    {
+        if(this.GetTimebar().HasChapterMarkers())
+        {
+            this.GetTimebar().SkipToPreviousMarker();
+        }
+        else if(this.GetTimebar().HasCommercialMarkers())
+        {
+            this.GetTimebar().SkipToPreviousMarker();
+        }
+        else
+        {
+            long curTime = MediaPlayer.GetMediaTime(uicontext);
+            MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000));
+        }
+    }
+    
+    public void SkipForward2() throws SageCallApiException
+    {
+        if(this.playbackOptions == PlaybackOptions.MULTIPLE
+                || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM
+                || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
+        {
+            this.PlayNextFile();
+        }
+        else
+        {
+            long curTime = MediaPlayer.GetMediaTime(uicontext);
+            MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000));
+        }
+    }
+    
+    public void SkipBackward2() throws SageCallApiException
+    {
+        if(this.playbackOptions == PlaybackOptions.MULTIPLE
+                || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM
+                || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
+        {
+            this.PlayPreviousFile();
+        }
+        else
+        {
+            long curTime = MediaPlayer.GetMediaTime(uicontext);
+            MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000));
+        }
+    }
+    
     
     public void Stop() throws SageCallApiException
     {
@@ -465,6 +578,50 @@ public class Playback
                 else
                 {
                     Debug.Writeln("There are no more media files...  Not playing anything.", Debug.WARNING);
+                }
+                
+                break;
+        }        
+    }
+    
+    public void PlayPreviousFile() throws SageCallApiException
+    {
+        //In case the play next thread is running
+        this.CancelPlayNextThread();
+        
+        switch (this.playbackOptions) 
+        {
+        
+            case LIVE_TV:
+                
+                Debug.Writeln("PlaybackOption.LIVE_TV, calling Watch on current airing.", Debug.INFO);
+                
+                //Call GetCurrent????
+                MediaPlayer.Watch(uicontext, this.airings.get(index));
+                break;
+        
+            case SINGLE:
+                
+                Debug.Writeln("PlaybackOption.SINGLE, calling watch on " + this.airings.get(index).GetShow().GetTitle(), Debug.INFO);
+                
+                MediaPlayer.Watch(uicontext, this.airings.get(index));
+                break;
+                    
+            default:
+                
+                Debug.Writeln("PlaybackOption.MULTIPLE_*", Debug.INFO);
+                
+                if(this.index > 0)
+                {
+                    MediaFile mediaFile = this.PreviousMediaFile();
+                    mediaFile.GetAiring().SetWatchedStatus(false);
+                    
+                    Debug.Writeln("calling watch on " + this.airings.get(index).GetShow().GetTitle(), Debug.WARNING);
+                    MediaPlayer.Watch(uicontext, mediaFile.GetAiring());
+                }   
+                else
+                {
+                    Debug.Writeln("Currently playing the first file...  Not playing anything.", Debug.WARNING);
                 }
                 
                 break;

@@ -191,7 +191,7 @@ public class Debug
         
         if(Debug.isDebug && level >= Debug.debugLevel)
         {
-            String formatedLine = Debug.GetDebugLevelString(level) + "[" + callingClass + "]" + " - " + line;
+            String formatedLine =  "[" + callingClass + "] " + Debug.GetDebugLevelString(level) + " - " + line;
             
             try
             {
