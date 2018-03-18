@@ -402,30 +402,36 @@ public class Playback
     
     public void FastForward() throws SageCallApiException
     {
-        long curTime = MediaPlayer.GetMediaTime(uicontext);
-        MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000));
+        
+        long skipTime = MediaPlayer.GetMediaTime(uicontext) + (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000);
+        Debug.Writeln("FastForward Called - Seek to: " + skipTime, Debug.INFO);
+        MediaPlayer.Seek(uicontext, skipTime);
     }
     
     public void Rewind() throws SageCallApiException
     {
-        long curTime = MediaPlayer.GetMediaTime(uicontext);
-        MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000));
+        long skipTime = MediaPlayer.GetMediaTime(uicontext) - (Playback.DEFAULT_SKIP_TIME_SECONDS * 1000);
+        Debug.Writeln("Rewind Called - Seek to: " + skipTime, Debug.INFO);
+        MediaPlayer.Seek(uicontext, skipTime);
     }
     
     public void SkipForward() throws SageCallApiException
     {
         if(this.GetTimebar().HasChapterMarkers())
         {
+            Debug.Writeln("Skip Forward Called - Has Chapter Markers, skipping to next marker.", Debug.INFO);
             this.GetTimebar().SkipToNextMarker();
         }
         else if(this.GetTimebar().HasCommercialMarkers())
         {
+            Debug.Writeln("Skip Forward Called - Has Commercial Markers, skipping to next marker.", Debug.INFO);
             this.GetTimebar().SkipToNextMarker();
         }
         else
         {
-            long curTime = MediaPlayer.GetMediaTime(uicontext);
-            MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000));
+            long skipTime = MediaPlayer.GetMediaTime(uicontext) + (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
+            Debug.Writeln("Skip Forward Called - Seek to: " + skipTime, Debug.INFO);
+            MediaPlayer.Seek(uicontext, skipTime);
         }
     }
     
@@ -433,16 +439,19 @@ public class Playback
     {
         if(this.GetTimebar().HasChapterMarkers())
         {
+            Debug.Writeln("Skip Backward Called - Has Chapter Markers, skipping to previous marker.", Debug.INFO);
             this.GetTimebar().SkipToPreviousMarker();
         }
         else if(this.GetTimebar().HasCommercialMarkers())
         {
+            Debug.Writeln("Skip Backward Called - Has Commercial Markers, skipping to previous marker.", Debug.INFO);
             this.GetTimebar().SkipToPreviousMarker();
         }
         else
         {
-            long curTime = MediaPlayer.GetMediaTime(uicontext);
-            MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000));
+            long skipTime = MediaPlayer.GetMediaTime(uicontext) - (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
+            Debug.Writeln("Skip Backward Called - Seek to: " + skipTime, Debug.INFO);
+            MediaPlayer.Seek(uicontext, skipTime);
         }
     }
     
@@ -452,12 +461,14 @@ public class Playback
                 || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM
                 || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
         {
+            Debug.Writeln("Skip Forward 2 Called - MULTIPLE Playack, playing next file", Debug.INFO);
             this.PlayNextFile();
         }
         else
         {
-            long curTime = MediaPlayer.GetMediaTime(uicontext);
-            MediaPlayer.Seek(uicontext, curTime + (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000));
+            long skipTime = MediaPlayer.GetMediaTime(uicontext) + (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000);
+            Debug.Writeln("Skip Forward 2 Called - Seek to: " + skipTime, Debug.INFO);
+            MediaPlayer.Seek(uicontext, skipTime);
         }
     }
     
@@ -467,12 +478,14 @@ public class Playback
                 || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM
                 || this.playbackOptions == PlaybackOptions.MULTIPLE_RANDOM)
         {
+            Debug.Writeln("Skip BAckward 2 Called - MULTIPLE Playack, playing previous file", Debug.INFO);
             this.PlayPreviousFile();
         }
         else
         {
-            long curTime = MediaPlayer.GetMediaTime(uicontext);
-            MediaPlayer.Seek(uicontext, curTime - (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000));
+            long skipTime = MediaPlayer.GetMediaTime(uicontext) - (Playback.DEFAULT_SKIP3_TIME_SECONDS * 1000);
+            Debug.Writeln("Skip Backward 2 Called - Seek to: " + skipTime, Debug.INFO);
+            MediaPlayer.Seek(uicontext, skipTime);
         }
     }
     
