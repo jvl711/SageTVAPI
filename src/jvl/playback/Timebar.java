@@ -2,6 +2,7 @@
 package jvl.playback;
 
 import java.util.ArrayList;
+import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
 import jvl.sage.api.MediaFile;
@@ -337,6 +338,27 @@ public class Timebar extends Thread
     
     public boolean HasCommercialMarkers()
     {
+        Debug.Writeln("HasCommerciaMarkers Called", Debug.INFO);
+        
+        if(this.commercials == null)
+        {
+            Debug.Writeln("Commercials variable is null", Debug.INFO);
+        }
+        
+        if(this.commercials.length == 0)
+        {
+            Debug.Writeln("Commercials length is 0", Debug.INFO);
+        }
+        
+        if(this.commercials != null && this.commercials.length > 0)
+        {
+            Debug.Writeln("returning true", Debug.INFO);
+        }
+        else
+        {
+            Debug.Writeln("returning false", Debug.INFO);
+        }
+        
         return (this.commercials != null && this.commercials.length > 0);
     }
     
