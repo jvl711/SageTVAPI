@@ -11,7 +11,7 @@ public class Global extends SageAPI
      * It will be based on resolution with
      * 
      * < 1280 = 1 (SD and below)
-     * < 1080 = 2 HD ~720P
+     * < 1920 = 2 HD ~720P
      * < 3840 = 3 HD ~1080P
      * >= 3840 = 4 4K and above
      * 
@@ -24,7 +24,7 @@ public class Global extends SageAPI
        {
            return 1;
        }
-       else if (width < 1080)
+       else if (width < 1920)
        {
            return 2;
        }
