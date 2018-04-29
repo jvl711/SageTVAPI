@@ -38,7 +38,22 @@ public class Widget extends SageObject
     */
     public Object ExecuteWidgetChain() throws SageCallApiException
     {
-        return Widget.callApiObject(uicontext, "ExecuteWidgetChainInCurrentMenuContext", this.UnwrapObject());
+        
+        Object ret = null;
+        
+        try
+        {   
+            System.out.println("JVL - Calling ExecuteWidgetChainInCurrentMenuContext on: " + this.GetName() + " - " + this.GetSymbol());
+            ret = Widget.callApiObject(uicontext, "ExecuteWidgetChainInCurrentMenuContext", this.UnwrapObject());
+            System.out.println("JVL - Completed calling ExecuteWidgetChainInCurrentMenuContext");
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL - Error executing ExecuteWdigetChain " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        
+        return ret;
     }
     
     /**
