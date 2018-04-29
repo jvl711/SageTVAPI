@@ -38,7 +38,7 @@ public class Widget extends SageObject
     */
     public Object ExecuteWidgetChain() throws SageCallApiException
     {
-        return Widget.callApiObject(uicontext, "ExecuteWidgetChain", this.UnwrapObject());
+        return Widget.callApiObject(uicontext, "ExecuteWidgetChainInCurrentMenuContext", this.UnwrapObject());
     }
     
     /**
