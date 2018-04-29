@@ -3,10 +3,7 @@ package jvl.sage.api;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 
-/**
- *
- * @author jvl711
- */
+
 public class Widget extends SageObject
 {
     private UIContext uicontext;
@@ -33,6 +30,15 @@ public class Widget extends SageObject
         
         return Widget.callApiString(this.uicontext, "GetWidgetName", this.widget);
         
+    }
+    
+    /**
+     * Executes a Widget and the chain of child Widgets underneath it
+     * @return the value returned by the last executed Widget in the chain
+    */
+    public Object ExecuteWidgetChain() throws SageCallApiException
+    {
+        return Widget.callApiObject(uicontext, "ExecuteWidgetChain", this.UnwrapObject());
     }
     
     /**
@@ -65,6 +71,38 @@ public class Widget extends SageObject
         if(this.GetType().equalsIgnoreCase("menu"))
         {
             Widget.callApi(uicontext, "LaunchMenuWidget", widget);
+        }
+    }
+    
+/* --------------------------- STATIC METHODS ---------------------------------------*/    
+    
+    public static Widget GetCurrentMenuWidget(UIContext uicontext) throws SageCallApiException
+    {
+        return new Widget(uicontext, Widget.callApiObject(uicontext, "GetCurrentMenuWidget"));
+    }
+            
+    
+    /**
+     * Searches currently active menu for the widget with the specified name
+     * 
+     * @param uicontext UI Context to do the search in
+     * @param name Name of the widget to search for
+     * 
+     * @return If the widget is found in the active menu then it returns it, or null
+     */
+    public static Widget FindActiveWidget(UIContext uicontext, String name) throws SageCallApiException
+    {
+        Widget menu = Widget.GetCurrentMenuWidget(uicontext);
+
+        Object ret = Widget.callApiObject(uicontext, "GetWidgetChild", menu.UnwrapObject(), null, name);
+        
+        if(ret == null)
+        {
+            return null;
+        }
+        else
+        {
+            return new Widget(uicontext, ret);
         }
     }
     
