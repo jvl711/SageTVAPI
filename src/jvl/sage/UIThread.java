@@ -86,13 +86,16 @@ public class UIThread extends Thread
 
             }
             catch(Exception ex) { }
+        
+            try
+            {
+                Thread.sleep(timer);
+            }
+            catch(Exception ex) { }    
+        
         }
         
-        try
-        {
-            Thread.sleep(timer);
-        }
-        catch(Exception ex) { }
+        
         
     }
 }
