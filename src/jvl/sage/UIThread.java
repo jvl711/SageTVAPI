@@ -71,10 +71,9 @@ public class UIThread extends Thread
             }
             catch(Exception ex)
             {
-                /*
-                What do we do...  Do we exit thread?  Do we allow a certain number
-                of errors?
-                */
+                System.out.println("JVL - UIThread exception.  Stopping thread");
+                this.running = false;
+                break;
             }
 
             try
@@ -94,8 +93,6 @@ public class UIThread extends Thread
             catch(Exception ex) { }    
         
         }
-        
-        
-        
+
     }
 }

@@ -96,7 +96,29 @@ public class Widget extends SageObject
     {
         return new Widget(uicontext, Widget.callApiObject(uicontext, "GetCurrentMenuWidget"));
     }
-            
+    
+    
+    /**
+     * Searches for the widget with the specified symbol
+     * 
+     * @param uicontext UI Context to do the search in
+     * @param symbol Symbol to search for
+     * 
+     * @return If the widget is found in the active menu then it returns it, or null
+     */
+    public static Widget FindWidgetBySymbol(UIContext uicontext, String symbol) throws SageCallApiException
+    {
+        Object ret = Widget.callApiObject(uicontext, "FindWidgetBySymbol",  symbol);
+        
+        if(ret == null)
+        {
+            return null;
+        }
+        else
+        {
+            return new Widget(uicontext, ret);
+        }
+    }
     
     /**
      * Searches currently active menu for the widget with the specified name
