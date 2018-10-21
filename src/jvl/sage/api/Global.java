@@ -56,4 +56,15 @@ public class Global extends SageAPI
 
         return result;
     }
+    
+    public static String [] GetUIContextNames() throws SageCallApiException
+    {
+        String [] result;
+        
+        result = (String []) Global.callApiArray("GetUIContextNames");
+        
+        return result;
+    }
+    
+    
 }

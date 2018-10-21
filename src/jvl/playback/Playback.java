@@ -415,27 +415,7 @@ public class Playback
         MediaPlayer.Seek(uicontext, skipTime);
     }
     
-    public void SkipForward() throws SageCallApiException
-    {
-        if(this.GetTimebar().HasChapterMarkers())
-        {
-            Debug.Writeln("Skip Forward Called - Has Chapter Markers, skipping to next marker.", Debug.INFO);
-            this.GetTimebar().SkipToNextMarker();
-        }
-        else if(this.GetTimebar().HasCommercialMarkers())
-        {
-            Debug.Writeln("Skip Forward Called - Has Commercial Markers, skipping to next marker.", Debug.INFO);
-            this.GetTimebar().SkipToNextMarker();
-        }
-        else
-        {
-            long skipTime = MediaPlayer.GetMediaTime(uicontext) + (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
-            Debug.Writeln("Skip Forward Called - Seek to: " + skipTime, Debug.INFO);
-            MediaPlayer.Seek(uicontext, skipTime);
-        }
-    }
-    
-    public void SkipBackward() throws SageCallApiException
+    public void SkipPreviousMarker() throws SageCallApiException
     {
         if(this.GetTimebar().HasChapterMarkers())
         {
@@ -447,12 +427,35 @@ public class Playback
             Debug.Writeln("Skip Backward Called - Has Commercial Markers, skipping to previous marker.", Debug.INFO);
             this.GetTimebar().SkipToPreviousMarker();
         }
-        else
+    }
+    
+    public void SkipNextMarker() throws SageCallApiException
+    {
+        if(this.GetTimebar().HasChapterMarkers())
         {
-            long skipTime = MediaPlayer.GetMediaTime(uicontext) - (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
-            Debug.Writeln("Skip Backward Called - Seek to: " + skipTime, Debug.INFO);
-            MediaPlayer.Seek(uicontext, skipTime);
+            Debug.Writeln("Skip Forward Called - Has Chapter Markers, skipping to next marker.", Debug.INFO);
+            this.GetTimebar().SkipToNextMarker();
         }
+        else if(this.GetTimebar().HasCommercialMarkers())
+        {
+            Debug.Writeln("Skip Forward Called - Has Commercial Markers, skipping to next marker.", Debug.INFO);
+            this.GetTimebar().SkipToNextMarker();
+        }
+    }
+    
+    public void SkipForward() throws SageCallApiException
+    {
+        long skipTime = MediaPlayer.GetMediaTime(uicontext) + (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
+        Debug.Writeln("Skip Forward Called - Seek to: " + skipTime, Debug.INFO);
+        MediaPlayer.Seek(uicontext, skipTime);
+        
+    }
+    
+    public void SkipBackward() throws SageCallApiException
+    {
+        long skipTime = MediaPlayer.GetMediaTime(uicontext) - (Playback.DEFAULT_SKIP2_TIME_SECONDS * 1000);
+        Debug.Writeln("Skip Backward Called - Seek to: " + skipTime, Debug.INFO);
+        MediaPlayer.Seek(uicontext, skipTime);   
     }
     
     public void SkipForward2() throws SageCallApiException
@@ -520,11 +523,18 @@ public class Playback
         if(MediaPlayer.IsMediaPlayerLoaded(uicontext))
         {
             Debug.Writeln("Media player is loaded. Calling MediaPlayer.Play", Debug.INFO);
+            
+            if(this.GetCurrentAiring().IsWatched())
+            {
+                this.GetCurrentAiring().SetWatchedStatus(false);
+            }
+            
             MediaPlayer.Play(uicontext);
         }
         else
         {
             Debug.Writeln("Media player is not loaded. Calling MediaPlayer.Watch", Debug.INFO);
+            
             this.PlayCurrentFile();
         }
         
@@ -539,9 +549,16 @@ public class Playback
      */
     public void PlayCurrentFile() throws SageCallApiException
     {
+        /*
         if(this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_RANDOM
             || this.GetPlaybackOption() == PlaybackOptions.MULTIPLE
             || this.GetPlaybackOption() == PlaybackOptions.MULTIPLE_UNWATCHED)
+        {
+            this.GetCurrentAiring().SetWatchedStatus(false);
+        }
+        */
+        
+        if(this.GetCurrentAiring().IsWatched())
         {
             this.GetCurrentAiring().SetWatchedStatus(false);
         }
@@ -557,6 +574,11 @@ public class Playback
     {
         //In case the play next thread is running
         this.CancelPlayNextThread();
+        
+        if(this.GetCurrentAiring().IsWatched())
+        {
+            this.GetCurrentAiring().SetWatchedStatus(false);
+        }
         
         switch (this.playbackOptions) 
         {
@@ -601,6 +623,11 @@ public class Playback
     {
         //In case the play next thread is running
         this.CancelPlayNextThread();
+        
+        if(this.GetCurrentAiring().IsWatched())
+        {
+            this.GetCurrentAiring().SetWatchedStatus(false);
+        }
         
         switch (this.playbackOptions) 
         {

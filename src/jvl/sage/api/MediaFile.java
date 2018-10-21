@@ -87,6 +87,11 @@ public class MediaFile extends SageObject
         return MediaFile.callAPIBoolean("IsBluRay", this.mediafile);
     }
     
+    public boolean IsTVFile() throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("IsTVFile", this.mediafile);
+    }
+    
     public static Object GetMediaFileAiring(Object mediaFile) throws SageCallApiException
     {
         return MediaFile.callApiObject("GetMediaFileAiring", mediaFile);
@@ -541,6 +546,28 @@ public class MediaFile extends SageObject
         return ret;
     }
  
+    /**
+     * Sets the corresponding metadata property in the MediaFile's format. These are set in 
+     * the database and are also exported to the corresponding .properties file for that MediaFile. 
+     * When it exports it will append these updates to the .properties file. It will also update 
+     * the property "custom_metadata_properties" (which is a semicolon/comma delimited list) 
+     * which tracks the extra metadata properties that should be retained. Usage of any of the 
+     * following names will update the corresponding Airing/Show object for the MediaFile as well: 
+     * Title, Description, EpisodeName, Track, Duration, Genre, Language, RunningTime, Rated, 
+     * ParentalRating, PartNumber, TotalParts, HDTV, CC, Stereo, SAP, Subtitled, 3D, DD5.1, 
+     * Dolby, Letterbox, Live, New, Widescreen, Surround, Dubbed, Taped, SeasonNumber, 
+     * EpisodeNumber Premiere, SeasonPremiere, SeriesPremiere, ChannelPremiere, SeasonFinale, 
+     * SeriesFinale, ExternalID, Album, Year, OriginalAirDate, ExtendedRatings, Misc and All "Role" Names
+     * 
+     * @param name Key to set propperty for
+     * @param value Value of the property
+     * @throws SageCallApiException 
+     */
+    public void SetMetadata(String name, String value) throws SageCallApiException
+    {
+        SageAPI.callApi("SetMediaFileMetadata", mediafile, name, value);
+    }
+    
     public long GetSize() throws SageCallApiException
     {
         long ret;
@@ -664,10 +691,13 @@ public class MediaFile extends SageObject
         // Second - Look for a direct match (Title and Duration)
         try
         {
+            System.out.println("JVL - Creating chapter search object");
             search = new ChapterSearch();
             String results = search.Execute(this.GetShow().GetTitle());
             chapterSets = search.ParseResult(results);
         
+            System.out.println("JVL - Search returned: " + chapterSets.size());
+            
             for(int i = 0; i < chapterSets.size(); i++)
             {
                 if(chapterSets.get(i).getTitle().equalsIgnoreCase(this.GetShow().GetTitle()) 
@@ -683,6 +713,10 @@ public class MediaFile extends SageObject
                         System.out.println("\tDuration: " + chapterSets.get(i).getSourceDuration());
                         System.out.println("\tMediaFile Duration: " + this.GetMediaDuration());
                         break;
+                    }
+                    else
+                    {
+                        System.out.println("JVL - Chapters...  Not a hit");
                     }
                 }
             }

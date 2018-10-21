@@ -8,6 +8,7 @@ import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import phoenix.fanart;
 import jvl.AdvancedImage;
+import jvl.metadata.Metadata;
 import jvl.sage.Debug;
 
 
@@ -20,6 +21,8 @@ public class Show extends SageObject
     private Object mediafile;
     private Object airing;
     private Object lookupObject;
+    
+    private Metadata meta;
     
     /**
      * This constructor will only construct if it is given a
@@ -57,6 +60,8 @@ public class Show extends SageObject
         {
             this.lookupObject = mediafile;
         }
+        
+        meta = new Metadata(this);
     }
     
     /**
@@ -81,6 +86,12 @@ public class Show extends SageObject
         return new Airing(this.airing);
     }
     
+    public boolean MetadataLookup() throws SageCallApiException, IOException
+    {
+        System.out.println("JVL - Show.LookupMetaData called");
+        return this.meta.LookupMetaData(true);
+    }
+    
     public int GetSeasonNumber() throws SageCallApiException 
     {
         int response = 0;
@@ -90,6 +101,11 @@ public class Show extends SageObject
         return response;
     }
     
+    public void SetSeasonNumber(int value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("SeasonNumber", value + "");
+    }
+    
     public int GetEpisodeNumber() throws SageCallApiException
     {
         int response = 0;
@@ -97,6 +113,11 @@ public class Show extends SageObject
         response = callApiInt("GetShowEpisodeNumber", this.lookupObject);
         
         return response;
+    }
+    
+    public void SetEpisodeNumber(int value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("EpisodeNumber", value + "");
     }
     
     public String GetEpisodeNumberString() throws SageCallApiException
@@ -173,9 +194,19 @@ public class Show extends SageObject
         return callApiString("GetShowEpisode", this.lookupObject).trim();
     }
     
+    public void SetEpisodeName(String value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("EpisodeName", value);
+    }
+    
     public String GetTitle() throws SageCallApiException
     {
         return callApiString("GetShowTitle", this.lookupObject).trim();
+    }
+    
+    public void SetTitle(String value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("Title", value);
     }
     
     public String GetDescription() throws SageCallApiException
@@ -183,11 +214,21 @@ public class Show extends SageObject
         return callApiString("GetShowDescription", this.lookupObject).trim();
     }
     
+    public void SetDescription(String value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("Description", value);
+    }
+    
     public String GetYear() throws SageCallApiException
     {
         return callApiString("GetShowYear", this.lookupObject);
     }
  
+    public void SetYear(int value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("Year", value + "");
+    }
+    
     public String GetCategoriesString() throws SageCallApiException
     {
         return this.GetCategoriesString(" / ");
@@ -251,15 +292,15 @@ public class Show extends SageObject
         File file = null;
 
         //If it returns null sttempt to clear cache and pickup new poster
-        if(poster == null)
-        {
+        //if(poster == null)
+        //{
             //System.out.println("JVL Debug - Getting poster returned null...");
             //System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
             //System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
-            fanart.ClearMemoryCaches();
-            poster = fanart.GetFanartPoster(this.lookupObject);
+        //    fanart.ClearMemoryCaches();
+        //    poster = fanart.GetFanartPoster(this.lookupObject);
             //System.out.println("JVL Debug - Second poster call attemp: " + poster);
-        }
+        //}
         
         if(poster != null)
         {
@@ -308,7 +349,7 @@ public class Show extends SageObject
         {
             String [] backgrounds = this.GetBackgrounds();
             
-            if(backgrounds.length > 0)
+            if(backgrounds != null && backgrounds.length > 0)
             {
                 background = backgrounds[0];
             }
@@ -339,7 +380,6 @@ public class Show extends SageObject
     {
         String [] posters = fanart.GetFanartPosters(this.lookupObject);
         ArrayList temp = new ArrayList();
-        
         
         for(int i = 0; i < posters.length; i++)
         {
@@ -372,6 +412,11 @@ public class Show extends SageObject
     {
         String [] backgrounds = fanart.GetFanartBackgrounds(this.lookupObject);
         ArrayList temp = new ArrayList();
+        
+        if(backgrounds == null)
+        {
+            backgrounds = new String[]{};
+        }
         
         for(int i = 0; i < backgrounds.length; i++)
         {
@@ -474,6 +519,30 @@ public class Show extends SageObject
             }
         }
         
+    }
+    
+    /**
+     * Gets the TMDB ID if it is set in the database.  If it is not set, or there
+     * is an error parsing the value it will return 0
+     * @return TMDB ID
+     */
+    public int GetTheMoiveDBID()
+    {
+        try
+        {
+            String temp_id = this.GetMediaFile().GetMetadata("tmdb.id");
+            
+            return Integer.parseInt(temp_id);
+        }
+        catch(Exception ex)
+        {
+            return -1;
+        }
+    }
+    
+    public void SetTheMovieDBID(int value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("tmdb.id", value + "");
     }
     
     @Override

@@ -32,6 +32,11 @@ public class Widget extends SageObject
         
     }
     
+    public UIContext GetUIConext()
+    {
+        return this.uicontext;
+    }
+    
     /**
      * Executes a Widget and the chain of child Widgets underneath it
      * @return the value returned by the last executed Widget in the chain

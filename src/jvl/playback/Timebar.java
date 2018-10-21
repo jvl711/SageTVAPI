@@ -52,6 +52,7 @@ public class Timebar extends Thread
         {
             mediaType = mediaFile.GetMetadata("MediaType");
         }
+        
         try
         {   
             this.commercials = mediaFile.GetCommercialMarkers();
@@ -65,10 +66,10 @@ public class Timebar extends Thread
        
         //If it is a movie attempt to load chapters
         if(mediaType != null && mediaType.equalsIgnoreCase("movie"))
-        {
-            
+        {    
             try
             {
+                System.out.println("JVL - Searching for chapters.");
                 chapters = mediaFile.GetChapterMarkers();
             }
             catch(Exception ex)
@@ -77,6 +78,10 @@ public class Timebar extends Thread
                 System.out.println("JVL - Error Message: " + ex.getMessage());
                 this.chapters = new Marker[0];
             }
+        }
+        else
+        {
+            System.out.println("JVL - Media Type not equal to movie.  Not searching for chapters.");
         }
         
         

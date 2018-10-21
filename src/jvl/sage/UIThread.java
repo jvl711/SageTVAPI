@@ -11,6 +11,7 @@ public class UIThread extends Thread
     private Widget afterExecute;
     private final long timer;
     private boolean running;
+    private final long contextCheckTime = 60000; /* Check if context is still valid after this time */
 
     public UIThread(Widget executeWidget, long timer)
     {
@@ -52,9 +53,12 @@ public class UIThread extends Thread
     @Override
     public void run()
     {
-
+        long sinceLastContextCheck = 0;
+        
         while(running)
         {
+            
+            
             try
             {
                 if(this.beforeExecute != null)
@@ -92,6 +96,32 @@ public class UIThread extends Thread
             }
             catch(Exception ex) { }    
         
+            if(sinceLastContextCheck >= contextCheckTime)
+            {
+                try
+                {
+                    if(!execute.GetUIConext().isActive())
+                    {
+                        System.out.println("JVL - UIThread.  UIConext not active.  Exiting thread.");
+                        running = false;
+                    }
+                    else
+                    {
+                        System.out.println("JVL - UIThread.  UIConext is still active.");
+                        sinceLastContextCheck = 0;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    System.out.println("JVL - UIThread error.  Exception checking UIContext status");
+                    running = false;
+                }
+            }
+            else
+            {
+                sinceLastContextCheck += timer;
+            }
+            
         }
 
     }

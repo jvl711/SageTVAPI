@@ -33,6 +33,11 @@ public class SageAPI
         callAPIBase(method, new Object [] {arg1, arg2});
     }
     
+    protected static void callApi(String method, Object arg1, Object arg2, Object arg3) throws SageCallApiException
+    {
+        callAPIBase(method, new Object [] {arg1, arg2, arg3});
+    }
+    
     protected static void callApi(UIContext context, String method, Object arg1, Object arg2) throws SageCallApiException
     {
         callAPIBase(context, method, new Object [] {arg1, arg2});
@@ -279,6 +284,7 @@ public class SageAPI
             Debug.Writeln(message, Debug.INFO);
             
             ret = (Object)SageTV.apiUI(context.GetName(), method, args);
+            
                     
             if(ret == null)
             {
