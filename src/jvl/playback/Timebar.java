@@ -32,6 +32,7 @@ public class Timebar extends Thread
     
     private static final int DEFAULT_SLEEP_ON_SKIP = 15000;
     private static final int DEFAULT_COMM_HIT_RANGE = 5000;
+    private static final int DEFAULT_COMM_SKIP_BEFORE = 3000; //Amount of seconds to skip too before maker
     
 
     public Timebar(String context, Airing airing) throws SageCallApiException
@@ -547,7 +548,7 @@ public class Timebar extends Thread
                             {
                                 //System.out.println("jvl.sage.Timebar - Commercial Hit...  Skipping to end of marker");
                                 this.SleepCommThread();
-                                MediaPlayer.Seek(this.context, commercials[i].GetEndTime());
+                                MediaPlayer.Seek(this.context, commercials[i].GetEndTime() - DEFAULT_COMM_SKIP_BEFORE);
 
                             }
                         }

@@ -21,8 +21,8 @@ public class Playback
 {
     private static final int DEFAULT_PLAYNEXT_TIME_SECONDS = 15;
     private static final int DEFAULT_SKIP_TIME_SECONDS = 10;
-    private static final int DEFAULT_SKIP2_TIME_SECONDS = 60;
-    private static final int DEFAULT_SKIP3_TIME_SECONDS = 120;
+    private static final int DEFAULT_SKIP2_TIME_SECONDS = 30;
+    private static final int DEFAULT_SKIP3_TIME_SECONDS = 60;
     private int playnextTime;
     private Airings airings;
     private int index;
