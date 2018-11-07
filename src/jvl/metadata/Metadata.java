@@ -118,10 +118,10 @@ public class Metadata
                         
                         show.SetTheMovieDBID(result.getTmdb_ID());                        
 
-                        Movie movie = MovieAPI.getDetails(request, result.getTmdb_ID() + "");
+                        Movie movie = MovieAPI.getDetails(request, result.getTmdb_ID());
                         movie.save(json);
                         
-                        Images images = MovieAPI.getImages(request, result.getTmdb_ID() + "");
+                        Images images = MovieAPI.getImages(request, result.getTmdb_ID());
 
                     }
                     else
@@ -154,10 +154,7 @@ public class Metadata
         if(id != -1)
         {
             File json = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + id + "movie.json");
-            
-            
-            
-            
+
         }
         
         return null;
