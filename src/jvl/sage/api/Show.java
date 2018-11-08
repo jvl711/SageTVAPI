@@ -89,7 +89,7 @@ public class Show extends SageObject
     public boolean MetadataLookup() throws SageCallApiException, IOException
     {
         System.out.println("JVL - Show.LookupMetaData called");
-        return this.meta.LookupMetaData(true);
+        return this.meta.LookupMetadata(true);
     }
     
     public int GetSeasonNumber() throws SageCallApiException 
@@ -239,10 +239,33 @@ public class Show extends SageObject
         return Show.callApiString("GetShowCategoriesString", this.lookupObject, Delimiter);
     }
     
+    public void SetCategories(String [] values) throws SageCallApiException
+    {
+        String value = "";
+        
+        for(int i = 0; i < values.length; i++)
+        {
+            value += values[i] + ";";
+        }
+        
+        if(value.length() > 0)
+        {
+            value = value.substring(0, value.length() - 1);
+        }
+        
+        this.GetMediaFile().SetMetadata("Genre", value);
+    }
+    
     public String [] GetCategories() throws SageCallApiException
     {
         return (String []) Show.callApiArray("GetShowCategoriesList", this.lookupObject);
     }
+    
+    public boolean IsMovie() throws SageCallApiException
+    {
+        return Show.callAPIBoolean("IsMovie");
+    }
+            
     
     public char GetTitleSearchChar() throws SageCallApiException
     {
@@ -520,6 +543,18 @@ public class Show extends SageObject
         }
         
     }
+    
+    public String GetMediaType() throws SageCallApiException
+    {
+        return this.GetMediaFile().GetMetadata("MediaType");
+    }
+    
+    public void SetMediaType(String value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("MediaType", value);
+    }
+    
+    
     
     /**
      * Gets the TMDB ID if it is set in the database.  If it is not set, or there
