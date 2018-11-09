@@ -11,9 +11,13 @@ import jvl.tmdb.model.SearchResultMovie;
 import jvl.tmdb.model.SearchResults;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
+import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
+import jvl.tmdb.ShowAPI;
 import jvl.tmdb.model.Images;
 import jvl.tmdb.model.SearchResultShow;
+import jvl.tmdb.model.Season;
 
 /*
  *  Directory Structure
@@ -24,8 +28,26 @@ import jvl.tmdb.model.SearchResultShow;
  *                                  images.json
  *                                  posters ->
  *                                          size_name.jpg
- *                                  backgrounds ->
+ *                                  backdrops ->
  *                                          size_name.jpg
+ *
+ *      Root ->
+ *              shows ->
+ *                      {TMDB ID} ->
+ *                                  details.json
+ 
+ *                                  images.json
+ *                                  posters (Show) ->
+ *                                                  size_name.jpg
+ *                                  backdrops (Show) ->
+ *                                                  size_name.jpg
+ *                                  season_{n} ->
+ *                                                  season.json
+ *                                                  posters ->
+ *                                                              size_name.jpg
+ *                                                  episode_{n} ->
+ *                                                              size_name.jpg
+ *
  *  
 */
 
@@ -180,7 +202,6 @@ public class Metadata
                 }
                 else
                 {
-                    
                     System.out.println("JVL - Parser found IsMovie is false");
                     results = SearchAPI.searchTV(request, parser.GetTitle());
                     
@@ -196,21 +217,45 @@ public class Metadata
                         
                         return false;
                     }
-                    
-                    
                 }
-                
-            }
-            
-            
+            }  
         }
         
         return true;
     }
     
-    private void SaveTVMetadata(SearchResultShow show, int seasonNumber, int episodeNumber)
+    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber) throws IOException
     {
-        //MediaType=TV
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "/images.json");
+        File seasonsFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "season_" + seasonNumber + "/season.json");
+        
+        boolean updateCache = false;
+        
+        //Check to see if we need to update files.  If we already have the season episode info
+        //then skip.  If we are missing anything than update it all.
+        if(!detailsFile.exists()) { updateCache = true; }
+        
+        if(!imagesFile.exists()) { updateCache = true; }
+    
+        if(!seasonsFile.exists())
+        {
+            updateCache = true;
+        }
+        else
+        {
+            Season season = Season.parseFile(seasonsFile, ConfigAPI.getConfig(request));
+            
+            if(season.getEpisodeCount() < episodeNumber)
+            {
+                { updateCache = true; }
+            }
+        }
+        
+        Date now = new Date();
+        //Show show = ShowAPI.getDetails(this.request, result.getTmdb_ID());
+        
+        
     }
     
     private void SaveMovieMetadata(SearchResultMovie result, int year) throws SageCallApiException, FileNotFoundException, IOException
@@ -218,6 +263,7 @@ public class Metadata
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/images.json");
         
+        Date now = new Date();
         Movie movie = MovieAPI.getDetails(request, result.getTmdb_ID());
         Images images = MovieAPI.getImages(request, result.getTmdb_ID());
         
@@ -225,25 +271,21 @@ public class Metadata
         show.SetTitle(movie.getTitle());
         show.SetDescription(movie.getOverview());
         show.SetCategories(movie.getGenres());
+        show.SetYear(movie.getReleaseYear());
+        show.SetMetadataUpdateDate(now.getTime());
         show.SetMediaType("Movie");
-        
-        //show.SetYear(result.getReleaseDate());  //TODO: I need to get the releae year.  Add method 
         
         movie.save(detailsFile);
         images.save(imagesFile);
         
-        String poster_width = images.getPoster().getValidSize(Metadata.DEFAULT_POSTER_SIZE_WIDTH);
-        File posterFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/posters/" + poster_width + images.getPoster().getFileName());
-        images.getPoster().saveImage(posterFile, Metadata.DEFAULT_POSTER_SIZE_WIDTH);
-        
-        String backdrop_width = images.getBackdrop().getValidSize(Metadata.DEFAULT_BACKDROP_SIZE_WIDTH);
-        File backdropFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
-        images.getBackdrop().saveImage(backdropFile, Metadata.DEFAULT_BACKDROP_SIZE_WIDTH);
+        //Cache the default poster and backdrop in the default size
+        this.GetPoster();
+        this.GetBackdrop();
     }
     
     private boolean HasMetadata()
     {
-        if(this.show.GetTheMoiveDBID() == -1)
+        if(this.show.GetTheMovieDBID() == -1)
         {
             return false;
         }
@@ -251,10 +293,159 @@ public class Metadata
         return true;
     }
     
+    public Movie GetMovieDetails() throws IOException
+    {
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/detials.json");
+        Movie movie = null;
+        
+        if(!detailsFile.exists())
+        {
+            movie = MovieAPI.getDetails(this.request, this.show.GetTheMovieDBID());
+        }
+        
+        return movie;
+    }
+    
+    
+    /**
+     * Gets the default poster for movie/show with the default size. Will download
+     * and save the image into the local cache folder
+     * 
+     * @return Path to the locally cached poster in the default size
+     * @throws SageCallApiException
+     * @throws IOException 
+     */
+    public String GetPoster() throws SageCallApiException, IOException
+    {
+        return this.GetPoster(Metadata.DEFAULT_POSTER_SIZE_WIDTH);
+    }
+    
+    /**
+     * Gets the default poster for movie/show with the closest match to the preferred size.
+     * Will download and save the image into the local cache folder
+     * 
+     * @return Path to the locally cached file in the closest matched preferred size
+     * @throws SageCallApiException
+     * @throws IOException 
+     */
+    public String GetPoster(int preferredSize) throws SageCallApiException, IOException
+    {
+        File file = null;
+        Images images = this.GetImages();
+        
+        if(this.HasMetadata() && images.getPosters().size() > 0)
+        {
+            String poster_width = images.getPoster().getValidSize(preferredSize);
+            
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/show/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
+            }
+            else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
+            }
+            
+            if(file != null && !file.exists())
+            {
+                images.getPoster().saveImage(file, preferredSize);
+            }
+        }
+        
+        return file.getAbsolutePath();
+    }
+    
+    /**
+     * Gets the default backdrop for movie/show with the default size. Will download
+     * and save the image into the local cache folder
+     * 
+     * @return Path to the locally cached poster in the default size
+     * @throws SageCallApiException
+     * @throws IOException 
+     */
+    public String GetBackdrop() throws SageCallApiException, IOException
+    {
+        return this.GetBackdrop(DEFAULT_BACKDROP_SIZE_WIDTH);
+    }
+    
+     /**
+     * Gets the default backdrop for movie/show with the closest match to the preferred size.
+     * Will download and save the image into the local cache folder
+     * 
+     * @return Path to the locally cached file in the closest matched preferred size
+     * @throws SageCallApiException
+     * @throws IOException 
+     */
+    public String GetBackdrop(int preferredSize) throws SageCallApiException, IOException
+    {
+        File file = null;
+        Images images = this.GetImages();
+        
+        if(this.HasMetadata() && images.getBackdrops().size() > 0)
+        {
+            String backdrop_width = images.getBackdrop().getValidSize(preferredSize);
+            
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/show/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
+            }
+            else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
+            }
+            
+            if(file != null && !file.exists())
+            {
+                images.getBackdrop().saveImage(file, preferredSize);
+            }
+        }
+        
+        return file.getAbsolutePath();
+    }
+    
+    private Images GetImages() throws SageCallApiException, IOException
+    {
+        Images images = null;
+        
+        if(this.HasMetadata())
+        {
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + this.show.GetTheMovieDBID() + "/images.json");
+                
+                if(imagesFile.exists())
+                {
+                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                }
+                else
+                {
+                    images = ShowAPI.getImages(request, this.show.GetTheMovieDBID());
+                    images.save(imagesFile);
+                }
+            }
+            else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
+            {
+                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + this.show.GetTheMovieDBID() + "/images.json");
+                
+                if(imagesFile.exists())
+                {
+                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                }
+                else
+                {
+                    images = MovieAPI.getImages(request, this.show.GetTheMovieDBID());
+                    images.save(imagesFile);
+                }
+            }
+        }
+        
+        return images;
+    }
+    
     private Movie GetMovie()
     {
         //This assumes we already know the TMDB ID
-        int id = this.show.GetTheMoiveDBID();
+        int id = this.show.GetTheMovieDBID();
         
         
         if(id != -1)

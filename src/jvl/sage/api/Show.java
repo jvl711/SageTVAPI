@@ -224,9 +224,9 @@ public class Show extends SageObject
         return callApiString("GetShowYear", this.lookupObject);
     }
  
-    public void SetYear(int value) throws SageCallApiException
+    public void SetYear(String value) throws SageCallApiException
     {
-        this.GetMediaFile().SetMetadata("Year", value + "");
+        this.GetMediaFile().SetMetadata("Year", value);
     }
     
     public String GetCategoriesString() throws SageCallApiException
@@ -544,11 +544,33 @@ public class Show extends SageObject
         
     }
     
+    /**
+     * The type of media file this show object represents.
+     * 
+     * TV - TV Episode
+     * Movie - Movie
+     * Music - File without video
+     * Unknown - Unable to identify.  These may need manual assignment
+     * 
+     * @return The type of media this object represents
+     * @throws SageCallApiException 
+     */
     public String GetMediaType() throws SageCallApiException
     {
         return this.GetMediaFile().GetMetadata("MediaType");
     }
     
+    /**
+     * Sets the type of media this object represents
+     * 
+     * TV - TV Episode
+     * Movie - Movie
+     * Music - File without video
+     * Unknown - Unable to identify.  These may need manual assignment
+     * 
+     * @param value MediaType from one of the valid options above
+     * @throws SageCallApiException 
+     */
     public void SetMediaType(String value) throws SageCallApiException
     {
         this.GetMediaFile().SetMetadata("MediaType", value);
@@ -561,11 +583,11 @@ public class Show extends SageObject
      * is an error parsing the value it will return 0
      * @return TMDB ID
      */
-    public int GetTheMoiveDBID()
+    public int GetTheMovieDBID()
     {
         try
         {
-            String temp_id = this.GetMediaFile().GetMetadata("tmdb.id");
+            String temp_id = this.GetMediaFile().GetMetadata("metadata.tmdb.id");
             
             return Integer.parseInt(temp_id);
         }
@@ -577,7 +599,24 @@ public class Show extends SageObject
     
     public void SetTheMovieDBID(int value) throws SageCallApiException
     {
-        this.GetMediaFile().SetMetadata("tmdb.id", value + "");
+        this.GetMediaFile().SetMetadata("metadata.tmdb.id", value + "");
+    }
+    
+    public long GetMetadataUpdateDate() throws SageCallApiException
+    {
+        String temp;
+        long value = 0;
+        
+        temp = this.GetMediaFile().GetMetadata("metadata.lastupdated");
+        
+        try { value = Long.parseLong(temp); } catch(Exception ex) {}
+        
+        return value;
+    }
+    
+    public void SetMetadataUpdateDate(long value) throws SageCallApiException
+    {
+        this.GetMediaFile().SetMetadata("metadata.lastupdated", value + "");
     }
     
     @Override
