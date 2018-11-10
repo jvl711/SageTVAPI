@@ -14,10 +14,12 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
-import jvl.tmdb.ShowAPI;
+import jvl.tmdb.TVAPI;
+import jvl.tmdb.model.Episode;
 import jvl.tmdb.model.Images;
 import jvl.tmdb.model.SearchResultShow;
 import jvl.tmdb.model.Season;
+import jvl.tmdb.model.TV;
 
 /*
  *  Directory Structure
@@ -32,7 +34,7 @@ import jvl.tmdb.model.Season;
  *                                          size_name.jpg
  *
  *      Root ->
- *              shows ->
+ *              TV ->
  *                      {TMDB ID} ->
  *                                  details.json
  
@@ -224,11 +226,12 @@ public class Metadata
         return true;
     }
     
-    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber) throws IOException
+    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber) throws IOException, SageCallApiException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "/images.json");
-        File seasonsFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + result.getTmdb_ID() + "season_" + seasonNumber + "/season.json");
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
+        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "season_" + seasonNumber + "/season.json");
+        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "season_" + seasonNumber + "/images.json");
         
         boolean updateCache = false;
         
@@ -238,24 +241,83 @@ public class Metadata
         
         if(!imagesFile.exists()) { updateCache = true; }
     
-        if(!seasonsFile.exists())
+        if(!seasonFile.exists())
         {
             updateCache = true;
         }
         else
         {
-            Season season = Season.parseFile(seasonsFile, ConfigAPI.getConfig(request));
+            TV tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request));
             
-            if(season.getEpisodeCount() < episodeNumber)
+            if(!tv.hasSeason(seasonNumber))
             {
-                { updateCache = true; }
+                updateCache = true;
+            }
+            else
+            {
+                Season season = Season.parseFile(seasonFile, ConfigAPI.getConfig(request));
+
+                if(!season.hasEpisode(episodeNumber))
+                {
+                    updateCache = true;
+                }
             }
         }
         
-        Date now = new Date();
-        //Show show = ShowAPI.getDetails(this.request, result.getTmdb_ID());
+        if(updateCache)
+        {
+            Date now = new Date();
+
+            //Show show = ShowAPI.getDetails(this.request, result.getTmdb_ID());
+            TV tv = TVAPI.getDetails(this.request, result.getTmdb_ID());
+            
+            if(!tv.hasSeason(seasonNumber))
+            {
+                //TODO: log the failure to system messages
+                System.out.println("JVL - The season was not found for the given show");
+                System.out.println("JVL - Search result: " + result.getName());
+                System.out.println("JVL - Season: " + seasonNumber);
+                
+                return;
+            }
+            
+            Season season = TVAPI.getSeasonDetails(this.request, seasonNumber, seasonNumber);
+            
+            if(!season.hasEpisode(episodeNumber))
+            {
+                //TODO: log the failure to system messages
+                System.out.println("JVL - The episode was not found for the given show and season");
+                System.out.println("JVL - Search result: " + result.getName());
+                System.out.println("JVL - Season: " + seasonNumber);
+                System.out.println("JVL - Episode: " + episodeNumber);
+                
+                return;
+            }
+            
+            Episode episode = season.getEpisode(episodeNumber);
+            Images images = TVAPI.getImages(this.request, result.getTmdb_ID());
+            Images seasonImages = TVAPI.getSeasonImages(request, result.getTmdb_ID(), seasonNumber);
+            
+            show.SetTheMovieDBID(result.getTmdb_ID());
+            show.SetTitle(tv.getName());
+            show.SetEpisodeName(episode.getName());
+            show.SetEpisodeNumber(episodeNumber);
+            show.SetSeasonNumber(seasonNumber);
+            show.SetDescription(episode.getOverview());
+            show.SetCategories(tv.getGenres());
+            show.SetMetadataUpdateDate(now.getTime());
+            show.SetMediaType("TV");
+
+            tv.save(detailsFile);
+            images.save(imagesFile);
+            season.save(seasonFile);
+            seasonImages.save(seasonImagesFile);
+        }
         
-        
+        this.GetPoster();
+        this.GetBackdrop();
+        //this.GetSeasonPoster();
+        //this.GetStillImage();
     }
     
     private void SaveMovieMetadata(SearchResultMovie result, int year) throws SageCallApiException, FileNotFoundException, IOException
@@ -339,7 +401,7 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/show/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
@@ -387,7 +449,7 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/show/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
@@ -411,7 +473,7 @@ public class Metadata
         {
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/shows/" + this.show.GetTheMovieDBID() + "/images.json");
+                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/images.json");
                 
                 if(imagesFile.exists())
                 {
@@ -419,7 +481,7 @@ public class Metadata
                 }
                 else
                 {
-                    images = ShowAPI.getImages(request, this.show.GetTheMovieDBID());
+                    images = TVAPI.getImages(request, this.show.GetTheMovieDBID());
                     images.save(imagesFile);
                 }
             }
