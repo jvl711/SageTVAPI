@@ -1,6 +1,7 @@
 
 package jvl.sage.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
@@ -74,6 +75,28 @@ public class Shows extends SageArrayObject<Show>
         }
                 
         return mediafiles;
+    }
+    
+    public boolean MetadataLookup() throws SageCallApiException, IOException
+    {
+        boolean result = true;
+        
+        for(int i = 0 ; i < this.size(); i++)
+        {
+            try
+            {
+                if(!this.get(i).MetadataLookup())
+                {
+                    result = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                System.out.println("JVL - Error looking up metadata");
+            }
+        }
+        
+        return result;
     }
     
     public ArrayList<String> GetCategroies() throws SageCallApiException

@@ -29,28 +29,34 @@ import jvl.tmdb.model.TV;
  *                                  details.json
  *                                  images.json
  *                                  posters ->
- *                                          size_name.jpg
+ *                                              size ->
+ *                                                      name.jpg
  *                                  backdrops ->
- *                                          size_name.jpg
+ *                                              size ->
+ *                                                      name.jpg
  *
  *      Root ->
  *              TV ->
  *                      {TMDB ID} ->
  *                                  details.json
- 
+ *
  *                                  images.json
  *                                  posters (Show) ->
- *                                                  size_name.jpg
+ *                                                  size ->
+                                                            name.jpg
  *                                  backdrops (Show) ->
- *                                                  size_name.jpg
+ *                                                  size ->
+                                                            name.jpg
  *                                  season_{n} ->
  *                                                  season.json
  *                                                  posters ->
- *                                                              size_name.jpg
+ *                                                              size ->
+                                                                        name.jpg
  *                                                  episode_{n} ->
- *                                                              size_name.jpg
+                                                                    stills
+            *                                                              size ->
+ *                                                                                  name.jpg
  *
- *  
 */
 
 
@@ -63,6 +69,7 @@ public class Metadata
     private TMDBRequest request;
     
     private static final int DEFAULT_POSTER_SIZE_WIDTH = 600;
+    private static final int DEFAULT_STILL_SIZE_WIDTH = 600;
     private static final int DEFAULT_BACKDROP_SIZE_WIDTH = 1920;
     
     
@@ -230,8 +237,9 @@ public class Metadata
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
-        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "season_" + seasonNumber + "/season.json");
-        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "season_" + seasonNumber + "/images.json");
+        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/season.json");
+        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/images.json");
+        File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
         
         boolean updateCache = false;
         
@@ -263,61 +271,76 @@ public class Metadata
                 }
             }
         }
-        
+                
+        Date now = new Date();
+
+        TV tv;
+        Season season;
+        Episode episode;
+            
         if(updateCache)
         {
-            Date now = new Date();
+            tv = TVAPI.getDetails(this.request, result.getTmdb_ID());
+            season = TVAPI.getSeasonDetails(this.request, result.getTmdb_ID(), seasonNumber);
+            episode = season.getEpisode(episodeNumber);
+        }
+        else
+        {
+            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request));
+            season = Season.parseFile(seasonFile, ConfigAPI.getConfig(request));
+            episode = season.getEpisode(episodeNumber);
+        }
 
-            //Show show = ShowAPI.getDetails(this.request, result.getTmdb_ID());
-            TV tv = TVAPI.getDetails(this.request, result.getTmdb_ID());
-            
-            if(!tv.hasSeason(seasonNumber))
-            {
-                //TODO: log the failure to system messages
-                System.out.println("JVL - The season was not found for the given show");
-                System.out.println("JVL - Search result: " + result.getName());
-                System.out.println("JVL - Season: " + seasonNumber);
-                
-                return;
-            }
-            
-            Season season = TVAPI.getSeasonDetails(this.request, seasonNumber, seasonNumber);
-            
-            if(!season.hasEpisode(episodeNumber))
-            {
-                //TODO: log the failure to system messages
-                System.out.println("JVL - The episode was not found for the given show and season");
-                System.out.println("JVL - Search result: " + result.getName());
-                System.out.println("JVL - Season: " + seasonNumber);
-                System.out.println("JVL - Episode: " + episodeNumber);
-                
-                return;
-            }
-            
-            Episode episode = season.getEpisode(episodeNumber);
+        if(!tv.hasSeason(seasonNumber))
+        {
+            //TODO: log the failure to system messages
+            System.out.println("JVL - The season was not found for the given show");
+            System.out.println("JVL - Search result: " + result.getName());
+            System.out.println("JVL - Season: " + seasonNumber);
+
+            return;
+        }
+
+        if(!season.hasEpisode(episodeNumber))
+        {
+            //TODO: log the failure to system messages
+            System.out.println("JVL - The episode was not found for the given show and season");
+            System.out.println("JVL - Search result: " + result.getName());
+            System.out.println("JVL - Season: " + seasonNumber);
+            System.out.println("JVL - Episode: " + episodeNumber);
+
+            return;
+        }
+        
+        show.SetTheMovieDBID(result.getTmdb_ID());
+        show.SetTitle(tv.getName());
+        show.SetEpisodeName(episode.getName());
+        show.SetEpisodeNumber(episodeNumber);
+        show.SetSeasonNumber(seasonNumber);
+        show.SetDescription(episode.getOverview());
+        show.SetCategories(tv.getGenres());
+        show.SetMetadataUpdateDate(now.getTime());
+        show.SetMediaType("TV");
+
+        if(updateCache)
+        {
             Images images = TVAPI.getImages(this.request, result.getTmdb_ID());
             Images seasonImages = TVAPI.getSeasonImages(request, result.getTmdb_ID(), seasonNumber);
-            
-            show.SetTheMovieDBID(result.getTmdb_ID());
-            show.SetTitle(tv.getName());
-            show.SetEpisodeName(episode.getName());
-            show.SetEpisodeNumber(episodeNumber);
-            show.SetSeasonNumber(seasonNumber);
-            show.SetDescription(episode.getOverview());
-            show.SetCategories(tv.getGenres());
-            show.SetMetadataUpdateDate(now.getTime());
-            show.SetMediaType("TV");
+            Images episodeImages = TVAPI.getEpisodeImages(request, result.getTmdb_ID(), seasonNumber, episodeNumber);
 
             tv.save(detailsFile);
-            images.save(imagesFile);
             season.save(seasonFile);
+
+            images.save(imagesFile);
+            episodeImages.save(episodeImagesFile);
             seasonImages.save(seasonImagesFile);
         }
         
+        
         this.GetPoster();
         this.GetBackdrop();
-        //this.GetSeasonPoster();
-        //this.GetStillImage();
+        this.GetSeasonPoster();
+        this.GetEpisodeStill();
     }
     
     private void SaveMovieMetadata(SearchResultMovie result, int year) throws SageCallApiException, FileNotFoundException, IOException
@@ -345,14 +368,9 @@ public class Metadata
         this.GetBackdrop();
     }
     
-    private boolean HasMetadata()
+    public boolean HasMetadata()
     {
-        if(this.show.GetTheMovieDBID() == -1)
-        {
-            return false;
-        }
-        
-        return true;
+        return this.show.GetTheMovieDBID() != -1;
     }
     
     public Movie GetMovieDetails() throws IOException
@@ -413,8 +431,85 @@ public class Metadata
                 images.getPoster().saveImage(file, preferredSize);
             }
         }
+     
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    public String GetSeasonPoster() throws SageCallApiException, IOException
+    {
+        return this.GetSeasonPoster(DEFAULT_POSTER_SIZE_WIDTH);
+    }
+    
+    public String GetSeasonPoster(int preferredSize) throws SageCallApiException, IOException
+    {
+        File file = null;
+        Images images = this.GetSeasonImages();
         
-        return file.getAbsolutePath();
+        if(this.HasMetadata() && images.getPosters().size() > 0)
+        {
+            String poster_width = images.getPoster().getValidSize(preferredSize);
+            
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/posters/" + poster_width + images.getPoster().getFileName());
+            }
+            
+            if(file != null && !file.exists())
+            {
+                images.getPoster().saveImage(file, preferredSize);
+            }
+        }
+        
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    public String GetEpisodeStill() throws SageCallApiException, IOException
+    {
+        return this.GetEpisodeStill(DEFAULT_STILL_SIZE_WIDTH);
+    }
+    
+    public String GetEpisodeStill(int preferredSize) throws SageCallApiException, IOException
+    {
+        File file = null;
+        Images images = this.GetEpisodeImages();
+        
+        if(this.HasMetadata() && images.getStills().size() > 0)
+        {
+            String still_width = images.getStill().getValidSize(preferredSize);
+            
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/episode_" + this.show.GetEpisodeNumber() + "/stills/" + still_width + images.getStill().getFileName());
+            }
+            
+            if(file != null && !file.exists())
+            {
+                images.getStill().saveImage(file, preferredSize);
+            }
+        }
+        
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
     }
     
     /**
@@ -462,7 +557,64 @@ public class Metadata
             }
         }
         
-        return file.getAbsolutePath();
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    private Images GetSeasonImages() throws SageCallApiException, IOException
+    {
+        Images images = null;
+        
+        if(this.HasMetadata())
+        {
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/images.json");
+                
+                if(imagesFile.exists())
+                {
+                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                }
+                else
+                {
+                    images = TVAPI.getSeasonImages(request, this.show.GetTheMovieDBID(), this.show.GetSeasonNumber());
+                    images.save(imagesFile);
+                }
+            }
+        }
+        
+        return images;
+    }
+    
+    private Images GetEpisodeImages() throws SageCallApiException, IOException
+    {
+        Images images = null;
+        
+        if(this.HasMetadata())
+        {
+            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+            {
+                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/episode_" + this.show.GetEpisodeNumber() + "/images.json");
+                
+                if(imagesFile.exists())
+                {
+                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                }
+                else
+                {
+                    images = TVAPI.getEpisodeImages(this.request, this.show.GetTheMovieDBID(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
+                    images.save(imagesFile);
+                }
+            }
+        }
+        
+        return images;
     }
     
     private Images GetImages() throws SageCallApiException, IOException

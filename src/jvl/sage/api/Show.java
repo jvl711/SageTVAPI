@@ -308,7 +308,36 @@ public class Show extends SageObject
         return ret;
     }
 
-    public String GetPoster()
+    public String GetEpisodeStill() throws SageCallApiException, IOException
+    {
+        return this.meta.GetEpisodeStill();
+    }
+    
+    public String GetSeasonPoster() throws SageCallApiException, IOException
+    {
+        if(this.meta.HasMetadata())
+        {
+            return this.meta.GetSeasonPoster();
+        }
+        else
+        {
+            return this.GetPosterOld();
+        }
+    }
+    
+    public String GetPoster() throws SageCallApiException, IOException
+    {
+        if(this.meta.HasMetadata())
+        {
+            return this.meta.GetPoster();
+        }
+        else
+        {
+            return this.GetPosterOld();
+        }
+    }
+    
+    public String GetPosterOld()
     {
         String poster = fanart.GetFanartPoster(this.lookupObject);
         
@@ -358,7 +387,19 @@ public class Show extends SageObject
         return poster;
     }
     
-    public String GetBackground()
+    public String GetBackground() throws SageCallApiException, IOException
+    {
+        if(this.meta.HasMetadata())
+        {
+            return this.meta.GetBackdrop();
+        }
+        else
+        {
+            return this.GetBackgroundOld();
+        }
+    }
+    
+    public String GetBackgroundOld()
     {
         String background = fanart.GetFanartBackground(this.lookupObject);
         File file = null;
