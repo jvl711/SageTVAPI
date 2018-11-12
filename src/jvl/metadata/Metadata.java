@@ -119,28 +119,30 @@ public class Metadata
             {
                 System.out.println("JVL - This is recorded content that is not a movie");
                 
-                if(this.show.GetEpisodeNumber() > 0)
+
+                SearchResults results = SearchAPI.searchTV(this.request, show.GetTitle());
+
+                if(results.getShows().size() > 0)
                 {
-                    SearchResults results = SearchAPI.searchTV(this.request, show.GetTitle());
-                    
-                    if(results.getShows().size() > 0)
+                    if(show.GetEpisodeNumber() > 0)
                     {
                         this.SaveTVMetadata(results.getShows().get(0), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
                     }
                     else
                     {
-                        //TODO:  Think about logging this to the system message interface
-                        System.out.println("JVL - TMDB there was no hit finding this show.");
-                        System.out.println("Show title: " + this.show.GetTitle());
-                        
-                        return false;
+                        //This is for shows that do not have season episode numbers
+                        this.SaveTVMetadata(results.getShows().get(0));
                     }
                 }
                 else
                 {
-                    System.out.println("JVL - This show does not appear to have an episode number.  I am going to skip it.");
+                    //TODO:  Think about logging this to the system message interface
+                    System.out.println("JVL - TMDB there was no hit finding this show.");
+                    System.out.println("Show title: " + this.show.GetTitle());
+
+                    return false;
                 }
-                
+
                 return false;
             }
             else if(this.show.GetMediaFile().IsTVFile() && this.show.IsMovie()) //Recored Movie
@@ -343,6 +345,57 @@ public class Metadata
         this.GetEpisodeStill();
     }
     
+    /**
+     * This downloads data associated with the show into the cache directory.  It stores the TheMovieDBID
+     * and some of the metadata back to the Sage object.  This call is for episodes that 
+     * do not have a season episode number.
+     * 
+     * @param result Search result hit from TheMovieDB
+     * @throws IOException
+     * @throws SageCallApiException 
+     */
+    private void SaveTVMetadata(SearchResultShow result) throws IOException, SageCallApiException
+    {
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
+        
+        boolean updateCache = false;
+        
+        //Check to see if we need to update files. If we are missing anything than update it all.
+        if(!detailsFile.exists()) { updateCache = true; }
+        
+        if(!imagesFile.exists()) { updateCache = true; }
+    
+        Date now = new Date();
+        TV tv;
+            
+        if(updateCache)
+        {
+            tv = TVAPI.getDetails(this.request, result.getTmdb_ID());
+        }
+        else
+        {
+            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request));
+        }
+
+        show.SetTheMovieDBID(result.getTmdb_ID());
+        show.SetTitle(tv.getName());
+        show.SetCategories(tv.getGenres());
+        show.SetMetadataUpdateDate(now.getTime());
+        show.SetMediaType("TV");
+
+        if(updateCache)
+        {
+            Images images = TVAPI.getImages(this.request, result.getTmdb_ID());
+
+            tv.save(detailsFile);
+            images.save(imagesFile);
+        }
+  
+        this.GetPoster();
+        this.GetBackdrop();
+    }
+    
     private void SaveMovieMetadata(SearchResultMovie result, int year) throws SageCallApiException, FileNotFoundException, IOException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/detials.json");
@@ -472,7 +525,91 @@ public class Metadata
         
     }
     
+    public String GetBackdropRealtime() throws SageCallApiException, IOException
+    {
+        return this.GetBackdropRealtime(DEFAULT_BACKDROP_SIZE_WIDTH);
+    }
     
+    public String GetBackdropRealtime(int preferredSize) throws SageCallApiException, IOException
+    {
+        int TheMovieDBID = -1;
+        String MediaType;
+        SearchResults results;
+        File file = null;
+        
+        System.out.println("JVL - Realtime backdrop lookup called");
+        
+        if(this.show.IsMovie())
+        {
+            System.out.println("JVL - Looking up movie");
+            int year = -1;    
+            MediaType = "Movie";
+        
+            try { year = Integer.parseInt(this.show.GetYear()); } catch (Exception ex) { } 
+            
+            if(year > 0)
+            {
+                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year);                
+            }
+            else
+            {
+                results = SearchAPI.searchMovies(this.request, this.show.GetTitle());    
+            }
+            
+            if(results.getMovies().size() > 0)
+            {
+                System.out.println("JVL - Found movie");
+                TheMovieDBID = results.getMovies().get(0).getTmdb_ID();
+            }
+        }
+        else
+        {
+            System.out.println("JVL - Looking up TV");
+            MediaType = "TV";
+            results = SearchAPI.searchTV(this.request, this.show.GetTitle());
+            
+            if(results.getShows().size() > 0)
+            {
+                System.out.println("JVL - Found show");
+                TheMovieDBID = results.getShows().get(0).getTmdb_ID();
+            }
+        }
+        
+        if(TheMovieDBID > 0)
+        {
+            Images images = this.GetImages(TheMovieDBID, MediaType);
+            
+            if(images.getBackdrops().size() > 0)
+            {
+                System.out.println("JVL - Image found");
+                String backdrops_width = images.getBackdrop().getValidSize(preferredSize);
+
+                if(MediaType.equalsIgnoreCase("TV"))
+                {
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                }
+                else if(MediaType.equalsIgnoreCase("MOVIE"))
+                {
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                }
+
+                if(file != null && !file.exists())
+                {
+                    images.getPoster().saveImage(file, preferredSize);
+                }
+            }
+        }
+
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
+        
+    }
     
     /**
      * Gets the default poster for movie/show with the default size. Will download

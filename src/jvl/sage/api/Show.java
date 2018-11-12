@@ -393,7 +393,12 @@ public class Show extends SageObject
     
     public String GetBackground() throws SageCallApiException, IOException
     {
-        if(this.meta.HasMetadata())
+        
+        if(this.mediafile == null)
+        {
+            return this.meta.GetBackdropRealtime();
+        }
+        else if(this.meta.HasMetadata())
         {
             return this.meta.GetBackdrop();
         }
