@@ -327,7 +327,11 @@ public class Show extends SageObject
     
     public String GetPoster() throws SageCallApiException, IOException
     {
-        if(this.meta.HasMetadata())
+        if(this.mediafile == null)
+        {
+            return this.meta.GetPosterRealtime();
+        }
+        else if(this.meta.HasMetadata())
         {
             return this.meta.GetPoster();
         }

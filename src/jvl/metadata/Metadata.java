@@ -386,6 +386,93 @@ public class Metadata
         return movie;
     }
     
+    public String GetPosterRealtime() throws SageCallApiException, IOException
+    {
+        return this.GetPosterRealtime(DEFAULT_POSTER_SIZE_WIDTH);
+    }
+    
+    public String GetPosterRealtime(int preferredSize) throws SageCallApiException, IOException
+    {
+        int TheMovieDBID = -1;
+        String MediaType;
+        SearchResults results;
+        File file = null;
+        
+        System.out.println("JVL - Realtime poster lookup called");
+        
+        if(this.show.IsMovie())
+        {
+            System.out.println("JVL - Looking up movie");
+            int year = -1;    
+            MediaType = "Movie";
+        
+            try { year = Integer.parseInt(this.show.GetYear()); } catch (Exception ex) { } 
+            
+            if(year > 0)
+            {
+                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year);                
+            }
+            else
+            {
+                results = SearchAPI.searchMovies(this.request, this.show.GetTitle());    
+            }
+            
+            if(results.getMovies().size() > 0)
+            {
+                System.out.println("JVL - Found movie");
+                TheMovieDBID = results.getMovies().get(0).getTmdb_ID();
+            }
+        }
+        else
+        {
+            System.out.println("JVL - Looking up TV");
+            MediaType = "TV";
+            results = SearchAPI.searchTV(this.request, this.show.GetTitle());
+            
+            if(results.getShows().size() > 0)
+            {
+                System.out.println("JVL - Found show");
+                TheMovieDBID = results.getShows().get(0).getTmdb_ID();
+            }
+        }
+        
+        if(TheMovieDBID > 0)
+        {
+            Images images = this.GetImages(TheMovieDBID, MediaType);
+            
+            if(images.getPosters().size() > 0)
+            {
+                System.out.println("JVL - Image found");
+                String poster_width = images.getPoster().getValidSize(preferredSize);
+
+                if(MediaType.equalsIgnoreCase("TV"))
+                {
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/posters/" + poster_width + images.getPoster().getFileName());
+                }
+                else if(MediaType.equalsIgnoreCase("MOVIE"))
+                {
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/posters/" + poster_width + images.getPoster().getFileName());
+                }
+
+                if(file != null && !file.exists())
+                {
+                    images.getPoster().saveImage(file, preferredSize);
+                }
+            }
+        }
+
+        if(file != null)
+        {
+            return file.getAbsolutePath();
+        }
+        else
+        {
+            return "";
+        }
+        
+    }
+    
+    
     
     /**
      * Gets the default poster for movie/show with the default size. Will download
@@ -411,9 +498,14 @@ public class Metadata
     public String GetPoster(int preferredSize) throws SageCallApiException, IOException
     {
         File file = null;
-        Images images = this.GetImages();
+        Images images = null;
         
-        if(this.HasMetadata() && images.getPosters().size() > 0)
+        if(this.HasMetadata())
+        {
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+        }
+        
+        if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
         {
             String poster_width = images.getPoster().getValidSize(preferredSize);
             
@@ -450,9 +542,14 @@ public class Metadata
     public String GetSeasonPoster(int preferredSize) throws SageCallApiException, IOException
     {
         File file = null;
-        Images images = this.GetSeasonImages();
+        Images images = null;
         
-        if(this.HasMetadata() && images.getPosters().size() > 0)
+        if(this.HasMetadata())
+        {
+            images = this.GetSeasonImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber());
+        }
+        
+        if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
         {
             String poster_width = images.getPoster().getValidSize(preferredSize);
             
@@ -485,9 +582,14 @@ public class Metadata
     public String GetEpisodeStill(int preferredSize) throws SageCallApiException, IOException
     {
         File file = null;
-        Images images = this.GetEpisodeImages();
+        Images images = null;
         
-        if(this.HasMetadata() && images.getStills().size() > 0)
+        if(this.HasMetadata())
+        {
+            images = this.GetEpisodeImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
+        }
+        
+        if(this.HasMetadata() && images != null && images.getStills().size() > 0)
         {
             String still_width = images.getStill().getValidSize(preferredSize);
             
@@ -536,9 +638,14 @@ public class Metadata
     public String GetBackdrop(int preferredSize) throws SageCallApiException, IOException
     {
         File file = null;
-        Images images = this.GetImages();
+        Images images = null;
         
-        if(this.HasMetadata() && images.getBackdrops().size() > 0)
+        if(this.HasMetadata())
+        {
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+        }
+        
+        if(this.HasMetadata() && images != null && images.getBackdrops().size() > 0)
         {
             String backdrop_width = images.getBackdrop().getValidSize(preferredSize);
             
@@ -567,108 +674,86 @@ public class Metadata
         }
     }
     
-    private Images GetSeasonImages() throws SageCallApiException, IOException
+    private Images GetSeasonImages(int TheMovieDBID, String MediaType, int seasonNumber) throws SageCallApiException, IOException
     {
         Images images = null;
         
-        if(this.HasMetadata())
+        if(MediaType.equalsIgnoreCase("TV"))
         {
-            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
-            {
-                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/images.json");
-                
-                if(imagesFile.exists())
-                {
-                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-                }
-                else
-                {
-                    images = TVAPI.getSeasonImages(request, this.show.GetTheMovieDBID(), this.show.GetSeasonNumber());
-                    images.save(imagesFile);
-                }
-            }
-        }
-        
-        return images;
-    }
-    
-    private Images GetEpisodeImages() throws SageCallApiException, IOException
-    {
-        Images images = null;
-        
-        if(this.HasMetadata())
-        {
-            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
-            {
-                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/episode_" + this.show.GetEpisodeNumber() + "/images.json");
-                
-                if(imagesFile.exists())
-                {
-                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-                }
-                else
-                {
-                    images = TVAPI.getEpisodeImages(this.request, this.show.GetTheMovieDBID(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
-                    images.save(imagesFile);
-                }
-            }
-        }
-        
-        return images;
-    }
-    
-    private Images GetImages() throws SageCallApiException, IOException
-    {
-        Images images = null;
-        
-        if(this.HasMetadata())
-        {
-            if(this.show.GetMediaType().equalsIgnoreCase("TV"))
-            {
-                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/images.json");
-                
-                if(imagesFile.exists())
-                {
-                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-                }
-                else
-                {
-                    images = TVAPI.getImages(request, this.show.GetTheMovieDBID());
-                    images.save(imagesFile);
-                }
-            }
-            else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
-            {
-                File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + this.show.GetTheMovieDBID() + "/images.json");
-                
-                if(imagesFile.exists())
-                {
-                    images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-                }
-                else
-                {
-                    images = MovieAPI.getImages(request, this.show.GetTheMovieDBID());
-                    images.save(imagesFile);
-                }
-            }
-        }
-        
-        return images;
-    }
-    
-    private Movie GetMovie()
-    {
-        //This assumes we already know the TMDB ID
-        int id = this.show.GetTheMovieDBID();
-        
-        
-        if(id != -1)
-        {
-            File json = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + id + "movie.json");
+            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/images.json");
 
+            if(imagesFile.exists())
+            {
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+            }
+            else
+            {
+                images = TVAPI.getSeasonImages(request, TheMovieDBID, seasonNumber);
+                images.save(imagesFile);
+            }
         }
         
-        return null;
+        return images;
+    }
+    
+    private Images GetEpisodeImages(int TheMovieDBID, String MediaType, int seasonNumber, int episodeNumber) throws SageCallApiException, IOException
+    {
+        Images images = null;
+        
+        if(MediaType.equalsIgnoreCase("TV"))
+        {
+            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+
+            if(imagesFile.exists())
+            {
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+            }
+            else
+            {
+                images = TVAPI.getEpisodeImages(this.request, TheMovieDBID, seasonNumber, episodeNumber);
+                images.save(imagesFile);
+            }
+        }
+        
+        return images;
+    }
+    
+    private Images GetImages(int TheMovieDBID, String MediaType) throws SageCallApiException, IOException
+    {
+        Images images = null;
+        
+        
+        if(MediaType.equalsIgnoreCase("TV"))
+        {
+            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/images.json");
+
+            if(imagesFile.exists())
+            {
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+            }
+            else
+            {
+                images = TVAPI.getImages(request, TheMovieDBID);
+                images.save(imagesFile);
+            }
+        }
+        else if(MediaType.equalsIgnoreCase("MOVIE"))
+        {
+            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/images.json");
+
+            if(imagesFile.exists())
+            {
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+            }
+            else
+            {
+                images = MovieAPI.getImages(request, TheMovieDBID);
+                images.save(imagesFile);
+            }
+        }
+        
+        
+        return images;
     }
     
 }
