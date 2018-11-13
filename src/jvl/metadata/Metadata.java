@@ -70,7 +70,7 @@ public class Metadata
     
     private static final int DEFAULT_POSTER_SIZE_WIDTH = 600;
     private static final int DEFAULT_STILL_SIZE_WIDTH = 600;
-    private static final int DEFAULT_BACKDROP_SIZE_WIDTH = 1920;
+    private static final int DEFAULT_BACKDROP_SIZE_WIDTH = 3840;
     
     
     public Metadata(Show show)
@@ -671,6 +671,29 @@ public class Metadata
         }
     }
     
+    public String [] GetPosters() throws SageCallApiException, IOException
+    {
+        Images images = null;
+        String [] urls = null;
+        
+        if(this.HasMetadata())
+        {
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+        }
+        
+        if(images != null && images.getPosters().size() > 0)
+        {
+            urls = new String [images.getPosters().size()];
+            
+            for(int i = 0; i < images.getPosters().size(); i++)
+            {
+                urls[i] = images.getPosters().get(i).getURL(DEFAULT_POSTER_SIZE_WIDTH);
+            }
+        }
+        
+        return urls;
+    }
+    
     public String GetSeasonPoster() throws SageCallApiException, IOException
     {
         return this.GetSeasonPoster(DEFAULT_POSTER_SIZE_WIDTH);
@@ -721,7 +744,7 @@ public class Metadata
         File file = null;
         Images images = null;
         
-        if(this.HasMetadata())
+        if(this.HasMetadata() && show.GetEpisodeNumber() > 0)
         {
             images = this.GetEpisodeImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
         }
@@ -848,7 +871,11 @@ public class Metadata
             else
             {
                 images = TVAPI.getEpisodeImages(this.request, TheMovieDBID, seasonNumber, episodeNumber);
-                images.save(imagesFile);
+                
+                if(images.getStills().size() > 0)
+                {
+                    images.save(imagesFile);
+                }
             }
         }
         

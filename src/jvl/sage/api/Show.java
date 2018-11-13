@@ -317,7 +317,15 @@ public class Show extends SageObject
     {
         if(this.meta.HasMetadata())
         {
-            return this.meta.GetSeasonPoster();
+            String seasonPoster = this.meta.GetSeasonPoster();
+            
+            if(seasonPoster.equalsIgnoreCase(""))
+            {
+                //If there is no poster, than attempt to get show poster
+                return this.GetPoster();
+            }
+            
+            return seasonPoster;
         }
         else
         {
@@ -444,12 +452,25 @@ public class Show extends SageObject
     {
         fanart.SetFanartBackground(this.lookupObject, background);
     }
+    
+    public String [] GetPosters() throws SageCallApiException, IOException
+    {
+        if(this.meta.HasMetadata())
+        {
+            return this.meta.GetPosters();
+        }
+        else
+        {
+            return this.GetPostersOld();
+        }
+    }
+    
     /**
      * Returns all of the posters for the show.  Verifies that the poster
      * exists.
      * @return String [] of paths to posters that have been verified to exist
      */
-    public String [] GetPosters()
+    public String [] GetPostersOld()
     {
         String [] posters = fanart.GetFanartPosters(this.lookupObject);
         ArrayList temp = new ArrayList();
