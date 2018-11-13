@@ -84,7 +84,7 @@ public class Movies
         
         try
         {
-            MediaFiles mediaFiles = MediaFile.GetVideoFiles();
+            MediaFiles mediaFiles = MediaFile.GetMovieFiles();
             
             //System.out.println("JVL - Movies Called GetVideoFiles: " + mediaFiles.size());
 
@@ -93,7 +93,7 @@ public class Movies
             boolean sortDesc = false;
 
             //Filter to just Movie type media files
-            mediaFiles.FilterByMetadata("MediaType", "Movie");            
+            //mediaFiles.FilterByMetadata("MediaType", "Movie");            
             
             Shows shows = mediaFiles.GetShows();
 

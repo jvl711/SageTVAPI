@@ -74,7 +74,7 @@ public class Recordings
     {
         try
         {
-            MediaFiles mediaFiles = MediaFile.GetRecordingFiles();
+            MediaFiles mediaFiles = MediaFile.GetTVFiles();
 
             SortDirection sortDir = this.GetSortDirection();
             RecordingsSortColumn sortCol = this.GetSortColumn();

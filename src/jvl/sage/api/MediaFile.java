@@ -878,6 +878,11 @@ public class MediaFile extends SageObject
         return mediaFiles;
     }
     
+    /**
+     * Gets all files that were recorded by SageTV.
+     * @return
+     * @throws SageCallApiException 
+     */
     public static MediaFiles GetRecordingFiles() throws SageCallApiException
     {
         Object [] objects;
@@ -886,6 +891,44 @@ public class MediaFile extends SageObject
         objects = MediaFile.callApiArray("GetMediaFiles", "T");
         
         mediaFiles = new MediaFiles(objects);
+        
+        return mediaFiles;
+    }
+    
+    /**
+     * Gets all files that are TV regardless of being recorded or imported.
+     * @return
+     * @throws SageCallApiException 
+     */
+    public static MediaFiles GetTVFiles() throws SageCallApiException
+    {
+        Object [] objects;
+        MediaFiles mediaFiles;
+        
+        objects = MediaFile.callApiArray("GetMediaFiles");
+        
+        mediaFiles = new MediaFiles(objects);
+        
+        mediaFiles.FilterByMetadata("MediaType", "TV");
+        
+        return mediaFiles;
+    }
+    
+    /**
+     * Gets all files that are TV regardless of being recorded or imported.
+     * @return
+     * @throws SageCallApiException 
+     */
+    public static MediaFiles GetMovieFiles() throws SageCallApiException
+    {
+        Object [] objects;
+        MediaFiles mediaFiles;
+        
+        objects = MediaFile.callApiArray("GetMediaFiles");
+        
+        mediaFiles = new MediaFiles(objects);
+        
+        mediaFiles.FilterByMetadata("MediaType", "Movie");
         
         return mediaFiles;
     }
