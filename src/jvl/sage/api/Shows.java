@@ -77,7 +77,29 @@ public class Shows extends SageArrayObject<Show>
         return mediafiles;
     }
     
-    public boolean MetadataLookup() throws SageCallApiException, IOException
+    public boolean MetadataLookup(boolean forceRefresh, boolean blocking)
+    {
+        boolean result = true;
+        
+        for(int i = 0 ; i < this.size(); i++)
+        {
+            try
+            {
+                if(!this.get(i).MetadataLookup(forceRefresh, blocking))
+                {
+                    result = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                System.out.println("JVL - Error looking up metadata: " + ex.getMessage());
+            }
+        }
+        
+        return result;
+    }
+    
+    public boolean MetadataLookup()
     {
         boolean result = true;
         
@@ -92,7 +114,7 @@ public class Shows extends SageArrayObject<Show>
             }
             catch(Exception ex)
             {
-                System.out.println("JVL - Error looking up metadata");
+                System.out.println("JVL - Error looking up metadata: " + ex.getMessage());
             }
         }
         

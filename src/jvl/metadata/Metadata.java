@@ -12,6 +12,8 @@ import jvl.tmdb.model.SearchResults;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
@@ -111,8 +113,8 @@ public class Metadata
     
     public boolean LookupMetadata(boolean forceRefresh, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
-        System.out.println("JVL - Working directory: " + this.cacheFolder.getAbsolutePath());
-        System.out.println("JVL - LookupMetaData was called");
+        //TODO: Handle force refresh
+        System.out.println("JVL Metadata - LookupMetaData was called");
         
         if(!this.HasMetadata() || forceRefresh)
         {
@@ -120,7 +122,6 @@ public class Metadata
             {
                 System.out.println("JVL - This is recorded content that is not a movie");
                 
-
                 SearchResults results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
 
                 if(results != null && results.getShows().size() > 0)
@@ -361,10 +362,10 @@ public class Metadata
         }
         
         
-        this.GetPoster();
-        this.GetBackdrop();
-        this.GetSeasonPoster();
-        this.GetEpisodeStill();
+        this.GetPoster(blocking);
+        this.GetBackdrop(blocking);
+        this.GetSeasonPoster(blocking);
+        this.GetEpisodeStill(blocking);
     }
     
     /**
@@ -426,8 +427,8 @@ public class Metadata
             
         }
   
-        this.GetPoster();
-        this.GetBackdrop();
+        this.GetPoster(blocking);
+        this.GetBackdrop(blocking);
     }
     
     private void SaveMovieMetadata(SearchResultMovie result, int year, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
@@ -461,8 +462,8 @@ public class Metadata
             images.save(imagesFile);
         }
         
-        this.GetPoster();
-        this.GetBackdrop();
+        this.GetPoster(blocking);
+        this.GetBackdrop(blocking);
     }
     
     public boolean HasMetadata()
@@ -481,6 +482,22 @@ public class Metadata
         }
         
         return movie;
+    }
+    
+    public String GetPosterRealtime()
+    {
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetPosterRealtime(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetPosterRealtime: " + ex.getMessage());
+        } 
+        
+        return ret;
     }
     
     public String GetPosterRealtime(boolean blocking) throws SageCallApiException, IOException, RateLimitException
@@ -535,7 +552,7 @@ public class Metadata
         
         if(TheMovieDBID > 0)
         {
-            Images images = this.GetImages(TheMovieDBID, MediaType);
+            Images images = this.GetImages(TheMovieDBID, MediaType, blocking);
             
             if(images.getPosters().size() > 0)
             {
@@ -567,6 +584,22 @@ public class Metadata
             return "";
         }
         
+    }
+    
+    public String GetBackdropRealtime()
+    {
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetBackdropRealtime(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetBackdropRealtime: " + ex.getMessage());
+        } 
+        
+        return ret;
     }
     
     public String GetBackdropRealtime(boolean blocking) throws SageCallApiException, IOException, RateLimitException
@@ -621,7 +654,7 @@ public class Metadata
         
         if(TheMovieDBID > 0)
         {
-            Images images = this.GetImages(TheMovieDBID, MediaType);
+            Images images = this.GetImages(TheMovieDBID, MediaType, blocking);
             
             if(images.getBackdrops().size() > 0)
             {
@@ -655,6 +688,22 @@ public class Metadata
         
     }
     
+    public String GetPoster()
+    {
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetPoster(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetPoster: " + ex.getMessage());
+        } 
+        
+        return ret;
+    }
+    
     /**
      * Gets the default poster for movie/show with the default size. Will download
      * and save the image into the local cache folder
@@ -663,9 +712,9 @@ public class Metadata
      * @throws SageCallApiException
      * @throws IOException 
      */
-    public String GetPoster() throws SageCallApiException, IOException
+    public String GetPoster(boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
-        return this.GetPoster(Metadata.DEFAULT_POSTER_SIZE_WIDTH);
+        return this.GetPoster(Metadata.DEFAULT_POSTER_SIZE_WIDTH, blocking);
     }
     
     /**
@@ -676,14 +725,14 @@ public class Metadata
      * @throws SageCallApiException
      * @throws IOException 
      */
-    public String GetPoster(int preferredSize) throws SageCallApiException, IOException
+    public String GetPoster(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         File file = null;
         Images images = null;
         
         if(this.HasMetadata())
         {
-            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), blocking);
         }
         
         if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
@@ -715,14 +764,30 @@ public class Metadata
         }
     }
     
-    public String [] GetPosters() throws SageCallApiException, IOException
+    public String [] GetPosters()
+    {
+        String [] ret = new String[0];
+        
+        try 
+        {
+            ret = this.GetPosters(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetPosterRealtime: " + ex.getMessage());
+        } 
+        
+        return ret;
+    }
+    
+    public String [] GetPosters(boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         Images images = null;
         String [] urls = null;
         
         if(this.HasMetadata())
         {
-            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), blocking);
         }
         
         if(images != null && images.getPosters().size() > 0)
@@ -738,19 +803,35 @@ public class Metadata
         return urls;
     }
     
-    public String GetSeasonPoster() throws SageCallApiException, IOException
+    public String GetSeasonPoster()
     {
-        return this.GetSeasonPoster(DEFAULT_POSTER_SIZE_WIDTH);
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetSeasonPoster(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetSeasonPoster: " + ex.getMessage());
+        } 
+        
+        return ret;
     }
     
-    public String GetSeasonPoster(int preferredSize) throws SageCallApiException, IOException
+    public String GetSeasonPoster(boolean blocking) throws SageCallApiException, IOException, RateLimitException
+    {
+        return this.GetSeasonPoster(DEFAULT_POSTER_SIZE_WIDTH, blocking);
+    }
+    
+    public String GetSeasonPoster(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         File file = null;
         Images images = null;
         
         if(this.HasMetadata())
         {
-            images = this.GetSeasonImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber());
+            images = this.GetSeasonImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber(), blocking);
         }
         
         if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
@@ -778,19 +859,35 @@ public class Metadata
         }
     }
     
-    public String GetEpisodeStill() throws SageCallApiException, IOException
+    public String GetEpisodeStill()
     {
-        return this.GetEpisodeStill(DEFAULT_STILL_SIZE_WIDTH);
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetEpisodeStill(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetEpisodeStill: " + ex.getMessage());
+        } 
+        
+        return ret;
     }
     
-    public String GetEpisodeStill(int preferredSize) throws SageCallApiException, IOException
+    public String GetEpisodeStill(boolean blocking) throws SageCallApiException, IOException, RateLimitException
+    {
+        return this.GetEpisodeStill(DEFAULT_STILL_SIZE_WIDTH, blocking);
+    }
+    
+    public String GetEpisodeStill(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         File file = null;
         Images images = null;
         
         if(this.HasMetadata() && show.GetEpisodeNumber() > 0)
         {
-            images = this.GetEpisodeImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber());
+            images = this.GetEpisodeImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber(), blocking);
         }
         
         if(this.HasMetadata() && images != null && images.getStills().size() > 0)
@@ -818,6 +915,22 @@ public class Metadata
         }
     }
     
+    public String GetBackdrop()
+    {
+        String ret = "";
+        
+        try 
+        {
+            ret = this.GetBackdrop(false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Exception calling GetBackdrop: " + ex.getMessage());
+        } 
+        
+        return ret;
+    }
+    
     /**
      * Gets the default backdrop for movie/show with the default size. Will download
      * and save the image into the local cache folder
@@ -826,9 +939,9 @@ public class Metadata
      * @throws SageCallApiException
      * @throws IOException 
      */
-    public String GetBackdrop() throws SageCallApiException, IOException
+    public String GetBackdrop(boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
-        return this.GetBackdrop(DEFAULT_BACKDROP_SIZE_WIDTH);
+        return this.GetBackdrop(DEFAULT_BACKDROP_SIZE_WIDTH, blocking);
     }
     
      /**
@@ -839,14 +952,14 @@ public class Metadata
      * @throws SageCallApiException
      * @throws IOException 
      */
-    public String GetBackdrop(int preferredSize) throws SageCallApiException, IOException
+    public String GetBackdrop(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         File file = null;
         Images images = null;
         
         if(this.HasMetadata())
         {
-            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType());
+            images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), blocking);
         }
         
         if(this.HasMetadata() && images != null && images.getBackdrops().size() > 0)
@@ -878,7 +991,7 @@ public class Metadata
         }
     }
     
-    private Images GetSeasonImages(int TheMovieDBID, String MediaType, int seasonNumber) throws SageCallApiException, IOException
+    private Images GetSeasonImages(int TheMovieDBID, String MediaType, int seasonNumber, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         Images images = null;
         
@@ -888,35 +1001,23 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-            }
-            else
-            {
-                images = TVAPI.getSeasonImages(request, TheMovieDBID, seasonNumber);
-                images.save(imagesFile);
-            }
-        }
-        
-        return images;
-    }
-    
-    private Images GetEpisodeImages(int TheMovieDBID, String MediaType, int seasonNumber, int episodeNumber) throws SageCallApiException, IOException
-    {
-        Images images = null;
-        
-        if(MediaType.equalsIgnoreCase("TV"))
-        {
-            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
-
-            if(imagesFile.exists())
-            {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
-            }
-            else
-            {
-                images = TVAPI.getEpisodeImages(this.request, TheMovieDBID, seasonNumber, episodeNumber);
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
                 
-                if(images.getStills().size() > 0)
+                if(images.getPosters().isEmpty())
+                {
+                    images = TVAPI.getSeasonImages(request, TheMovieDBID, seasonNumber, blocking);
+                    
+                    if(images != null)
+                    {
+                        images.save(imagesFile);
+                    }
+                }
+            }
+            else
+            {
+                images = TVAPI.getSeasonImages(request, TheMovieDBID, seasonNumber, blocking);
+                
+                if(images != null)
                 {
                     images.save(imagesFile);
                 }
@@ -926,7 +1027,43 @@ public class Metadata
         return images;
     }
     
-    private Images GetImages(int TheMovieDBID, String MediaType) throws SageCallApiException, IOException
+    private Images GetEpisodeImages(int TheMovieDBID, String MediaType, int seasonNumber, int episodeNumber, boolean blocking) throws SageCallApiException, IOException, RateLimitException
+    {
+        Images images = null;
+        
+        if(MediaType.equalsIgnoreCase("TV"))
+        {
+            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+
+            if(imagesFile.exists())
+            {
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                
+                if(images.getStills().isEmpty())
+                {
+                    images = TVAPI.getEpisodeImages(this.request, TheMovieDBID, seasonNumber, episodeNumber, blocking);
+                    
+                    if(images != null)
+                    {
+                        images.save(imagesFile);
+                    }
+                }
+            }
+            else
+            {
+                images = TVAPI.getEpisodeImages(this.request, TheMovieDBID, seasonNumber, episodeNumber, blocking);
+                
+                if(images != null)
+                {
+                    images.save(imagesFile);
+                }
+            }
+        }
+        
+        return images;
+    }
+    
+    private Images GetImages(int TheMovieDBID, String MediaType, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
         Images images = null;
         
@@ -937,12 +1074,26 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                
+                if(images.getBackdrops().isEmpty() || images.getPosters().isEmpty())
+                {
+                    images = TVAPI.getImages(request, TheMovieDBID, blocking);
+                    
+                    if(images != null)
+                    {
+                        images.save(imagesFile);
+                    }
+                }
             }
             else
             {
-                images = TVAPI.getImages(request, TheMovieDBID);
-                images.save(imagesFile);
+                images = TVAPI.getImages(request, TheMovieDBID, blocking);
+                
+                if(images != null)
+                {
+                    images.save(imagesFile);
+                }
             }
         }
         else if(MediaType.equalsIgnoreCase("MOVIE"))
@@ -951,12 +1102,27 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request));
+                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                
+                if(images.getBackdrops().isEmpty() || images.getPosters().isEmpty())
+                {
+                    images = MovieAPI.getImages(request, TheMovieDBID, blocking);
+                   
+                    if(images != null)
+                    {
+                        images.save(imagesFile);
+                    }
+                }
+
             }
             else
             {
-                images = MovieAPI.getImages(request, TheMovieDBID);
-                images.save(imagesFile);
+                images = MovieAPI.getImages(request, TheMovieDBID, blocking);
+                
+                if(images != null)
+                {
+                    images.save(imagesFile);
+                }
             }
         }
         

@@ -3,10 +3,10 @@ package jvl.metadata;
 
 import java.io.IOException;
 import java.util.Map;
-
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.Show;
+import jvl.tmdb.RateLimitException;
 import sage.SageTVPlugin;
 import sage.SageTVPluginRegistry;
 
@@ -159,13 +159,36 @@ public class MetadataPlugin implements SageTVPlugin
             System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler");
             ex.printStackTrace();
         }
+        
     }
     
     public void MediaFileImportedHandler(Show show)
     {
         try 
         {
-            show.MetadataLookup();
+            show.MetadataLookup(true, true);
+        } 
+        catch (SageCallApiException ex) 
+        {
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException)");
+            ex.printStackTrace();
+        } 
+        catch (IOException ex) 
+        {
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException)");
+            ex.printStackTrace();
+        } 
+        catch (RateLimitException ex) 
+        {
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException)");
+        }
+    }
+    
+    public void RecordingStartedHandler(Show show)
+    {
+        try 
+        {
+            show.MetadataLookup(true, true);
         } 
         catch (SageCallApiException ex) 
         {
@@ -177,23 +200,9 @@ public class MetadataPlugin implements SageTVPlugin
             System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException)");
             ex.printStackTrace();
         }
-    }
-    
-    public void RecordingStartedHandler(Show show)
-    {
-        try 
+        catch (RateLimitException ex) 
         {
-            show.MetadataLookup();
-        } 
-        catch (SageCallApiException ex) 
-        {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException)");
-            ex.printStackTrace();
-        } 
-        catch (IOException ex) 
-        {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException)");
-            ex.printStackTrace();
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException)");
         }
     }
     

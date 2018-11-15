@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import phoenix.fanart;
 import jvl.AdvancedImage;
 import jvl.metadata.Metadata;
 import jvl.sage.Debug;
+import jvl.tmdb.RateLimitException;
 
 
 public class Show extends SageObject
@@ -86,10 +89,24 @@ public class Show extends SageObject
         return new Airing(this.airing);
     }
     
-    public boolean MetadataLookup() throws SageCallApiException, IOException
+    public boolean MetadataLookup(boolean forceRefresh, boolean blocking) throws SageCallApiException, IOException, RateLimitException
+    {
+        return this.meta.LookupMetadata(forceRefresh, blocking);
+    }
+    
+    public boolean MetadataLookup()
     {
         System.out.println("JVL - Show.LookupMetaData called");
-        return this.meta.LookupMetadata(true);
+        
+        try 
+        {
+            return this.meta.LookupMetadata(true, false);
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL - Show.MetadataLookup exception thrown: " + ex.getMessage());
+            return false;
+        } 
     }
     
     public int GetSeasonNumber() throws SageCallApiException 
