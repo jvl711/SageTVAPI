@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import phoenix.fanart;
@@ -13,6 +11,7 @@ import jvl.AdvancedImage;
 import jvl.metadata.Metadata;
 import jvl.sage.Debug;
 import jvl.tmdb.RateLimitException;
+import jvl.tmdb.model.Image;
 
 
 public class Show extends SageObject
@@ -470,6 +469,11 @@ public class Show extends SageObject
         fanart.SetFanartBackground(this.lookupObject, background);
     }
     
+    public ArrayList<Image> GetPosterImages()
+    {
+        return this.meta.GetPosterImages();
+    }
+    
     public String [] GetPosters() throws SageCallApiException, IOException
     {
         if(this.meta.HasMetadata())
@@ -517,6 +521,11 @@ public class Show extends SageObject
         }
         
         return posters;
+    }
+    
+    public ArrayList<Image> GetBackdropImages()
+    {
+        return this.meta.GetBackdropImages();
     }
     
     public String [] GetBackgrounds()

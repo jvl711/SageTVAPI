@@ -11,6 +11,7 @@ import jvl.tmdb.model.SearchResultMovie;
 import jvl.tmdb.model.SearchResults;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
 import jvl.tmdb.TVAPI;
 import jvl.tmdb.model.Episode;
+import jvl.tmdb.model.Image;
 import jvl.tmdb.model.Images;
 import jvl.tmdb.model.SearchResultShow;
 import jvl.tmdb.model.Season;
@@ -466,6 +468,18 @@ public class Metadata
         this.GetBackdrop(blocking);
     }
     
+    public String GetMetadataOverrides()
+    {
+        /**
+         * Utility.GetWorkingDirectory
+         * 
+         * 
+         * 
+         */
+        
+        return "";
+    }
+    
     public boolean HasMetadata()
     {
         return this.show.GetTheMovieDBID() != -1;
@@ -764,6 +778,25 @@ public class Metadata
         }
     }
     
+    public ArrayList<Image> GetPosterImages()
+    {
+        ArrayList<Image> images = null;
+        
+        try 
+        {
+            if(this.HasMetadata())
+            {
+                images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), true).getPosters();
+            }
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Error getting poster images");
+        }
+        
+        return images;
+    }
+    
     public String [] GetPosters()
     {
         String [] ret = new String[0];
@@ -913,6 +946,25 @@ public class Metadata
         {
             return "";
         }
+    }
+    
+    public ArrayList<Image> GetBackdropImages()
+    {
+        ArrayList<Image> images = null;
+        
+        try 
+        {
+            if(this.HasMetadata())
+            {
+                images = this.GetImages(this.show.GetTheMovieDBID(), this.show.GetMediaType(), true).getBackdrops();
+            }
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Error getting poster images");
+        }
+        
+        return images;
     }
     
     public String GetBackdrop()

@@ -862,7 +862,7 @@ public class MediaFile extends SageObject
     /*
      * Media File Accessor methods.  I am going to start with very specific methods.
      * I may make take a different direction in the future.
-    */
+     */
     
     /*********************************************************************************************/
     
@@ -897,7 +897,7 @@ public class MediaFile extends SageObject
     
     /**
      * Gets all files that are TV regardless of being recorded or imported.
-     * @return
+     * @return TV Files as MediaFiles object
      * @throws SageCallApiException 
      */
     public static MediaFiles GetTVFiles() throws SageCallApiException
@@ -916,7 +916,7 @@ public class MediaFile extends SageObject
     
     /**
      * Gets all files that are TV regardless of being recorded or imported.
-     * @return
+     * @return Movie Files as MediaFiles object
      * @throws SageCallApiException 
      */
     public static MediaFiles GetMovieFiles() throws SageCallApiException
@@ -929,6 +929,27 @@ public class MediaFile extends SageObject
         mediaFiles = new MediaFiles(objects);
         
         mediaFiles.FilterByMetadata("MediaType", "Movie");
+        
+        return mediaFiles;
+    }
+    
+    /**
+     * Gets all files that are not identified as TV/Movie.  They were most likely
+     * not identified by the Metadata lookup routine
+     * 
+     * @return Unknown Files as MediaFiles object
+     * @throws SageCallApiException 
+     */
+    public static MediaFiles GetUnknownFiles() throws SageCallApiException
+    {
+        Object [] objects;
+        MediaFiles mediaFiles;
+        
+        objects = MediaFile.callApiArray("GetMediaFiles");
+        
+        mediaFiles = new MediaFiles(objects);
+        
+        mediaFiles.FilterByMetadata("MediaType", "");
         
         return mediaFiles;
     }
