@@ -10,11 +10,17 @@ import jvl.tmdb.model.Movie;
 import jvl.tmdb.model.SearchResultMovie;
 import jvl.tmdb.model.SearchResults;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jvl.sage.api.Utility;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
@@ -467,17 +473,82 @@ public class Metadata
         this.GetPoster(blocking);
         this.GetBackdrop(blocking);
     }
-    
-    public String GetMetadataOverrides()
+
+    public Properties GetMetadataOverrides()
     {
-        /**
-         * Utility.GetWorkingDirectory
-         * 
-         * 
-         * 
-         */
+        Properties overrides = new Properties();
+        File overridesFile;
         
-        return "";
+        InputStream input = null;
+        
+        try
+        {
+            if(this.HasMetadata())
+            {
+                if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+                {
+                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+
+                    if(overridesFile.exists())
+                    {
+                        input = new FileInputStream(overridesFile);
+                        overrides.load(input);
+                    }
+                }
+                else if(this.show.GetMediaType().equalsIgnoreCase("Movie"))
+                {
+                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    
+                    if(overridesFile.exists())
+                    {
+                        input = new FileInputStream(overridesFile);
+                        overrides.load(input);
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            
+        }
+        
+        return overrides;
+    }
+    
+    public void SaveMetadataOverrides(Properties overrides)
+    {
+        
+        File overridesFile;
+        OutputStream output = null;
+        
+        try
+        {
+            if(this.HasMetadata())
+            {
+                if(this.show.GetMediaType().equalsIgnoreCase("TV"))
+                {
+                    System.out.println("JVL Metadata - Override Path: " + this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+                                                
+                    output = new FileOutputStream(overridesFile);
+                    overrides.store(output, "");
+                }
+                else if(this.show.GetMediaType().equalsIgnoreCase("Movie"))
+                {
+                    
+                    System.out.println("JVL Metadata - Override Path: " + this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/overrides.properties");
+        
+                    output = new FileOutputStream(overridesFile);
+                    overrides.store(output, "");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL Metadata - Exception writing overrides.properties: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
     
     public boolean HasMetadata()
@@ -702,6 +773,22 @@ public class Metadata
         
     }
     
+    public void SetPoster(Image image)
+    {
+        Properties overrides = this.GetMetadataOverrides();
+        
+        overrides.setProperty("show.poster", image.getFileName());
+        this.SaveMetadataOverrides(overrides);
+    }
+    
+    public void SetBackdrop(Image image)
+    {
+        Properties overrides = this.GetMetadataOverrides();
+        
+        overrides.setProperty("show.backdrop", image.getFileName());
+        this.SaveMetadataOverrides(overrides);
+    }
+    
     public String GetPoster()
     {
         String ret = "";
@@ -743,6 +830,7 @@ public class Metadata
     {
         File file = null;
         Images images = null;
+        Properties overrides = this.GetMetadataOverrides();
         
         if(this.HasMetadata())
         {
@@ -751,20 +839,27 @@ public class Metadata
         
         if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
         {
-            String poster_width = images.getPoster().getValidSize(preferredSize);
+            Image image = images.getPoster(overrides.getProperty("show.poster", images.getPoster().getFileName()));
+            
+            if(image == null)
+            {
+                image = images.getPoster();
+            }
+            
+            String poster_width = image.getValidSize(preferredSize);
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/posters/" + poster_width + image.getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/posters/" + poster_width + images.getPoster().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/posters/" + poster_width + image.getFileName());
             }
             
             if(file != null && !file.exists())
             {
-                images.getPoster().saveImage(file, preferredSize);
+                image.saveImage(file, preferredSize);
             }
         }
      
@@ -1008,6 +1103,7 @@ public class Metadata
     {
         File file = null;
         Images images = null;
+        Properties overrides = this.GetMetadataOverrides();
         
         if(this.HasMetadata())
         {
@@ -1016,20 +1112,27 @@ public class Metadata
         
         if(this.HasMetadata() && images != null && images.getBackdrops().size() > 0)
         {
-            String backdrop_width = images.getBackdrop().getValidSize(preferredSize);
+            Image image = images.getBackdrop(overrides.getProperty("show.backdrop", images.getBackdrop().getFileName()));
+            
+            if(image == null)
+            {
+                image = images.getBackdrop();
+            }
+            
+            String backdrop_width = image.getValidSize(preferredSize);
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + image.getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + images.getBackdrop().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + image.getFileName());
             }
             
             if(file != null && !file.exists())
             {
-                images.getBackdrop().saveImage(file, preferredSize);
+                image.saveImage(file, preferredSize);
             }
         }
         

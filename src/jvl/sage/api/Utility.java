@@ -20,6 +20,15 @@ public class Utility extends SageAPI
         return ret;
     }
     
+    public static String GetWorkingDirectory() throws SageCallApiException 
+    {
+        String ret;
+        
+        ret = SageAPI.callApiString("GetWorkingDirectory");
+        
+        return ret;
+    }
+    
     public static long Time() throws SageCallApiException
     {
         long ret;

@@ -459,14 +459,14 @@ public class Show extends SageObject
         return background;
     }
     
-    public void SetPoster(String poster)
+    public void SetPoster(Image poster)
     {
-        fanart.SetFanartPoster(this.lookupObject, poster);
+        meta.SetPoster(poster);
     }
     
-    public void SetBackground(String background)
+    public void SetBackground(Image background)
     {
-        fanart.SetFanartBackground(this.lookupObject, background);
+        meta.SetBackdrop(background);
     }
     
     public ArrayList<Image> GetPosterImages()
