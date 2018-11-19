@@ -84,7 +84,14 @@ public class Airing extends SageObject
     
     public MediaFile GetMediaFile() throws SageCallApiException
     {
-        return new MediaFile(Airing.GetMediaFileForAiring(this.airing));
+        Object temp = Airing.GetMediaFileForAiring(this.airing);
+        
+        if(temp == null)
+        {
+            return null;
+        }
+        
+        return new MediaFile(temp);
     }
     
     public boolean IsWatched() throws SageCallApiException

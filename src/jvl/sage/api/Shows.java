@@ -1,7 +1,6 @@
 
 package jvl.sage.api;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
@@ -11,7 +10,6 @@ import java.util.LinkedList;
 import jvl.sage.Debug;
 import jvl.sage.JobStatus;
 import jvl.sage.SageCallApiException;
-
 
 public class Shows extends SageArrayObject<Show>
 {
@@ -296,6 +294,7 @@ public class Shows extends SageArrayObject<Show>
         }
     }
     
+    /*
     public JobStatus CleanPosters(int width)
     {
         JobStatus jobStatus = new JobStatus();
@@ -306,7 +305,9 @@ public class Shows extends SageArrayObject<Show>
         
         return jobStatus;
     }
+    */
     
+    /*
     public JobStatus ScalePosters(int width)
     {
         JobStatus jobStatus = new JobStatus();
@@ -318,6 +319,7 @@ public class Shows extends SageArrayObject<Show>
         
         return jobStatus;
     }
+    */
     
     public Show GetShowBySearchChar(String searchChar) throws SageCallApiException
     {
@@ -368,7 +370,7 @@ public class Shows extends SageArrayObject<Show>
     }
 
     
-    
+    /*
     private class ScalePostersThread implements Runnable
     {
         private JobStatus jobStatus;
@@ -425,15 +427,6 @@ public class Shows extends SageArrayObject<Show>
                     this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + keys.length + " - " + show.GetTitle());
                 }
                 
-                /*
-                for(int i = 0; i < this.shows.size(); i++)
-                {
-                    shows.get(i).ScalePosters(width);
-                    
-                    this.jobStatus.SetStatusMessage("Processing " + (i + 1) + " of " + this.shows.size() + " - " + shows.get(i).GetTitle());
-                }
-                */
-                
                 this.jobStatus.SetComplete();
             }
             catch(Exception ex)
@@ -447,7 +440,10 @@ public class Shows extends SageArrayObject<Show>
         }
         
     }
+    */
+
     
+    /*
     private class CleanPostersThread implements Runnable
     {
         private JobStatus jobStatus;
@@ -484,4 +480,5 @@ public class Shows extends SageArrayObject<Show>
         }
         
     }
+    */
 }

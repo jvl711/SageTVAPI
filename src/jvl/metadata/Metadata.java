@@ -136,12 +136,12 @@ public class Metadata
                 {
                     if(show.GetEpisodeNumber() > 0)
                     {
-                        this.SaveTVMetadata(results.getShows().get(0), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber(), blocking);
+                        this.SaveTVMetadata(results.getShows().get(0), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber(), forceRefresh, blocking);
                     }
                     else
                     {
                         //This is for shows that do not have season episode numbers
-                        this.SaveTVMetadata(results.getShows().get(0), blocking);
+                        this.SaveTVMetadata(results.getShows().get(0), blocking, forceRefresh);
                     }
                 }
                 else
@@ -173,7 +173,7 @@ public class Metadata
                 
                 if(results != null && results.getMovies().size() > 0)
                 {
-                    this.SaveMovieMetadata(results.getMovies().get(0), year, blocking);
+                    this.SaveMovieMetadata(results.getMovies().get(0), year, forceRefresh, blocking);
                 }
                 else
                 {
@@ -210,7 +210,7 @@ public class Metadata
                     
                     if(results != null && results.getMovies().size() > 0)
                     {
-                        this.SaveMovieMetadata(results.getMovies().get(0), parser.GetReleaseYear(), blocking);
+                        this.SaveMovieMetadata(results.getMovies().get(0), parser.GetReleaseYear(), forceRefresh, blocking);
                     }
                     else
                     {
@@ -228,7 +228,7 @@ public class Metadata
                     
                     if(results != null && results.getShows().size() > 0)
                     {
-                        this.SaveTVMetadata(results.getShows().get(0), parser.GetSeason(), parser.GetEpisode(), blocking);
+                        this.SaveTVMetadata(results.getShows().get(0), parser.GetSeason(), parser.GetEpisode(), forceRefresh, blocking);
                     }
                     else
                     {
@@ -245,7 +245,7 @@ public class Metadata
         return true;
     }
     
-    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
@@ -253,7 +253,7 @@ public class Metadata
         File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/images.json");
         File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
         
-        boolean updateCache = false;
+        boolean updateCache = forceRefresh;
         
         //Check to see if we need to update files.  If we already have the season episode info
         //then skip.  If we are missing anything than update it all.
@@ -385,12 +385,12 @@ public class Metadata
      * @throws IOException
      * @throws SageCallApiException 
      */
-    private void SaveTVMetadata(SearchResultShow result, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    private void SaveTVMetadata(SearchResultShow result, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
         
-        boolean updateCache = false;
+        boolean updateCache = forceRefresh;
         
         //Check to see if we need to update files. If we are missing anything than update it all.
         if(!detailsFile.exists()) { updateCache = true; }
@@ -439,7 +439,7 @@ public class Metadata
         this.GetBackdrop(blocking);
     }
     
-    private void SaveMovieMetadata(SearchResultMovie result, int year, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
+    private void SaveMovieMetadata(SearchResultMovie result, int year, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/images.json");
@@ -447,6 +447,8 @@ public class Metadata
         Date now = new Date();
         Movie movie = MovieAPI.getDetails(request, result.getTmdb_ID(), blocking);
         Images images = MovieAPI.getImages(request, result.getTmdb_ID(), blocking);
+        
+        //TODO: Implement selective save
         
         show.SetTheMovieDBID(result.getTmdb_ID());
         show.SetMediaType("Movie");
@@ -789,6 +791,14 @@ public class Metadata
         this.SaveMetadataOverrides(overrides);
     }
     
+    public void SetSeasonPoster(Image image) throws SageCallApiException
+    {
+        Properties overrides = this.GetMetadataOverrides();
+        
+        overrides.setProperty("show.season_" + this.show.GetSeasonNumber() + ".poster", image.getFileName());
+        this.SaveMetadataOverrides(overrides);
+    }
+    
     public String GetPoster()
     {
         String ret = "";
@@ -931,6 +941,25 @@ public class Metadata
         return urls;
     }
     
+    public ArrayList<Image> GetSeasonPosterImages()
+    {
+        ArrayList<Image> images = null;
+        
+        try 
+        {
+            if(this.HasMetadata())
+            {
+                images = this.GetSeasonImages(this.show.GetTheMovieDBID(),this.show.GetMediaType(), this.show.GetSeasonNumber(), true).getPosters();
+            }
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("JVL Metadata - Error getting poster images");
+        }
+        
+        return images;
+    }
+    
     public String GetSeasonPoster()
     {
         String ret = "";
@@ -954,6 +983,7 @@ public class Metadata
     
     public String GetSeasonPoster(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
+        Properties overrides = this.GetMetadataOverrides();
         File file = null;
         Images images = null;
         
@@ -964,16 +994,23 @@ public class Metadata
         
         if(this.HasMetadata() && images != null && images.getPosters().size() > 0)
         {
-            String poster_width = images.getPoster().getValidSize(preferredSize);
+            Image image = images.getPoster(overrides.getProperty("show.season_" + this.show.GetSeasonNumber() + ".poster", images.getPoster().getFileName()));
+            
+            if(image == null)
+            {
+                image = images.getPoster();
+            }
+            
+            String poster_width = image.getValidSize(preferredSize);
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/posters/" + poster_width + images.getPoster().getFileName());
+                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/posters/" + poster_width + image.getFileName());
             }
             
             if(file != null && !file.exists())
             {
-                images.getPoster().saveImage(file, preferredSize);
+                image.saveImage(file, preferredSize);
             }
         }
         

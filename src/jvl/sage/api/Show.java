@@ -1,13 +1,10 @@
 package jvl.sage.api;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
-import phoenix.fanart;
-import jvl.AdvancedImage;
 import jvl.metadata.Metadata;
 import jvl.sage.Debug;
 import jvl.tmdb.RateLimitException;
@@ -331,7 +328,11 @@ public class Show extends SageObject
     
     public String GetSeasonPoster() throws SageCallApiException, IOException
     {
-        if(this.meta.HasMetadata())
+        if(this.mediafile == null)
+        {
+            return this.meta.GetPosterRealtime();
+        }
+        else if(this.meta.HasMetadata())
         {
             String seasonPoster = this.meta.GetSeasonPoster();
             
@@ -343,10 +344,8 @@ public class Show extends SageObject
             
             return seasonPoster;
         }
-        else
-        {
-            return this.GetPosterOld();
-        }
+
+        return "";
     }
     
     public String GetPoster() throws SageCallApiException, IOException
@@ -359,60 +358,8 @@ public class Show extends SageObject
         {
             return this.meta.GetPoster();
         }
-        else
-        {
-            return this.GetPosterOld();
-        }
-    }
-    
-    public String GetPosterOld()
-    {
-        String poster = fanart.GetFanartPoster(this.lookupObject);
         
-        File file = null;
-
-        //If it returns null sttempt to clear cache and pickup new poster
-        //if(poster == null)
-        //{
-            //System.out.println("JVL Debug - Getting poster returned null...");
-            //System.out.println("JVL Debug - Fanart direcotry: " + fanart.GetFanartCentralFolder());
-            //System.out.println("JVL Debug - Clearing cache to attemp to get poster.");
-        //    fanart.ClearMemoryCaches();
-        //    poster = fanart.GetFanartPoster(this.lookupObject);
-            //System.out.println("JVL Debug - Second poster call attemp: " + poster);
-        //}
-        
-        if(poster != null)
-        {
-            file = new File(poster);
-        }
-                
-        if(file == null || !file.exists())
-        {
-            String [] posters = null;
-            
-            
-            try
-            {
-                //System.out.println("JVL Debug - Attempting to get all posters... ");
-                posters = this.GetPosters();
-            }
-            catch(Exception ex)
-            {
-                //System.out.println("JVL Debug - Failed with error: " + ex.getMessage());
-            }
-
-            if(posters != null && posters.length > 0)
-            {
-                poster = posters[0];
-            }
-            
-            //TODO:  Investigate further.  Not sure why, but when I set a new poster
-            // on one client, it is not respected on the other.
-            //fanart.SetFanartPoster(show, poster);
-        }
-        
-        return poster;
+        return "";
     }
     
     public String GetBackground() throws SageCallApiException, IOException
@@ -426,42 +373,18 @@ public class Show extends SageObject
         {
             return this.meta.GetBackdrop();
         }
-        else
-        {
-            return this.GetBackgroundOld();
-        }
-    }
-    
-    public String GetBackgroundOld()
-    {
-        String background = fanart.GetFanartBackground(this.lookupObject);
-        File file = null;
         
-        if(background != null)
-        {
-            file = new File(background);
-        }
-                
-        if(file == null || !file.exists())
-        {
-            String [] backgrounds = this.GetBackgrounds();
-            
-            if(backgrounds != null && backgrounds.length > 0)
-            {
-                background = backgrounds[0];
-            }
-            
-            //TODO:  Investigate further.  Not sure why, but when I set a new poster
-            // on one client, it is not respected on the other.
-            //fanart.SetFanartPoster(show, background);
-        }
-        
-        return background;
+        return "";
     }
     
     public void SetPoster(Image poster)
     {
         meta.SetPoster(poster);
+    }
+    
+    public void SetSeasonPoster(Image poster) throws SageCallApiException
+    {
+        meta.SetSeasonPoster(poster);
     }
     
     public void SetBackground(Image background)
@@ -474,172 +397,16 @@ public class Show extends SageObject
         return this.meta.GetPosterImages();
     }
     
-    public String [] GetPosters() throws SageCallApiException, IOException
+    public ArrayList<Image> GetSeasonPosterImages()
     {
-        if(this.meta.HasMetadata())
-        {
-            return this.meta.GetPosters();
-        }
-        else
-        {
-            return this.GetPostersOld();
-        }
+        return this.meta.GetSeasonPosterImages();
     }
     
-    /**
-     * Returns all of the posters for the show.  Verifies that the poster
-     * exists.
-     * @return String [] of paths to posters that have been verified to exist
-     */
-    public String [] GetPostersOld()
-    {
-        String [] posters = fanart.GetFanartPosters(this.lookupObject);
-        ArrayList temp = new ArrayList();
-        
-        for(int i = 0; i < posters.length; i++)
-        {
-            File file = new File(posters[i]);
-            
-            if(file.exists())
-            {
-                temp.add(posters[i]);
-            }
-        }
-        
-        if(temp.size() > 0)
-        {
-            posters = new String[temp.size()];
-            
-            for(int i = 0; i < temp.size(); i++)
-            {
-                posters[i] = (String)temp.get(i);
-            }
-        }
-        else
-        {
-            posters = null;
-        }
-        
-        return posters;
-    }
-    
-    public ArrayList<Image> GetBackdropImages()
+    public ArrayList<Image> GetBackgroundImages()
     {
         return this.meta.GetBackdropImages();
     }
     
-    public String [] GetBackgrounds()
-    {
-        String [] backgrounds = fanart.GetFanartBackgrounds(this.lookupObject);
-        ArrayList temp = new ArrayList();
-        
-        if(backgrounds == null)
-        {
-            backgrounds = new String[]{};
-        }
-        
-        for(int i = 0; i < backgrounds.length; i++)
-        {
-            File file = new File(backgrounds[i]);
-            
-            if(file.exists())
-            {
-                temp.add(backgrounds[i]);
-            }
-        }
-        
-        if(temp.size() > 0)
-        {
-            backgrounds = new String[temp.size()];
-            
-            for(int i = 0; i < temp.size(); i++)
-            {
-                backgrounds[i] = (String)temp.get(i);
-            }
-        }
-        else
-        {
-            backgrounds = null;
-        }
-        
-        return backgrounds;
-    }
-    
-    /**
-     * Delete all posters that are not as large as specified width
-     * Also deletes any poster that does not fall into specified 
-     * ratio of width / height between .68 and .64
-     * @param Width Any poster with a width less than this will be deleted
-     */
-    public void CleanPosters(int Width)
-    {
-        String [] posters = fanart.GetFanartPosters(this.lookupObject);
-        
-        if(posters != null)
-        {
-            for(int i = 0; i < posters.length; i++)
-            {
-                try
-                {
-                    AdvancedImage image = new AdvancedImage(posters[i]);
-
-                    Double ratio = (image.getWidth() * 1.0) / (image.getHeight() * 1.0);
-                    
-                    //Delete the poster if it is not in the standard format
-                    if(ratio < Show.MINIMUM_POSTER_RATIO || ratio > Show.MAXIMUM_POSTER_RATIO || image.getWidth() < Width)
-                    {
-                        File file = new File(posters[i]);
-                        file.delete();
-                    }
-                }
-                catch(IOException ex2)
-                {
-                    //TODO: Add error logging
-                }
-            }
-        }
-    }
-    
-    /***
-     * Scales all posters for this show to the given width maintaining
-     * aspect ratio
-     * @param Width 
-     */
-    public void ScalePosters(int width)
-    {
-        String [] posters = fanart.GetFanartPosters(this.lookupObject);
-        
-        if(posters != null)
-        {
-            for(int i = 0; i < posters.length; i++)
-            {
-                try
-                {
-                    //TODO: Only resize if the poster is > than the specified width
-
-                    
-                    AdvancedImage image = new AdvancedImage(posters[i]);
-                    
-                    if(image.getWidth() > width)
-                    {
-                        image.ResizeImageByWidth(width, true);
-                        image.SaveImageToFile(posters[i]);
-                    }
-                }
-                catch(IllegalArgumentException ex1)
-                {
-                    Debug.Writeln("ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
-                    Debug.WriteStackTrace(ex1, Debug.ERROR);
-                }
-                catch(IOException ex2)
-                {
-                    Debug.Writeln("ScalePoser:  Error scaling poster - " + posters[i], Debug.ERROR);
-                    Debug.WriteStackTrace(ex2, Debug.ERROR);
-                }
-            }
-        }
-        
-    }
     
     /**
      * The type of media file this show object represents.
