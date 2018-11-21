@@ -156,8 +156,7 @@ public class MetadataPlugin implements SageTVPlugin
         }
         catch(Exception ex)
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler");
-            ex.printStackTrace();
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler: " + ex.getMessage());
         }
         
     }
@@ -170,17 +169,17 @@ public class MetadataPlugin implements SageTVPlugin
         } 
         catch (SageCallApiException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException): " + ex.getMessage());
             ex.printStackTrace();
         } 
         catch (IOException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException): " + ex.getMessage());
             ex.printStackTrace();
         } 
         catch (RateLimitException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException): " + ex.getMessage());
         }
     }
     
@@ -192,17 +191,17 @@ public class MetadataPlugin implements SageTVPlugin
         } 
         catch (SageCallApiException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (SageCallApiException): " + ex.getMessage());
             ex.printStackTrace();
         } 
         catch (IOException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (IOException): " + ex.getMessage());
             ex.printStackTrace();
         }
         catch (RateLimitException ex) 
         {
-            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException)");
+            System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException): " + ex.getMessage());
         }
     }
     

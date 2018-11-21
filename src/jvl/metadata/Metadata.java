@@ -18,9 +18,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jvl.sage.api.Utility;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
@@ -299,11 +296,18 @@ public class Metadata
                 return;
             }
             
-            season = TVAPI.getSeasonDetails(this.request, result.getTmdb_ID(), seasonNumber, blocking);
-            
-            if(season != null)
+            try
             {
-                episode = season.getEpisode(episodeNumber);
+                season = TVAPI.getSeasonDetails(this.request, result.getTmdb_ID(), seasonNumber, blocking);
+
+                if(season != null)
+                {
+                    episode = season.getEpisode(episodeNumber);
+                }
+            }
+            catch(Exception ex)
+            {
+                //Season info is not always up to date.  Allow to fail and still continue to update
             }
             
         }
