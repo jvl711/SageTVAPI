@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
-import jvl.sage.Debug;
-import jvl.sage.JobStatus;
 import jvl.sage.SageCallApiException;
 
 public class Shows extends SageArrayObject<Show>
@@ -135,11 +132,48 @@ public class Shows extends SageArrayObject<Show>
                 }
             }
         }
-        
-        
-        //categories.sort(String.CASE_INSENSITIVE_ORDER);
 
         return categories;
+    }
+    
+    public int GetShowTitleCount() throws SageCallApiException
+    {
+        return this.GetShowTitles().size();
+    }
+    
+    /**
+     * Gets a distinct list of all of the show titles
+     * @return ArrayList of Titles
+     * @throws SageCallApiException 
+     */
+    public ArrayList<String> GetShowTitles() throws SageCallApiException
+    {
+        ArrayList<String> titles = new ArrayList<String>();
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(!titles.contains(this.get(i).GetTitle()))
+            {
+                titles.add(this.get(i).GetTitle());
+            }
+        }
+        
+        return titles;
+    }
+    
+    public Shows GetShowsByTitle(String title) throws SageCallApiException
+    {
+        Shows shows = new Shows();
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(this.get(i).GetTitle().equals(title))
+            {
+                shows.add(this.get(i));
+            }
+        }
+        
+        return shows;
     }
     
     public void FilterByCategory(String Category) throws SageCallApiException
