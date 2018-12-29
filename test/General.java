@@ -60,7 +60,7 @@ public class General
     @Test
     public void getTitleFromFileName()
     {
-        String testFileName = "Test 1x2.mp4";
+        String testFileName = "Blade Runner 2049_2017_1080p_H264.mkv";
         
         
         FileNameParser parser = new FileNameParser(testFileName);

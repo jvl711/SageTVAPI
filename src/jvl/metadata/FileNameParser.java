@@ -57,6 +57,8 @@ public class FileNameParser
     
     public static void AddIgnoreWord(String input)
     {
+        //@todo test
+        
         if(!ignoreWords.contains(input.toLowerCase()))
         {
             ignoreWords.add(input.toLowerCase());
@@ -106,13 +108,15 @@ public class FileNameParser
     
     private void ParseFileName()
     {
-        String input = this.fileName.replace('.', ' ').replace('_', ' ');        
+        String input = this.fileName.replace('.', ' ').replace('_', ' ').replace('-', ' ');        
         String [] parts = input.split(" ");
         String output = "";
         
+        System.out.println("Filename: " + this.fileName);
+        
         for(int i = 0; i < parts.length; i++)
         {        
-            //System.out.println("Part: " + parts[i]);
+            System.out.println("Part: " + parts[i]);
             
             if(this.isIgnoreWord(parts[i]))
             {
@@ -121,18 +125,21 @@ public class FileNameParser
             else if(this.IsDate(parts[i]))
             {
                 this.year = ParseDate(parts[i]);
-                break;
+                //break;
             }
             else if(this.IsSeasonEpisode(parts[i]))
             {
-                System.out.println("Is Season/Episode");
+                //System.out.println("Is Season/Episode");
                 this.season = this.getSeason(parts[i]);
                 this.episode = this.GetEpisode(parts[i]);
                 break;
             }
             else
             {
-                output += parts[i] + " "; 
+                if(parts[i].length() > 0)
+                {
+                    output += parts[i].trim() + " "; 
+                }
             }
         }
         
@@ -170,8 +177,12 @@ public class FileNameParser
     //I good place to look for additional examples, which I may support later https://kodi.wiki/view/Naming_video_files/TV_shows
     
     private boolean IsSeasonEpisode(String input)
-    {
-        
+    {   
+        if(input.length() == 0)
+        {
+            return false;
+        }
+                
         if(input.charAt(0) == 'S')
         {
             String season = "";

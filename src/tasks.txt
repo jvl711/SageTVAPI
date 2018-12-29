@@ -1,0 +1,6 @@
+//TASK: Make a lookup cache for filenames so we do not continue to hit the API for realtime lookups
+//TASK: Research why weird media files are showing up in the unknown files
+//TASK: Make a page for managing unknown files
+//TASK: Redo the movies detail page in the new style
+//TASK: Add paging to the details pages
+//TASK: Performance enhancements....
