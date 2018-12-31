@@ -7,7 +7,6 @@ import jvl.sage.api.Show;
 import jvl.tmdb.SearchAPI;
 import jvl.tmdb.TMDBRequest;
 import jvl.tmdb.model.Movie;
-import jvl.tmdb.model.SearchResultMovie;
 import jvl.tmdb.model.SearchResults;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +16,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
@@ -25,7 +26,6 @@ import jvl.tmdb.TVAPI;
 import jvl.tmdb.model.Episode;
 import jvl.tmdb.model.Image;
 import jvl.tmdb.model.Images;
-import jvl.tmdb.model.SearchResultShow;
 import jvl.tmdb.model.Season;
 import jvl.tmdb.model.TV;
 
@@ -75,6 +75,10 @@ public class Metadata
     private File cacheFolder;
     private Show show;
     private TMDBRequest request;
+    
+    /*Basic cache for lookup on title*/
+    private static Map<String, Integer> TMDBIDCacheMovie = new ConcurrentHashMap<String, Integer>();
+    private static Map<String, Integer> TMDBIDCacheTV = new ConcurrentHashMap<String, Integer>();
     
     private static final int DEFAULT_POSTER_SIZE_WIDTH = 600;
     private static final int DEFAULT_STILL_SIZE_WIDTH = 600;
@@ -126,19 +130,34 @@ public class Metadata
             if(this.show.GetMediaFile().IsTVFile() && !this.show.IsMovie()) //Recorded TV
             {
                 System.out.println("JVL - This is recorded content that is not a movie");
+                int tmdb_id = -1;
                 
-                SearchResults results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
+                if(this.HasCachedTVTMDB_ID(show.GetTitle()))
+                {
+                    System.out.println("JVL - Metadata cache hit on title for TV Show");
+                    tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+                }
+                else
+                {
+                    SearchResults results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
+                    
+                    if(results != null && results.getShows().size() > 0)
+                    {
+                        tmdb_id = results.getShows().get(0).getTmdb_ID();
+                        this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
+                    }
+                }
 
-                if(results != null && results.getShows().size() > 0)
+                if(tmdb_id > 0)
                 {
                     if(show.GetEpisodeNumber() > 0)
                     {
-                        this.SaveTVMetadata(results.getShows().get(0), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber(), forceRefresh, blocking);
+                        this.SaveTVMetadata(tmdb_id, this.show.GetSeasonNumber(), this.show.GetEpisodeNumber(), forceRefresh, blocking);
                     }
                     else
                     {
                         //This is for shows that do not have season episode numbers
-                        this.SaveTVMetadata(results.getShows().get(0), blocking, forceRefresh);
+                        this.SaveTVMetadata(tmdb_id, blocking, forceRefresh);
                     }
                 }
                 else
@@ -156,21 +175,49 @@ public class Metadata
             {
                 SearchResults results;
                 int year = 0;
-                
-                try{ year = Integer.parseInt(this.show.GetYear()); } catch(Exception ex) { }
+                int tmdb_id = -1;
+                try{ year = Integer.parseInt(this.show.GetYear()); } catch(Exception ex) { }                
                 
                 if(year > 0)
                 {
-                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);
+                    if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
+                    {
+                        System.out.println("JVL - Metadata cache hit getting movie id");
+                        tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                    }
+                    else
+                    {
+                        results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);
+                        
+                        if(results != null && results.getMovies().size() > 0)
+                        {
+                            tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                            this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
+                        }
+                    }
                 }
                 else
                 {
-                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);
+                    if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
+                    {
+                        System.out.println("JVL - Metadata cache hit getting movie id");
+                        tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                    }
+                    else
+                    {
+                        results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);
+                        
+                        if(results != null && results.getMovies().size() > 0)
+                        {
+                            tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                            this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
+                        }
+                    }
                 }
                 
-                if(results != null && results.getMovies().size() > 0)
+                if(tmdb_id > 0)
                 {
-                    this.SaveMovieMetadata(results.getMovies().get(0), year, forceRefresh, blocking);
+                    this.SaveMovieMetadata(tmdb_id, year, forceRefresh, blocking);
                 }
                 else
                 {
@@ -188,6 +235,8 @@ public class Metadata
                 System.out.println("JVL - Filename: " + this.show.GetMediaFile().GetFileName());
                 
                 SearchResults results;
+                int tmdb_id = -1;
+                
                 
                 if(parser.IsMovie())
                 {
@@ -195,19 +244,47 @@ public class Metadata
                     
                     if(parser.GetReleaseYear() > 0)
                     {
-                        System.out.println("JVL - Parser Title: " + parser.GetTitle());
-                        System.out.println("JVL - Parser Release Year: " + parser.GetReleaseYear());
-                        results = SearchAPI.searchMovies(request, parser.GetTitle(), parser.GetReleaseYear(), blocking);
+                        //System.out.println("JVL - Parser Title: " + parser.GetTitle());
+                        //System.out.println("JVL - Parser Release Year: " + parser.GetReleaseYear());
+                        
+                        if(this.HasCachedMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear()))
+                        {
+                            System.out.println("JVL - Metadata cache hit getting movie id");
+                            tmdb_id = this.GetCacherMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear());
+                        }
+                        else
+                        {
+                            results = SearchAPI.searchMovies(this.request, parser.GetTitle(), parser.GetReleaseYear(), blocking);
+
+                            if(results != null && results.getMovies().size() > 0)
+                            {
+                                tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                                this.PutCacheMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear(), tmdb_id);
+                            }
+                        }
                     }
                     else
                     {
-                        System.out.println("JVL - Parser Title: " + parser.GetTitle());
-                        results = SearchAPI.searchMovies(request, parser.GetTitle(), blocking);
+                        if(this.HasCachedMovieTMDB_ID(parser.GetTitle()))
+                        {
+                            System.out.println("JVL - Metadata cache hit getting movie id");
+                            tmdb_id = this.GetCacherMovieTMDB_ID(parser.GetTitle());
+                        }
+                        else
+                        {
+                            results = SearchAPI.searchMovies(this.request, parser.GetTitle(), blocking);
+
+                            if(results != null && results.getMovies().size() > 0)
+                            {
+                                tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                                this.PutCacheMovieTMDB_ID(parser.GetTitle(), tmdb_id);
+                            }
+                        }
                     }
                     
-                    if(results != null && results.getMovies().size() > 0)
+                    if(tmdb_id > 0)
                     {
-                        this.SaveMovieMetadata(results.getMovies().get(0), parser.GetReleaseYear(), forceRefresh, blocking);
+                        this.SaveMovieMetadata(tmdb_id, parser.GetReleaseYear(), forceRefresh, blocking);
                     }
                     else
                     {
@@ -221,11 +298,25 @@ public class Metadata
                 else
                 {
                     System.out.println("JVL - Parser found IsMovie is false");
-                    results = SearchAPI.searchTV(request, parser.GetTitle(), blocking);
                     
-                    if(results != null && results.getShows().size() > 0)
+                    if(this.HasCachedTVTMDB_ID(parser.GetTitle()))
                     {
-                        this.SaveTVMetadata(results.getShows().get(0), parser.GetSeason(), parser.GetEpisode(), forceRefresh, blocking);
+                        tmdb_id = this.GetCacherTVTMDB_ID("");
+                    }
+                    else
+                    {
+                        results = SearchAPI.searchTV(request, parser.GetTitle(), blocking);
+                        
+                        if(results != null && results.getShows().size() > 0)
+                        {
+                            tmdb_id = results.getShows().get(0).getTmdb_ID();
+                            this.PutCacheTVTMDB_ID(parser.GetTitle(), tmdb_id);
+                        }
+                    }
+                    
+                    if(tmdb_id > 0)
+                    {
+                        this.SaveTVMetadata(tmdb_id, parser.GetSeason(), parser.GetEpisode(), forceRefresh, blocking);
                     }
                     else
                     {
@@ -242,13 +333,66 @@ public class Metadata
         return true;
     }
     
-    private void SaveTVMetadata(SearchResultShow result, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    private void PutCacheMovieTMDB_ID(String title, int year, int tmdb_id)
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
-        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/season.json");
-        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/images.json");
-        File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+        if(!Metadata.TMDBIDCacheMovie.containsKey(title + "_" + year))
+        {
+            Metadata.TMDBIDCacheMovie.put(title + "_" + year, tmdb_id);
+        }
+    }
+    
+    private void PutCacheMovieTMDB_ID(String title, int tmdb_id)
+    {
+        if(!Metadata.TMDBIDCacheMovie.containsKey(title))
+        {
+            Metadata.TMDBIDCacheMovie.put(title, tmdb_id);
+        }
+    }
+    
+    private boolean HasCachedMovieTMDB_ID(String title)
+    {
+        return Metadata.TMDBIDCacheMovie.containsKey(title);
+    }
+    
+    private boolean HasCachedMovieTMDB_ID(String title, int year)
+    {
+        return Metadata.TMDBIDCacheMovie.containsKey(title + "_" + year);
+    }
+    private int GetCacherMovieTMDB_ID(String title, int year)
+    {
+        return Metadata.TMDBIDCacheMovie.get(title + "_" + year);
+    }
+    
+    private int GetCacherMovieTMDB_ID(String title)
+    {
+        return Metadata.TMDBIDCacheMovie.get(title);
+    }
+    
+    private void PutCacheTVTMDB_ID(String title, int tmdb_id)
+    {
+        if(!Metadata.TMDBIDCacheTV.containsKey(title))
+        {
+            Metadata.TMDBIDCacheTV.put(title, tmdb_id);
+        }
+    }
+    
+    private boolean HasCachedTVTMDB_ID(String title)
+    {
+        return Metadata.TMDBIDCacheTV.containsKey(title);
+    }
+    
+    private int GetCacherTVTMDB_ID(String title)
+    {
+        return Metadata.TMDBIDCacheTV.get(title);
+    }
+    
+    private void SaveTVMetadata(int tmdb_id, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    {
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
+        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/season.json");
+        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/images.json");
+        File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
         
         boolean updateCache = forceRefresh;
         
@@ -289,7 +433,7 @@ public class Metadata
             
         if(updateCache)
         {
-            tv = TVAPI.getDetails(this.request, result.getTmdb_ID(), blocking);
+            tv = TVAPI.getDetails(this.request, tmdb_id, blocking);
             
             if(tv == null)
             {
@@ -298,7 +442,7 @@ public class Metadata
             
             try
             {
-                season = TVAPI.getSeasonDetails(this.request, result.getTmdb_ID(), seasonNumber, blocking);
+                season = TVAPI.getSeasonDetails(this.request, tmdb_id, seasonNumber, blocking);
 
                 if(season != null)
                 {
@@ -320,7 +464,7 @@ public class Metadata
 
         
         
-        show.SetTheMovieDBID(result.getTmdb_ID());
+        show.SetTheMovieDBID(tmdb_id);
         show.SetEpisodeNumber(episodeNumber);
         show.SetSeasonNumber(seasonNumber);
         show.SetMetadataUpdateDate(now.getTime());
@@ -342,9 +486,9 @@ public class Metadata
 
         if(updateCache)
         {
-            Images images = TVAPI.getImages(this.request, result.getTmdb_ID(), blocking);
-            Images seasonImages = TVAPI.getSeasonImages(request, result.getTmdb_ID(), seasonNumber, blocking);
-            Images episodeImages = TVAPI.getEpisodeImages(request, result.getTmdb_ID(), seasonNumber, episodeNumber, blocking);
+            Images images = TVAPI.getImages(this.request, tmdb_id, blocking);
+            Images seasonImages = TVAPI.getSeasonImages(request, tmdb_id, seasonNumber, blocking);
+            Images episodeImages = TVAPI.getEpisodeImages(request, tmdb_id, seasonNumber, episodeNumber, blocking);
 
             if(tv != null)
             {
@@ -389,10 +533,10 @@ public class Metadata
      * @throws IOException
      * @throws SageCallApiException 
      */
-    private void SaveTVMetadata(SearchResultShow result, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    private void SaveTVMetadata(int tmdb_id, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + result.getTmdb_ID() + "/images.json");
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
         
         boolean updateCache = forceRefresh;
         
@@ -406,14 +550,14 @@ public class Metadata
             
         if(updateCache)
         {
-            tv = TVAPI.getDetails(this.request, result.getTmdb_ID(), blocking);
+            tv = TVAPI.getDetails(this.request, tmdb_id, blocking);
         }
         else
         {
             tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, blocking));
         }
 
-        show.SetTheMovieDBID(result.getTmdb_ID());
+        show.SetTheMovieDBID(tmdb_id);
         show.SetMetadataUpdateDate(now.getTime());
         show.SetMediaType("TV");
         
@@ -425,7 +569,7 @@ public class Metadata
 
         if(updateCache)
         {
-            Images images = TVAPI.getImages(this.request, result.getTmdb_ID(), blocking);
+            Images images = TVAPI.getImages(this.request, tmdb_id, blocking);
 
             if(tv != null)
             {
@@ -443,18 +587,18 @@ public class Metadata
         this.GetBackdrop(blocking);
     }
     
-    private void SaveMovieMetadata(SearchResultMovie result, int year, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
+    private void SaveMovieMetadata(int tmdb_id, int year, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + result.getTmdb_ID() + "/images.json");
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
+        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/images.json");
         
         Date now = new Date();
-        Movie movie = MovieAPI.getDetails(request, result.getTmdb_ID(), blocking);
-        Images images = MovieAPI.getImages(request, result.getTmdb_ID(), blocking);
+        Movie movie = MovieAPI.getDetails(request, tmdb_id, blocking);
+        Images images = MovieAPI.getImages(request, tmdb_id, blocking);
         
         //TODO: Implement selective save
         
-        show.SetTheMovieDBID(result.getTmdb_ID());
+        show.SetTheMovieDBID(tmdb_id);
         show.SetMediaType("Movie");
         
         if(movie != null)
@@ -598,7 +742,7 @@ public class Metadata
     
     public String GetPosterRealtime(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
-        int TheMovieDBID = -1;
+        int tmdb_id = -1;
         String MediaType;
         SearchResults results;
         File file = null;
@@ -615,35 +759,67 @@ public class Metadata
             
             if(year > 0)
             {
-                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);                
+                if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
+                {
+                    System.out.println("JVL - Metadata cache hit getting movie id");
+                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                }
+                else
+                {
+                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);
+
+                    if(results != null && results.getMovies().size() > 0)
+                    {
+                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
+                    }
+                }
             }
             else
             {
-                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);    
+                if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
+                {
+                    System.out.println("JVL - Metadata cache hit getting movie id");
+                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                }
+                else
+                {
+                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);
+
+                    if(results != null && results.getMovies().size() > 0)
+                    {
+                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
+                    }
+                }
             }
-            
-            if(results != null && results.getMovies().size() > 0)
-            {
-                System.out.println("JVL - Found movie");
-                TheMovieDBID = results.getMovies().get(0).getTmdb_ID();
-            }
+
         }
         else
         {
             System.out.println("JVL - Looking up TV");
             MediaType = "TV";
-            results = SearchAPI.searchTV(this.request, this.show.GetTitle(), blocking);
             
-            if(results.getShows().size() > 0)
+            if(this.HasCachedTVTMDB_ID(show.GetTitle()))
             {
-                System.out.println("JVL - Found show");
-                TheMovieDBID = results.getShows().get(0).getTmdb_ID();
+                System.out.println("JVL - Metadata cache hit on title for TV Show");
+                tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+            }
+            else
+            {
+                results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
+
+                if(results != null && results.getShows().size() > 0)
+                {
+                    tmdb_id = results.getShows().get(0).getTmdb_ID();
+                    this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
+                }
             }
         }
         
-        if(TheMovieDBID > 0)
+        if(tmdb_id > 0)
         {
-            Images images = this.GetImages(TheMovieDBID, MediaType, blocking);
+            Images images = this.GetImages(tmdb_id, MediaType, blocking);
             
             if(images.getPosters().size() > 0)
             {
@@ -652,11 +828,11 @@ public class Metadata
 
                 if(MediaType.equalsIgnoreCase("TV"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/posters/" + poster_width + images.getPoster().getFileName());
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
                 }
                 else if(MediaType.equalsIgnoreCase("MOVIE"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/posters/" + poster_width + images.getPoster().getFileName());
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
                 }
 
                 if(file != null && !file.exists())
@@ -700,7 +876,7 @@ public class Metadata
     
     public String GetBackdropRealtime(int preferredSize, boolean blocking) throws SageCallApiException, IOException, RateLimitException
     {
-        int TheMovieDBID = -1;
+        int tmdb_id = -1;
         String MediaType;
         SearchResults results;
         File file = null;
@@ -717,35 +893,67 @@ public class Metadata
             
             if(year > 0)
             {
-                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);                
+                if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
+                {
+                    System.out.println("JVL - Metadata cache hit getting movie id");
+                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                }
+                else
+                {
+                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), year, blocking);
+
+                    if(results != null && results.getMovies().size() > 0)
+                    {
+                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
+                    }
+                }
             }
             else
             {
-                results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);    
+                if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
+                {
+                    System.out.println("JVL - Metadata cache hit getting movie id");
+                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                }
+                else
+                {
+                    results = SearchAPI.searchMovies(this.request, this.show.GetTitle(), blocking);
+
+                    if(results != null && results.getMovies().size() > 0)
+                    {
+                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
+                    }
+                }
             }
-            
-            if(results != null && results.getMovies().size() > 0)
-            {
-                System.out.println("JVL - Found movie");
-                TheMovieDBID = results.getMovies().get(0).getTmdb_ID();
-            }
+
         }
         else
         {
             System.out.println("JVL - Looking up TV");
             MediaType = "TV";
-            results = SearchAPI.searchTV(this.request, this.show.GetTitle(), blocking);
             
-            if(results != null && results.getShows().size() > 0)
+            if(this.HasCachedTVTMDB_ID(show.GetTitle()))
             {
-                System.out.println("JVL - Found show");
-                TheMovieDBID = results.getShows().get(0).getTmdb_ID();
+                System.out.println("JVL - Metadata cache hit on title for TV Show");
+                tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+            }
+            else
+            {
+                results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
+
+                if(results != null && results.getShows().size() > 0)
+                {
+                    tmdb_id = results.getShows().get(0).getTmdb_ID();
+                    this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
+                }
             }
         }
         
-        if(TheMovieDBID > 0)
+        if(tmdb_id > 0)
         {
-            Images images = this.GetImages(TheMovieDBID, MediaType, blocking);
+            Images images = this.GetImages(tmdb_id, MediaType, blocking);
             
             if(images.getBackdrops().size() > 0)
             {
@@ -754,16 +962,16 @@ public class Metadata
 
                 if(MediaType.equalsIgnoreCase("TV"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
                 }
                 else if(MediaType.equalsIgnoreCase("MOVIE"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
                 }
 
                 if(file != null && !file.exists())
                 {
-                    images.getPoster().saveImage(file, preferredSize);
+                    images.getBackdrop().saveImage(file, preferredSize);
                 }
             }
         }
