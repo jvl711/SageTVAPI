@@ -109,12 +109,26 @@ public class MediaFile extends SageObject
     
     public String GetFileName() throws SageCallApiException
     {
-        return this.GetMediaFileSegments()[0].GetFileName();
+        if(this.GetMediaFileSegments().length > 0)
+        {
+            return this.GetMediaFileSegments()[0].GetFileName();
+        }
+        else
+        {
+            return "";
+        }
     }
     
     public String GetFilePath() throws SageCallApiException
     {
-        return this.GetMediaFileSegments()[0].GetFilePath();
+        if(this.GetMediaFileSegments().length > 0)
+        {
+            return this.GetMediaFileSegments()[0].GetFilePath();
+        }
+        else
+        {
+            return "";
+        }
     }
     
     /**
@@ -935,7 +949,8 @@ public class MediaFile extends SageObject
     
     /**
      * Gets all files that are not identified as TV/Movie.  They were most likely
-     * not identified by the Metadata lookup routine
+     * not identified by the Metadata lookup routine.  Excludes all files that have 0
+     * size, or do not exist on disk
      * 
      * @return Unknown Files as MediaFiles object
      * @throws SageCallApiException 
@@ -943,13 +958,22 @@ public class MediaFile extends SageObject
     public static MediaFiles GetUnknownFiles() throws SageCallApiException
     {
         Object [] objects;
-        MediaFiles mediaFiles;
+        MediaFiles tempMediaFiles;
+        MediaFiles mediaFiles = new MediaFiles();
         
         objects = MediaFile.callApiArray("GetMediaFiles");
         
-        mediaFiles = new MediaFiles(objects);
+        tempMediaFiles = new MediaFiles(objects);
         
-        mediaFiles.FilterByMetadata("MediaType", "");
+        tempMediaFiles.FilterByMetadata("MediaType", "");
+        
+        for(int i = 0; i < tempMediaFiles.size(); i++)
+        {
+            if(tempMediaFiles.get(i).GetSize() > 0)
+            {
+                mediaFiles.add(tempMediaFiles.get(i));
+            }
+        }
         
         return mediaFiles;
     }

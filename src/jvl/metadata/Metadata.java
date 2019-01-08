@@ -135,7 +135,7 @@ public class Metadata
                 if(this.HasCachedTVTMDB_ID(show.GetTitle()))
                 {
                     System.out.println("JVL - Metadata cache hit on title for TV Show");
-                    tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+                    tmdb_id = this.GetCachedTVTMDB_ID(show.GetTitle());
                 }
                 else
                 {
@@ -183,7 +183,7 @@ public class Metadata
                     if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
                     {
                         System.out.println("JVL - Metadata cache hit getting movie id");
-                        tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                        tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle(), year);
                     }
                     else
                     {
@@ -201,7 +201,7 @@ public class Metadata
                     if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
                     {
                         System.out.println("JVL - Metadata cache hit getting movie id");
-                        tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                        tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle());
                     }
                     else
                     {
@@ -250,7 +250,7 @@ public class Metadata
                         if(this.HasCachedMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear()))
                         {
                             System.out.println("JVL - Metadata cache hit getting movie id");
-                            tmdb_id = this.GetCacherMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear());
+                            tmdb_id = this.GetCachedMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear());
                         }
                         else
                         {
@@ -268,7 +268,7 @@ public class Metadata
                         if(this.HasCachedMovieTMDB_ID(parser.GetTitle()))
                         {
                             System.out.println("JVL - Metadata cache hit getting movie id");
-                            tmdb_id = this.GetCacherMovieTMDB_ID(parser.GetTitle());
+                            tmdb_id = this.GetCachedMovieTMDB_ID(parser.GetTitle());
                         }
                         else
                         {
@@ -301,7 +301,8 @@ public class Metadata
                     
                     if(this.HasCachedTVTMDB_ID(parser.GetTitle()))
                     {
-                        tmdb_id = this.GetCacherTVTMDB_ID("");
+                        tmdb_id = this.GetCachedTVTMDB_ID(parser.GetTitle());
+                        System.out.println("JVL - Metadata cache hit getting tv id");
                     }
                     else
                     {
@@ -358,12 +359,12 @@ public class Metadata
     {
         return Metadata.TMDBIDCacheMovie.containsKey(title + "_" + year);
     }
-    private int GetCacherMovieTMDB_ID(String title, int year)
+    private int GetCachedMovieTMDB_ID(String title, int year)
     {
         return Metadata.TMDBIDCacheMovie.get(title + "_" + year);
     }
     
-    private int GetCacherMovieTMDB_ID(String title)
+    private int GetCachedMovieTMDB_ID(String title)
     {
         return Metadata.TMDBIDCacheMovie.get(title);
     }
@@ -381,7 +382,7 @@ public class Metadata
         return Metadata.TMDBIDCacheTV.containsKey(title);
     }
     
-    private int GetCacherTVTMDB_ID(String title)
+    private int GetCachedTVTMDB_ID(String title)
     {
         return Metadata.TMDBIDCacheTV.get(title);
     }
@@ -762,7 +763,7 @@ public class Metadata
                 if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
                 {
                     System.out.println("JVL - Metadata cache hit getting movie id");
-                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                    tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle(), year);
                 }
                 else
                 {
@@ -780,7 +781,7 @@ public class Metadata
                 if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
                 {
                     System.out.println("JVL - Metadata cache hit getting movie id");
-                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                    tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle());
                 }
                 else
                 {
@@ -803,16 +804,18 @@ public class Metadata
             if(this.HasCachedTVTMDB_ID(show.GetTitle()))
             {
                 System.out.println("JVL - Metadata cache hit on title for TV Show");
-                tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+                tmdb_id = this.GetCachedTVTMDB_ID(show.GetTitle());
             }
             else
             {
+                System.out.println("JVL - Metadata cache miss on TV Show: " + show.GetTitle());
                 results = SearchAPI.searchTV(this.request, show.GetTitle(), blocking);
 
                 if(results != null && results.getShows().size() > 0)
                 {
                     tmdb_id = results.getShows().get(0).getTmdb_ID();
                     this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
+                    System.out.println("JVL - Metadata adding tp cache TMDB: " + tmdb_id);
                 }
             }
         }
@@ -896,7 +899,7 @@ public class Metadata
                 if(this.HasCachedMovieTMDB_ID(this.show.GetTitle(), year))
                 {
                     System.out.println("JVL - Metadata cache hit getting movie id");
-                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle(), year);
+                    tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle(), year);
                 }
                 else
                 {
@@ -914,7 +917,7 @@ public class Metadata
                 if(this.HasCachedMovieTMDB_ID(this.show.GetTitle()))
                 {
                     System.out.println("JVL - Metadata cache hit getting movie id");
-                    tmdb_id = this.GetCacherMovieTMDB_ID(this.show.GetTitle());
+                    tmdb_id = this.GetCachedMovieTMDB_ID(this.show.GetTitle());
                 }
                 else
                 {
@@ -937,7 +940,7 @@ public class Metadata
             if(this.HasCachedTVTMDB_ID(show.GetTitle()))
             {
                 System.out.println("JVL - Metadata cache hit on title for TV Show");
-                tmdb_id = this.GetCacherTVTMDB_ID(show.GetTitle());
+                tmdb_id = this.GetCachedTVTMDB_ID(show.GetTitle());
             }
             else
             {
