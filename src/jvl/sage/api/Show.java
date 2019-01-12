@@ -1,5 +1,6 @@
 package jvl.sage.api;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -83,6 +84,16 @@ public class Show extends SageObject
     public Airing GetAiring()
     {
         return new Airing(this.airing);
+    }
+    
+    public void SaveTVMetadata(int tmbdID, int seasonNumber, int episodeNumber, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    {
+        meta.SaveTVMetadata(tmbdID, seasonNumber, episodeNumber, blocking, blocking);
+    }
+    
+    public void SaveMovieMetadata(int tmdbID, boolean blocking) throws SageCallApiException, IOException, FileNotFoundException, RateLimitException
+    {
+        meta.SaveMovieMetadata(tmdbID, blocking, blocking);
     }
     
     public boolean MetadataLookup(boolean forceRefresh, boolean blocking) throws SageCallApiException, IOException, RateLimitException

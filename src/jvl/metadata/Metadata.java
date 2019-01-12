@@ -143,7 +143,7 @@ public class Metadata
                     
                     if(results != null && results.getShows().size() > 0)
                     {
-                        tmdb_id = results.getShows().get(0).getTmdb_ID();
+                        tmdb_id = results.getShows().get(0).getTmdbID();
                         this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
                     }
                 }
@@ -191,7 +191,7 @@ public class Metadata
                         
                         if(results != null && results.getMovies().size() > 0)
                         {
-                            tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                            tmdb_id = results.getMovies().get(0).getTmdbID();
                             this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
                         }
                     }
@@ -209,7 +209,7 @@ public class Metadata
                         
                         if(results != null && results.getMovies().size() > 0)
                         {
-                            tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                            tmdb_id = results.getMovies().get(0).getTmdbID();
                             this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
                         }
                     }
@@ -217,7 +217,7 @@ public class Metadata
                 
                 if(tmdb_id > 0)
                 {
-                    this.SaveMovieMetadata(tmdb_id, year, forceRefresh, blocking);
+                    this.SaveMovieMetadata(tmdb_id, forceRefresh, blocking);
                 }
                 else
                 {
@@ -258,7 +258,7 @@ public class Metadata
 
                             if(results != null && results.getMovies().size() > 0)
                             {
-                                tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                                tmdb_id = results.getMovies().get(0).getTmdbID();
                                 this.PutCacheMovieTMDB_ID(parser.GetTitle(), parser.GetReleaseYear(), tmdb_id);
                             }
                         }
@@ -276,7 +276,7 @@ public class Metadata
 
                             if(results != null && results.getMovies().size() > 0)
                             {
-                                tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                                tmdb_id = results.getMovies().get(0).getTmdbID();
                                 this.PutCacheMovieTMDB_ID(parser.GetTitle(), tmdb_id);
                             }
                         }
@@ -284,7 +284,7 @@ public class Metadata
                     
                     if(tmdb_id > 0)
                     {
-                        this.SaveMovieMetadata(tmdb_id, parser.GetReleaseYear(), forceRefresh, blocking);
+                        this.SaveMovieMetadata(tmdb_id, forceRefresh, blocking);
                     }
                     else
                     {
@@ -310,7 +310,7 @@ public class Metadata
                         
                         if(results != null && results.getShows().size() > 0)
                         {
-                            tmdb_id = results.getShows().get(0).getTmdb_ID();
+                            tmdb_id = results.getShows().get(0).getTmdbID();
                             this.PutCacheTVTMDB_ID(parser.GetTitle(), tmdb_id);
                         }
                     }
@@ -387,7 +387,7 @@ public class Metadata
         return Metadata.TMDBIDCacheTV.get(title);
     }
     
-    private void SaveTVMetadata(int tmdb_id, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
+    public void SaveTVMetadata(int tmdb_id, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
@@ -588,7 +588,7 @@ public class Metadata
         this.GetBackdrop(blocking);
     }
     
-    private void SaveMovieMetadata(int tmdb_id, int year, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
+    public void SaveMovieMetadata(int tmdb_id, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
         File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/images.json");
@@ -771,7 +771,7 @@ public class Metadata
 
                     if(results != null && results.getMovies().size() > 0)
                     {
-                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        tmdb_id = results.getMovies().get(0).getTmdbID();
                         this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
                     }
                 }
@@ -789,7 +789,7 @@ public class Metadata
 
                     if(results != null && results.getMovies().size() > 0)
                     {
-                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        tmdb_id = results.getMovies().get(0).getTmdbID();
                         this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
                     }
                 }
@@ -813,7 +813,7 @@ public class Metadata
 
                 if(results != null && results.getShows().size() > 0)
                 {
-                    tmdb_id = results.getShows().get(0).getTmdb_ID();
+                    tmdb_id = results.getShows().get(0).getTmdbID();
                     this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
                     System.out.println("JVL - Metadata adding tp cache TMDB: " + tmdb_id);
                 }
@@ -907,7 +907,7 @@ public class Metadata
 
                     if(results != null && results.getMovies().size() > 0)
                     {
-                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        tmdb_id = results.getMovies().get(0).getTmdbID();
                         this.PutCacheMovieTMDB_ID(this.show.GetTitle(), year, tmdb_id);
                     }
                 }
@@ -925,7 +925,7 @@ public class Metadata
 
                     if(results != null && results.getMovies().size() > 0)
                     {
-                        tmdb_id = results.getMovies().get(0).getTmdb_ID();
+                        tmdb_id = results.getMovies().get(0).getTmdbID();
                         this.PutCacheMovieTMDB_ID(this.show.GetTitle(), tmdb_id);
                     }
                 }
@@ -948,7 +948,7 @@ public class Metadata
 
                 if(results != null && results.getShows().size() > 0)
                 {
-                    tmdb_id = results.getShows().get(0).getTmdb_ID();
+                    tmdb_id = results.getShows().get(0).getTmdbID();
                     this.PutCacheTVTMDB_ID(show.GetTitle(), tmdb_id);
                 }
             }
