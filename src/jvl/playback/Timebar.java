@@ -66,6 +66,9 @@ public class Timebar extends Thread
         }
        
         //If it is a movie attempt to load chapters
+        //TODO: Need to cache the chapter markers.  Taking way to long to look them up in realtime
+        //TODO: Disabling this section for now because of performance issues.
+        /*
         if(mediaType != null && mediaType.equalsIgnoreCase("movie"))
         {    
             try
@@ -84,6 +87,8 @@ public class Timebar extends Thread
         {
             System.out.println("JVL - Media Type not equal to movie.  Not searching for chapters.");
         }
+        */
+        this.chapters = new Marker[0];
         
         
         this.comThreadRun = false;
