@@ -24,17 +24,17 @@ public class Global extends SageAPI
        {
            return 1;
        }
-       else if (width < 1920)
+//       else if (width < 1920)
+//       {
+//           return 2;
+//       }
+       else if(width < 3840)
        {
            return 2;
        }
-       else if(width < 3840)
-       {
-           return 3;
-       }
        else
        {
-           return 4;
+           return 3;
        }
            
     }
