@@ -28,6 +28,7 @@ public class MetadataPlugin implements SageTVPlugin
         System.out.println("JVL Metadata Plugin - Started");
         this.registry.eventSubscribe(this, "RecordingStarted");
         this.registry.eventSubscribe(this, "MediaFileImported");
+        this.registry.eventSubscribe(this, "MediaFileRemoved");
     }
 
     @Override
@@ -137,7 +138,32 @@ public class MetadataPlugin implements SageTVPlugin
                     if(MediaFile.IsMediaFileObject(args.get("MediaFile")))
                     {
                         Show show = new Show(args.get("MediaFile"));
+                
+                        System.out.println("JVL Metadata Plugin - File name: " + show.GetMediaFile().GetFileName());
+                        
                         this.MediaFileImportedHandler(show);
+                    }
+                    else
+                    {
+                        System.out.println("JVL Metadata Plugin - Args was not reported as a MediaFile object");
+                    }
+                }
+                else
+                {
+                    System.out.println("JVL Metadata Plugin - Args missing MediaFile object");
+                }
+            }
+            else if(event.equalsIgnoreCase("MediaFileRemoved"))
+            {
+                System.out.println("JVL Metadata Plugin - Media File Removed Called");
+                
+                if(args.containsKey("MediaFile"))
+                {
+                    if(MediaFile.IsMediaFileObject(args.get("MediaFile")))
+                    {
+                        Show show = new Show(args.get("MediaFile"));
+                
+                        System.out.println("JVL Metadata Plugin - File name: " + show.GetMediaFile().GetFileName());
                     }
                     else
                     {

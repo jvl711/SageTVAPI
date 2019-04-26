@@ -1,5 +1,13 @@
 //TODO: Research why weird media files are showing up in the unknown files
-//TODO: Make a page for managing unknown files
-//TODO: Redo the movies detail page in the new style
+This appears t o be an issue with Medusa and CouchPotatoe updating the file with a higher quality, and deleting the .properties file.  This is my best guess
+//TODO: Relookup any media files that are missing metadata at the end of a library import scan.  This should reduce the chance of the above
+
+//TODO: Add options to the unknown media file pages to refresh metadata and scan media file
+
+
 //TODO: Add paging to the details pages
 //TODO: Performance enhancements....
+
+Completed:
+Make a page for managing unknown files
+Redo the movies detail page in the new style
