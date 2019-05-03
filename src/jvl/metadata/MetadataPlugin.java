@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.MediaFile;
+import jvl.sage.api.MediaFiles;
 import jvl.sage.api.Show;
 import jvl.tmdb.RateLimitException;
 import sage.SageTVPlugin;
@@ -29,6 +30,8 @@ public class MetadataPlugin implements SageTVPlugin
         this.registry.eventSubscribe(this, "RecordingStarted");
         this.registry.eventSubscribe(this, "MediaFileImported");
         this.registry.eventSubscribe(this, "MediaFileRemoved");
+        this.registry.eventSubscribe(this, "ImportingCompleted");
+        
     }
 
     @Override
@@ -175,6 +178,11 @@ public class MetadataPlugin implements SageTVPlugin
                     System.out.println("JVL Metadata Plugin - Args missing MediaFile object");
                 }
             }
+            else if(event.equalsIgnoreCase("ImportingCompleted"))
+            {
+                System.out.println("JVL Metadata Plugin - Importing Completed");
+                this.ImportingCompletedHandler();
+            }
             else
             {
                 System.out.println("JVL Metadata Plugin - Unknown/Unregistered event fired: " + event);
@@ -228,6 +236,40 @@ public class MetadataPlugin implements SageTVPlugin
         catch (RateLimitException ex) 
         {
             System.out.println("JVL Metadata Plugin - Unhandled exception processing event handler (RateLimitException): " + ex.getMessage());
+        }
+    }
+    
+    public void ImportingCompletedHandler()
+    {
+        try
+        {
+            System.out.println("JVL Metadata Plugin - Unknown File Lookup");
+                    
+            MediaFiles mediaFiles = MediaFile.GetUnknownFiles();
+            
+            System.out.println("JVL Metadata Plugin - File count " + mediaFiles.size());
+            
+            for(int i  = 0; i < mediaFiles.size(); i++)
+            {
+                MediaFile mediaFile = mediaFiles.get(i);
+                
+                System.out.println("JVL Metadata Plugin - Unknown File Lookup " + mediaFile.GetFileName());
+                
+                try
+                {
+                    mediaFile.GetShow().MetadataLookup(true, true);
+                }
+                catch(Exception ex1)
+                {
+                    System.out.println("JVL Metadata Plugin - Unexpected error looking up metadata");
+                    ex1.printStackTrace();
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL Metadata Plugin - Unexpected error");
+            ex.printStackTrace();
         }
     }
     
