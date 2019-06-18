@@ -458,7 +458,7 @@ public class Show extends SageObject
      * is an error parsing the value it will return 0
      * @return TMDB ID
      */
-    public int GetTheMovieDBID()
+    public int GetTheMovieDBID() throws SageCallApiException
     {
         try
         {
@@ -468,6 +468,11 @@ public class Show extends SageObject
         }
         catch(Exception ex)
         {
+            if(this.GetMediaFile().IsTVFile())
+            {
+                return -2;
+            }
+            
             return -1;
         }
     }

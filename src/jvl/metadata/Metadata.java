@@ -165,6 +165,9 @@ public class Metadata
                     //TODO:  Think about logging this to the system message interface
                     System.out.println("JVL - TMDB there was no hit finding this show.");
                     System.out.println("Show title: " + this.show.GetTitle());
+                    System.out.println("Going to set MediaType so it is at least available");
+                    this.show.SetMediaType("TV");
+                    this.show.SetTheMovieDBID(-2);
 
                     return false;
                 }
@@ -224,6 +227,9 @@ public class Metadata
                     //TODO:  Think about logging this to the system message interface
                     System.out.println("JVL - TMDB there was no hit finding this movie.");
                     System.out.println("Movie title: " + this.show.GetTitle());
+                    System.out.println("Going to set MediaType so it is at least available");
+                    this.show.SetMediaType("Movie");
+                    this.show.SetTheMovieDBID(-2);
                     
                     return false;
                 }
@@ -702,12 +708,17 @@ public class Metadata
         }
     }
     
-    public boolean HasMetadata()
+    /**
+     * Determines if there was a successful metadata lookup, and there is and MovieDB ID set 
+     * @return True if lookup was successful
+     * @throws SageCallApiException 
+     */
+    public boolean HasMetadata() throws SageCallApiException
     {
-        return this.show.GetTheMovieDBID() != -1;
+        return this.show.GetTheMovieDBID() > -1;
     }
     
-    public Movie GetMovieDetails() throws IOException, RateLimitException
+    public Movie GetMovieDetails() throws IOException, RateLimitException, SageCallApiException
     {
         File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/detials.json");
         Movie movie = null;
