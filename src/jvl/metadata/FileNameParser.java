@@ -183,7 +183,7 @@ public class FileNameParser
             return false;
         }
                 
-        if(input.charAt(0) == 'S')
+        if(input.charAt(0) == 'S' || input.charAt(0) == 's')
         {
             String season = "";
             String episode = "";
@@ -192,7 +192,7 @@ public class FileNameParser
             for(int i = 1; i < input.length(); i++)
             {
                                 
-                if(input.charAt(i) != 'E' && !episodeFound)
+                if(input.charAt(i) != 'E' && input.charAt(i) != 'e' && !episodeFound)
                 {
                     season += input.charAt(i);                    
                 }
@@ -264,7 +264,7 @@ public class FileNameParser
     private int getSeason(String input)
     {
         
-        if(input.charAt(0) == 'S')
+        if(input.charAt(0) == 'S' || input.charAt(0) == 's')
         {
             String season = "";
             String episode = "";
@@ -273,7 +273,7 @@ public class FileNameParser
             for(int i = 1; i < input.length(); i++)
             {
                                 
-                if(input.charAt(i) != 'E' && !episodeFound)
+                if(input.charAt(i) != 'E' && input.charAt(i) != 'e' && !episodeFound)
                 {
                     season += input.charAt(i);                    
                 }
@@ -341,7 +341,7 @@ public class FileNameParser
     private int GetEpisode(String input)
     {
         
-        if(input.charAt(0) == 'S')
+        if(input.charAt(0) == 'S' || input.charAt(0) == 's' )
         {
             String season = "";
             String episode = "";
@@ -350,7 +350,7 @@ public class FileNameParser
             for(int i = 1; i < input.length(); i++)
             {
                                 
-                if(input.charAt(i) != 'E' && !episodeFound)
+                if(input.charAt(i) != 'E' && input.charAt(i) != 'e' && !episodeFound)
                 {
                     season += input.charAt(i);                    
                 }

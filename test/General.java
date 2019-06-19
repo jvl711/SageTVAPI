@@ -10,7 +10,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -60,7 +59,7 @@ public class General
     @Test
     public void getTitleFromFileName()
     {
-        String testFileName = "Blade Runner 2049_2017_1080p_H264.mkv";
+        String testFileName = "chernobyl.s01e02.internal.1080p.web.h264-memento.mkv";
         
         
         FileNameParser parser = new FileNameParser(testFileName);
