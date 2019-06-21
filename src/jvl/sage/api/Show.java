@@ -373,6 +373,20 @@ public class Show extends SageObject
         return "";
     }
     
+    public String GetPoster(int Size) throws SageCallApiException, IOException, RateLimitException
+    {
+        if(this.mediafile == null)
+        {
+            return this.meta.GetPosterRealtime(Size, true);
+        }
+        else if(this.meta.HasMetadata())
+        {
+            return this.meta.GetPoster(Size, true);
+        }
+        
+        return "";
+    }
+    
     public String GetBackground() throws SageCallApiException, IOException
     {
         
