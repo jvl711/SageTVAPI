@@ -10,17 +10,27 @@ import jvl.sage.api.Show;
 import jvl.tmdb.RateLimitException;
 import sage.SageTVPlugin;
 import sage.SageTVPluginRegistry;
+import jvl.sage.api.server.MiniServer;
 
 
 public class MetadataPlugin implements SageTVPlugin
 {
     
     private final SageTVPluginRegistry registry;
+    private MiniServer miniserver;
     
-    public MetadataPlugin(SageTVPluginRegistry registry)
+    public MetadataPlugin(SageTVPluginRegistry registry) throws IOException
     {
         System.out.println("JVL - Metadata Plugin Constructed");
         this.registry = registry;
+        try
+        {
+            miniserver = new MiniServer(8080);
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL - Error creating mini server.  Check that the port is available.");
+        }
     }
     
     @Override
@@ -32,12 +42,17 @@ public class MetadataPlugin implements SageTVPlugin
         this.registry.eventSubscribe(this, "MediaFileRemoved");
         this.registry.eventSubscribe(this, "ImportingCompleted");
         
+        System.out.println("JVL Starting the MiniServer");
+        this.miniserver.start();
     }
 
     @Override
     public void stop() 
     {
         System.out.println("JVL Metadata Plugin - Stopping");
+        
+        System.out.println("JVL Stopping the MiniServer");
+        this.miniserver.stop();
     }
 
     @Override

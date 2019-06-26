@@ -42,6 +42,27 @@ public class MediaFile extends SageObject
     }
 
     /**
+     * Returns the MediaFile object that corresponds to the passed in ID. The ID should have been obtained from a call to GetMediaFileID()
+     * 
+     * @param id the id of the MediaFile object to get
+     * @return the MediaFile object that corresponds to the passed in ID
+     * @throws SageCallApiException 
+     */
+    public static MediaFile GetMediaFileForID(int id) throws SageCallApiException
+    {
+        Object ret = MediaFile.callApiObject("GetMediaFileForID", id);
+        
+        if(ret != null)
+        {
+            return new MediaFile(ret);
+        }
+        else
+        {
+            throw new RuntimeException("ID passed does not represent a media file object");
+        }
+    }
+    
+    /**
      * Returns true if the specified object is a MediaFile object. No automatic 
      * type conversion will be performed on the argument. This will return false 
      * if the argument is a MediaFile object, BUT that object no longer exists 
@@ -175,6 +196,16 @@ public class MediaFile extends SageObject
     public long GetMediaDuration() throws SageCallApiException
     {
         return this.GetMediaEndTime() - this.GetMediaStartTime();
+    }
+    
+    /**
+     * Returns the unique ID used to identify this MediaFile. Can get used later on a call to GetMediaFileForID()
+     * @return the unique ID used to identify this MediaFile
+     * @throws SageCallApiException 
+     */
+    public int GetMediaFileID() throws SageCallApiException
+    {
+        return MediaFile.callApiInt("GetMediaFileID", this.mediafile);
     }
     
     public Show GetShow() throws SageCallApiException
