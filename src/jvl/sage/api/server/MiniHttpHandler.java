@@ -3,12 +3,17 @@ package jvl.sage.api.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import java.io.File;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
+import sun.misc.IOUtils;
 
 
 public class MiniHttpHandler implements HttpHandler
@@ -28,6 +33,10 @@ public class MiniHttpHandler implements HttpHandler
             {
                 GetAllTVEpisodes(msg);
             }
+            else if(context.equals("/api/v1/poster"))
+            {
+                GetPoster(msg);
+            }
             else
             {
                 //return error response
@@ -42,11 +51,50 @@ public class MiniHttpHandler implements HttpHandler
     public void test(HttpExchange msg) throws UnsupportedEncodingException, IOException
     {
         OutputStream out = msg.getResponseBody();
+        
+        Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
+        
+        if(query.containsKey("test"))
+        {
+            System.out.println("Test: " + query.get("test"));
+        }
+        
         byte data [] = "This is a test".getBytes("UTF-8");
         msg.getResponseHeaders().add("Content-Type", "text/plain; charset=UTF-8");
         msg.sendResponseHeaders(200, data.length);
         out.write(data);
         out.close();
+    }
+    
+    public void GetPoster(HttpExchange msg) throws IOException
+    {
+        Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
+        
+        try
+        {
+            if(query.containsKey("mediafileid"))
+            {
+                int mediaFileId = Integer.parseInt(query.get(query.get("mediafileid")));
+                MediaFile mediaFile = MediaFile.GetMediaFileForID(mediaFileId);
+                
+                String path = mediaFile.GetShow().GetPoster();
+                if(path.length() > 0)
+                {
+                    File file = new File(path);
+                    byte [] data = IOUtils.readFully(new java.io.FileInputStream(file), -1, true);
+                    
+                    OutputStream out = msg.getResponseBody();
+                    msg.getResponseHeaders().add("Content-Type", "image/jpg");
+                    msg.sendResponseHeaders(200, data.length);
+                    out.write(data);
+                    out.close();
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            msg.sendResponseHeaders(500, 0);
+        }
     }
     
     public void GetAllTVEpisodes(HttpExchange msg) throws UnsupportedEncodingException, IOException, SageCallApiException
@@ -68,6 +116,27 @@ public class MiniHttpHandler implements HttpHandler
         out.write(data);
         out.close();
     }
+                
+    public static Map<String, String> ParseQuery(HttpExchange msg)
+    {
+        HashMap<String, String> map = new HashMap<String, String>();
+        String [] pairs = msg.getRequestURI().getQuery().split("&");
+        
+        for(int i = 0; i < pairs.length; i++)
+        {
+            String [] temp = pairs[i].split("=");
             
+            if(temp.length == 2)
+            {
+                map.put(temp[0].toLowerCase(), temp[1]);
+            }
+            else
+            {
+                //Malformed.... Ignore
+            }
+        }
+        
+        return map;
+    }
     
 }

@@ -18,6 +18,7 @@ public class MiniServer
 
         httpserver.createContext("/api/v1/test", handler);
         httpserver.createContext("/api/v1/tv/all", handler);
+        httpserver.createContext("/api/v1/poster", handler);
     }
     
     public void start()
