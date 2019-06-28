@@ -27,14 +27,17 @@ public class MiniHttpHandler implements HttpHandler
         {
             if(context.equals("/api/v1/test"))
             {
+                System.out.println("JVL HTTP Test Called");
                 test(msg);
             }
             else if(context.equals("/api/v1/tv/all"))
             {
+                System.out.println("JVL HTTP tv/all Called");
                 GetAllTVEpisodes(msg);
             }
             else if(context.equals("/api/v1/poster"))
             {
+                System.out.println("JVL HTTP Poster Called");
                 GetPoster(msg);
             }
             else
@@ -52,6 +55,7 @@ public class MiniHttpHandler implements HttpHandler
     {
         OutputStream out = msg.getResponseBody();
         
+        
         Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
         
         if(query.containsKey("test"))
@@ -68,16 +72,18 @@ public class MiniHttpHandler implements HttpHandler
     
     public void GetPoster(HttpExchange msg) throws IOException
     {
+        System.out.println("JVL HTTP Parse Query: " + msg.getRequestURI().getQuery());
         Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
         
         try
         {
             if(query.containsKey("mediafileid"))
             {
-                int mediaFileId = Integer.parseInt(query.get(query.get("mediafileid")));
+                int mediaFileId = Integer.parseInt(query.get("mediafileid"));
                 MediaFile mediaFile = MediaFile.GetMediaFileForID(mediaFileId);
                 
                 String path = mediaFile.GetShow().GetPoster();
+                                
                 if(path.length() > 0)
                 {
                     File file = new File(path);
@@ -90,10 +96,17 @@ public class MiniHttpHandler implements HttpHandler
                     out.close();
                 }
             }
+            else
+            {                
+                msg.sendResponseHeaders(400, 0);
+                msg.getResponseBody().close();
+            }
         }
         catch(Exception ex)
         {
             msg.sendResponseHeaders(500, 0);
+            msg.getResponseBody().close();
+            System.out.println("Error getting poster: " + ex.getMessage());
         }
     }
     
