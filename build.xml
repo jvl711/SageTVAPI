@@ -7,7 +7,7 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="SageAPI" default="default" basedir=".">
+<project name="SageAPI" xmlns:if="ant:if" xmlns:unless="ant:unless" default="default" basedir=".">
     <description>Builds, tests, and runs the project SageAPI.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
@@ -78,8 +78,10 @@
     
     </target>
     
-    <target name="deploy-test-run-sageclient" depends="jar">
+    <target name="deploy-test-run-sageclient" depends="jar,sageclient" if="sagetvclient.exists">
         
+        <echo>Running deploy and test on SageTV Client</echo>
+
         <exec executable="taskkill">
             <arg line="/im SageTVClient.exe /f /t"/>
         </exec>
@@ -87,7 +89,11 @@
         <exec executable="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" >
             <arg line="-connect zion"/>
         </exec>
-        
+
     </target>
     
+    <target name="sageclient">
+        <available property="sagetvclient.exists" file="C:\Program Files (x86)\SageTV\" type="dir"/>
+        <echo unless:set="sagetvclient.exists">SageTV Client Not Installed!</echo>
+    </target>
 </project>
