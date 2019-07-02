@@ -79,6 +79,7 @@ public class MiniHttpHandler implements HttpHandler
         {
             if(query.containsKey("mediafileid"))
             {
+                System.out.println("JVL - mediafileid present.  Attempt to get poster");
                 int mediaFileId = Integer.parseInt(query.get("mediafileid"));
                 MediaFile mediaFile = MediaFile.GetMediaFileForID(mediaFileId);
                 
@@ -98,7 +99,8 @@ public class MiniHttpHandler implements HttpHandler
             }
             else
             {                
-                msg.sendResponseHeaders(400, 0);
+                System.out.println("JVL - mediafileid missing.  Send 400 error");
+                msg.sendResponseHeaders(400, -1);
                 msg.getResponseBody().close();
             }
         }

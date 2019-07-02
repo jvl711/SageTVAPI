@@ -78,4 +78,16 @@
     
     </target>
     
+    <target name="deploy-test-run-sageclient" depends="jar">
+        
+        <exec executable="taskkill">
+            <arg line="/im SageTVClient.exe /f /t"/>
+        </exec>
+        <copy file="${dist.jar}" todir="C:\Program Files (x86)\SageTV\SageTV\JARs" />
+        <exec executable="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" >
+            <arg line="-connect zion"/>
+        </exec>
+        
+    </target>
+    
 </project>
