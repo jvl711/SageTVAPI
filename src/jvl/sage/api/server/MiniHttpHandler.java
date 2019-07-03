@@ -11,8 +11,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import jvl.sage.SageCallApiException;
+import jvl.sage.api.Airing;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
+import jvl.sage.api.Show;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import sun.misc.IOUtils;
 
 
@@ -48,6 +52,11 @@ public class MiniHttpHandler implements HttpHandler
         catch(Exception ex)
         {
             //Unhandled exception processing the request
+            msg.sendResponseHeaders(500, 0);
+            msg.getResponseBody().close();
+            System.out.println("JVL error processing request for context: " + msg.getHttpContext().getPath());
+            System.out.println("Error message: " + ex.getMessage());
+            
         }
     }
  
@@ -120,13 +129,34 @@ public class MiniHttpHandler implements HttpHandler
         
         MediaFiles tv = MediaFile.GetTVFiles();
         
+        JSONObject jsonShows = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        
         for(int i = 0; i < tv.size(); i++)
         {
-            test += tv.get(i).GetMediaFileID() + "," + tv.get(i).GetShow().GetTitle() + "," + tv.get(i).GetShow().GetEpisodeName() + "\n";
+            JSONObject jsonShow = new JSONObject();
+            MediaFile mediaFile = tv.get(i);
+            Show show = mediaFile.GetShow();
+            Airing airing = mediaFile.GetAiring();
+            
+            jsonShow.put("MediaFileID", mediaFile.GetMediaFileID());
+            jsonShow.put("Show", show.GetTitle());
+            jsonShow.put("EpisodeName", show.GetEpisodeName());
+            jsonShow.put("Season", show.GetSeasonNumber());
+            jsonShow.put("SeasonString", show.GetSeasonNumberString());
+            jsonShow.put("EpisodeNumber", show.GetEpisodeNumber());
+            jsonShow.put("EpisodeNumberString", show.GetEpisodeNumberString());
+            jsonShow.put("Categories", show.GetCategories());
+            jsonShow.put("TheMovieDBID", show.GetTheMovieDBID());
+            jsonShow.put("Watched", airing.IsWatched());
+            
+            jsonArray.put(jsonShow);
         }
         
-        data = test.getBytes("UTF-8");
-        msg.getResponseHeaders().add("Content-Type", "text/plain; charset=UTF-8");
+        jsonShows.put("Shows", jsonArray);
+        
+        data = jsonShows.toString(4).getBytes("UTF-8");
+        msg.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
         msg.sendResponseHeaders(200, data.length);
         out.write(data);
         out.close();
