@@ -38,6 +38,7 @@ public class FileNameParser
         ignoreWords.add("dts".toLowerCase());
         ignoreWords.add("dts-hd".toLowerCase());
         ignoreWords.add("TRUEFRENCH".toLowerCase());
+        ignoreWords.add("UNRATED".toLowerCase());
     }
     
     public FileNameParser(String fileName)
@@ -108,7 +109,9 @@ public class FileNameParser
     
     private void ParseFileName()
     {
-        String input = this.fileName.replace('.', ' ').replace('_', ' ').replace('-', ' ');        
+        //String input = this.fileName.replace('.', ' ').replace('_', ' ').replace('-', ' ');        
+        //I am going to test leaving the dash.  It is breaking filename parsing on BR-Rip often
+        String input = this.fileName.replace('.', ' ').replace('_', ' ');        
         String [] parts = input.split(" ");
         String output = "";
         

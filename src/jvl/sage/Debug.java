@@ -180,8 +180,10 @@ public class Debug
     
     public static void Writeln(String line, int level)
     {
-        String callingClass = "";
-        callingClass = sun.reflect.Reflection.getCallerClass().getName();
+        String callingClass = "Unknown";
+        //callingClass = sun.reflect.Reflection.getCallerClass().getName();
+        
+        
         
         Debug.Writeln(callingClass, line, level);
     }
