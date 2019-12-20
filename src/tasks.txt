@@ -1,3 +1,7 @@
+//TODO: Figure our how to get ratings for movies into sage...
+
+//TODO: Look at updating airing date for imported media.  I think I should probably overwrite the import date.
+
 //TODO: Add a play, delete and other options to the unknown media files page
 
 //TODO: Research why weird media files are showing up in the unknown files

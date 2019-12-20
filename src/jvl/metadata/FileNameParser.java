@@ -22,6 +22,10 @@ public class FileNameParser
     {
         ignoreWords = new ArrayList();
         ignoreWords.add("1080p".toLowerCase());
+        ignoreWords.add("2060p".toLowerCase());
+        ignoreWords.add("4K".toLowerCase());
+        ignoreWords.add("HDR".toLowerCase());
+        ignoreWords.add("HEVC".toLowerCase());
         ignoreWords.add("720p".toLowerCase());
         ignoreWords.add("xvid".toLowerCase());
         ignoreWords.add("BRRip".toLowerCase());

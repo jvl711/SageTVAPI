@@ -725,12 +725,59 @@ public class Metadata
         
         if(!detailsFile.exists())
         {
-            movie = MovieAPI.getDetails(this.request, this.show.GetTheMovieDBID(), false);
+            movie = MovieAPI.getDetails(this.request, this.show.GetTheMovieDBID(), true);
+            movie.save(detailsFile);
+        }
+        else
+        {
+            movie = Movie.paarseFile(detailsFile, ConfigAPI.getConfig(request, true));
         }
         
         return movie;
     }
     
+    public TV getShowDetails() throws IOException, RateLimitException, SageCallApiException
+    {
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/detials.json");
+        
+        TV tv = null;
+
+        if(!detailsFile.exists())
+        {
+            tv = TVAPI.getDetails(this.request, this.show.GetTheMovieDBID(), true);
+        }
+        else
+        {
+            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, true));
+        }
+        
+        return tv;
+    }
+    
+    public Episode getEpisodeDetails() throws IOException, RateLimitException, SageCallApiException
+    {
+        return this.getSeasonDetails().getEpisode(this.show.GetEpisodeNumber());
+    }
+    
+    public Season getSeasonDetails() throws IOException, RateLimitException, SageCallApiException
+    {
+        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/season.json");
+        
+        Season season = null;
+
+        if(!detailsFile.exists())
+        {
+            season = TVAPI.getSeasonDetails(this.request, this.show.GetTheMovieDBID(), this.show.GetSeasonNumber(), true);
+            season.save(detailsFile);
+        }
+        else
+        {
+            season = Season.parseFile(detailsFile, ConfigAPI.getConfig(request, true));
+        }
+        
+        return season;
+    }
+
     public String GetPosterRealtime()
     {
         String ret = "";

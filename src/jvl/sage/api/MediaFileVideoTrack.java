@@ -67,7 +67,11 @@ public class MediaFileVideoTrack
     {
         String resolution;
         
-        if(this.width >= 1920)
+        if(this.width >= 3840)
+        {
+            resolution = "2160";
+        }
+        else if(this.width >= 1920)
         {
             resolution = "1080";
         }

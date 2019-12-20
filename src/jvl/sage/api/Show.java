@@ -116,6 +116,60 @@ public class Show extends SageObject
         } 
     }
     
+    public String GetTagline()
+    {
+        String value = "";
+        
+        try
+        {
+            if(this.meta.HasMetadata() && this.IsMovie())
+            {
+                value = this.meta.GetMovieDetails().getTagline();
+            }
+        }
+        catch(Exception ex){ }
+        
+        return value;
+    }
+    
+    public double GetShowVoteScore()
+    {
+        double value = 0;
+        
+        try
+        {
+            if(this.meta.HasMetadata() && !this.IsMovie())
+            {
+                value = this.meta.getShowDetails().getVoteAverage();
+            }
+        }
+        catch(Exception ex){ }
+        
+        return value;
+    }
+    
+    public double GetVoteScore()
+    {
+        double value = 0;
+        try
+        {
+            if(this.meta.HasMetadata())
+            {
+                if(this.IsMovie())
+                {
+                    meta.GetMovieDetails().getVoteAverage();
+                }
+                else
+                {
+                    meta.getEpisodeDetails().getVoteAverage();
+                }
+            }
+        }
+        catch(Exception ex) { }
+        
+        return value;
+    }
+    
     public int GetSeasonNumber() throws SageCallApiException 
     {
         int response = 0;
