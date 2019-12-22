@@ -730,7 +730,7 @@ public class Metadata
         }
         else
         {
-            movie = Movie.paarseFile(detailsFile, ConfigAPI.getConfig(request, true));
+            movie = Movie.parse(detailsFile, ConfigAPI.getConfig(request, true));
         }
         
         return movie;
@@ -1466,7 +1466,7 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
                 
                 if(images.getPosters().isEmpty())
                 {
@@ -1502,7 +1502,7 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
                 
                 if(images.getStills().isEmpty())
                 {
@@ -1539,7 +1539,7 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
                 
                 if(images.getBackdrops().isEmpty() || images.getPosters().isEmpty())
                 {
@@ -1567,7 +1567,7 @@ public class Metadata
 
             if(imagesFile.exists())
             {
-                images = Images.parseFile(imagesFile, ConfigAPI.getConfig(this.request, blocking));
+                images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
                 
                 if(images.getBackdrops().isEmpty() || images.getPosters().isEmpty())
                 {

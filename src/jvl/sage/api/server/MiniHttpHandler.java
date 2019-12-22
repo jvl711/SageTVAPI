@@ -29,12 +29,7 @@ public class MiniHttpHandler implements HttpHandler
         String context = msg.getHttpContext().getPath();
         try
         {
-            if(context.equals("/api/v1/test"))
-            {
-                System.out.println("JVL HTTP Test Called");
-                test(msg);
-            }
-            else if(context.equals("/api/v1/tv/all"))
+            if(context.equals("/api/v1/tv/all"))
             {
                 System.out.println("JVL HTTP tv/all Called");
                 GetAllTVEpisodes(msg);
@@ -59,41 +54,42 @@ public class MiniHttpHandler implements HttpHandler
             
         }
     }
- 
-    public void test(HttpExchange msg) throws UnsupportedEncodingException, IOException
-    {
-        OutputStream out = msg.getResponseBody();
-        
-        
-        Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
-        
-        if(query.containsKey("test"))
-        {
-            System.out.println("Test: " + query.get("test"));
-        }
-        
-        byte data [] = "This is a test".getBytes("UTF-8");
-        msg.getResponseHeaders().add("Content-Type", "text/plain; charset=UTF-8");
-        msg.sendResponseHeaders(200, data.length);
-        out.write(data);
-        out.close();
-    }
-    
+
     public void GetPoster(HttpExchange msg) throws IOException
     {
         System.out.println("JVL HTTP Parse Query: " + msg.getRequestURI().getQuery());
         Map<String, String> query = MiniHttpHandler.ParseQuery(msg);
-        
+        int requestedSize = 0;
+                
         try
         {
+            if(query.containsKey("requestedsize"))
+            {
+                try
+                {
+                    System.out.println("JVL - requested size present.");
+                    requestedSize = Integer.parseInt(query.get("requestedsize"));
+                }
+                catch(Exception ex) { /*Do nothing at this point.  Maybe throw 400 error in the future*/ }
+            }
+            
             if(query.containsKey("mediafileid"))
             {
                 System.out.println("JVL - mediafileid present.  Attempt to get poster");
                 int mediaFileId = Integer.parseInt(query.get("mediafileid"));
                 MediaFile mediaFile = MediaFile.GetMediaFileForID(mediaFileId);
                 
-                String path = mediaFile.GetShow().GetPoster();
-                                
+                String path;
+                
+                if(requestedSize > 0)
+                {
+                    path = mediaFile.GetShow().GetPoster(requestedSize);
+                }
+                else
+                {
+                    path = mediaFile.GetShow().GetPoster();
+                }
+                
                 if(path.length() > 0)
                 {
                     File file = new File(path);
