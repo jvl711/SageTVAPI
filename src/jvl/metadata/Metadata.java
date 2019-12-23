@@ -415,7 +415,7 @@ public class Metadata
         }
         else
         {
-            TV tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, blocking));
+            TV tv = TV.parse(detailsFile, ConfigAPI.getConfig(request, blocking));
             
             if(!tv.hasSeason(seasonNumber))
             {
@@ -423,7 +423,7 @@ public class Metadata
             }
             else
             {
-                Season season = Season.parseFile(seasonFile, ConfigAPI.getConfig(request, blocking));
+                Season season = Season.parse(seasonFile, ConfigAPI.getConfig(request, blocking));
 
                 if(!season.hasEpisode(episodeNumber))
                 {
@@ -464,8 +464,8 @@ public class Metadata
         }
         else
         {
-            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, blocking));
-            season = Season.parseFile(seasonFile, ConfigAPI.getConfig(request, blocking));
+            tv = TV.parse(detailsFile, ConfigAPI.getConfig(request, blocking));
+            season = Season.parse(seasonFile, ConfigAPI.getConfig(request, blocking));
             episode = season.getEpisode(episodeNumber);
         }
 
@@ -561,7 +561,7 @@ public class Metadata
         }
         else
         {
-            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, blocking));
+            tv = TV.parse(detailsFile, ConfigAPI.getConfig(request, blocking));
         }
 
         show.SetTheMovieDBID(tmdb_id);
@@ -748,7 +748,7 @@ public class Metadata
         }
         else
         {
-            tv = TV.parseFile(detailsFile, ConfigAPI.getConfig(request, true));
+            tv = TV.parse(detailsFile, ConfigAPI.getConfig(request, true));
         }
         
         return tv;
@@ -772,7 +772,7 @@ public class Metadata
         }
         else
         {
-            season = Season.parseFile(detailsFile, ConfigAPI.getConfig(request, true));
+            season = Season.parse(detailsFile, ConfigAPI.getConfig(request, true));
         }
         
         return season;
@@ -1595,4 +1595,68 @@ public class Metadata
         return images;
     }
     
+   // <editor-fold defaultstate="collapsed" desc="File Path Builder Methods for data cache">
+    
+    private File GetTVDetailsFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+    }
+ 
+    private File GetTVImagesFile(int tmdb_id)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
+    }
+    
+    private File GetTVSeasonFile(int tmdb_id, int seasonNumber)
+    {
+        return new  File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/season.json");
+    }
+    
+    private File GetTVSeasonImagesFile(int tmdb_id, int seasonNumber)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/images.json"); 
+    }
+    
+    private File SetTVEpisodeImagesFile(int tmdb_id, int seasonNumber, int episodeNumber)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+    }
+    
+    /*
+    --TV Data File Locations
+    File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+    File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
+    File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/season.json");
+    File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/images.json");
+    File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+
+    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+
+    File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
+    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/posters/" + poster_width + image.getFileName());
+    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/episode_" + this.show.GetEpisodeNumber() + "/stills/" + still_width + images.getStill().getFileName());
+
+
+
+    --Movie Data File Locations
+
+    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/overrides.properties");
+
+    File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+    File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
+
+
+    File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
+    File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/images.json");
+
+
+    File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
+    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+    
+    */
+    
+    
+    // </editor-fold>
 }
