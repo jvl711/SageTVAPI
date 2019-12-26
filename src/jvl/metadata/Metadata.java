@@ -23,50 +23,13 @@ import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
 import jvl.tmdb.TVAPI;
+import jvl.tmdb.model.Credits;
 import jvl.tmdb.model.Episode;
 import jvl.tmdb.model.Image;
 import jvl.tmdb.model.Images;
+import jvl.tmdb.model.MovieReleases;
 import jvl.tmdb.model.Season;
 import jvl.tmdb.model.TV;
-
-/*
- *  Directory Structure
- *      Root ->
- *              movies ->
- *                      [TMDB ID] ->
- *                                  details.json
- *                                  images.json
- *                                  posters ->
- *                                              size ->
- *                                                      name.jpg
- *                                  backdrops ->
- *                                              size ->
- *                                                      name.jpg
- *
- *      Root ->
- *              TV ->
- *                      {TMDB ID} ->
- *                                  details.json
- *
- *                                  images.json
- *                                  posters (Show) ->
- *                                                  size ->
-                                                            name.jpg
- *                                  backdrops (Show) ->
- *                                                  size ->
-                                                            name.jpg
- *                                  season_{n} ->
- *                                                  season.json
- *                                                  posters ->
- *                                                              size ->
-                                                                        name.jpg
- *                                                  episode_{n} ->
-                                                                    stills
-            *                                                              size ->
- *                                                                                  name.jpg
- *
-*/
-
 
 
 public class Metadata 
@@ -395,12 +358,12 @@ public class Metadata
     
     public void SaveTVMetadata(int tmdb_id, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
-        File seasonFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/season.json");
-        File seasonImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/images.json");
-        File episodeImagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
-        
+        File detailsFile = this.GetTVDetailsFile(tmdb_id);
+        File imagesFile = this.GetTVImagesFile(tmdb_id);
+        File seasonFile = this.GetTVSeasonFile(tmdb_id, seasonNumber);
+        File seasonImagesFile = this.GetTVSeasonImagesFile(tmdb_id, seasonNumber);
+        File episodeImagesFile = this.GetTVEpisodeImagesFile(tmdb_id, seasonNumber, episodeNumber);
+
         boolean updateCache = forceRefresh;
         
         //Check to see if we need to update files.  If we already have the season episode info
@@ -542,8 +505,8 @@ public class Metadata
      */
     private void SaveTVMetadata(int tmdb_id, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/images.json");
+        File detailsFile = this.GetTVDetailsFile(tmdb_id);
+        File imagesFile = this.GetTVImagesFile(tmdb_id);
         
         boolean updateCache = forceRefresh;
         
@@ -596,12 +559,16 @@ public class Metadata
     
     public void SaveMovieMetadata(int tmdb_id, boolean forceRefresh, boolean blocking) throws SageCallApiException, FileNotFoundException, IOException, RateLimitException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
-        File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/images.json");
+        File detailsFile = this.GetMovieDetailsFile(tmdb_id);
+        File imagesFile = this.GetMovieImagesFile(tmdb_id);
+        File releasesFile = this.GetMovieReleasesFile(tmdb_id);
+        File creditsFile = this.GetMovieCreditsFile(tmdb_id);
         
         Date now = new Date();
         Movie movie = MovieAPI.getDetails(request, tmdb_id, blocking);
+        MovieReleases releases = MovieAPI.getReleases(request, tmdb_id, blocking);
         Images images = MovieAPI.getImages(request, tmdb_id, blocking);
+        Credits credits = MovieAPI.getCredits(request, tmdb_id, blocking);
         
         //TODO: Implement selective save
         
@@ -620,6 +587,16 @@ public class Metadata
         if(movie != null)
         {
             movie.save(detailsFile);
+        }
+        
+        if(releases != null)
+        {
+            releases.save(releasesFile);
+        }
+        
+        if(credits != null)
+        {
+            credits.save(creditsFile);
         }
         
         if(images.getPosters().size() > 0 || images.getBackdrops().size() > 0)
@@ -644,7 +621,7 @@ public class Metadata
             {
                 if(this.show.GetMediaType().equalsIgnoreCase("TV"))
                 {
-                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = this.GetTVOverridesFile(show.GetTheMovieDBID());
 
                     if(overridesFile.exists())
                     {
@@ -654,7 +631,7 @@ public class Metadata
                 }
                 else if(this.show.GetMediaType().equalsIgnoreCase("Movie"))
                 {
-                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = this.GetMovieOverridesFile(show.GetTheMovieDBID());
                     
                     if(overridesFile.exists())
                     {
@@ -685,7 +662,7 @@ public class Metadata
                 if(this.show.GetMediaType().equalsIgnoreCase("TV"))
                 {
                     System.out.println("JVL Metadata - Override Path: " + this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
-                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = this.GetTVOverridesFile(show.GetTheMovieDBID());
                                                 
                     output = new FileOutputStream(overridesFile);
                     overrides.store(output, "");
@@ -694,7 +671,7 @@ public class Metadata
                 {
                     
                     System.out.println("JVL Metadata - Override Path: " + this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/overrides.properties");
-                    overridesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/overrides.properties");
+                    overridesFile = this.GetMovieOverridesFile(show.GetTheMovieDBID());
         
                     output = new FileOutputStream(overridesFile);
                     overrides.store(output, "");
@@ -718,9 +695,45 @@ public class Metadata
         return this.show.GetTheMovieDBID() > -1;
     }
     
+    public MovieReleases GetMovieReleases() throws SageCallApiException, IOException, RateLimitException
+    {
+        File file = this.GetMovieReleasesFile(this.show.GetTheMovieDBID());
+        MovieReleases releases;
+        
+        if(!file.exists())
+        {
+            releases = MovieAPI.getReleases(request, this.show.GetTheMovieDBID(), true);
+            releases.save(file);
+        }
+        else
+        {
+            releases = MovieReleases.parse(file, ConfigAPI.getConfig(request, true));
+        }
+        
+        return releases;
+    }
+    
+    public Credits GetMovieCredits() throws IOException, RateLimitException, SageCallApiException
+    {
+        File file = this.GetMovieCreditsFile(show.GetTheMovieDBID());
+        Credits credits = null;
+        
+        if(!file.exists())
+        {
+            credits = MovieAPI.getCredits(this.request, this.show.GetTheMovieDBID(), true);
+            credits.save(file);
+        }
+        else
+        {
+            credits = Credits.parse(file, ConfigAPI.getConfig(request, true));
+        }
+        
+        return credits;
+    }
+    
     public Movie GetMovieDetails() throws IOException, RateLimitException, SageCallApiException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/detials.json");
+        File detailsFile = this.GetMovieDetailsFile(show.GetTheMovieDBID());
         Movie movie = null;
         
         if(!detailsFile.exists())
@@ -736,9 +749,9 @@ public class Metadata
         return movie;
     }
     
-    public TV getShowDetails() throws IOException, RateLimitException, SageCallApiException
+    public TV GetShowDetails() throws IOException, RateLimitException, SageCallApiException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/detials.json");
+        File detailsFile = this.GetTVDetailsFile(show.GetTheMovieDBID());
         
         TV tv = null;
 
@@ -761,8 +774,8 @@ public class Metadata
     
     public Season getSeasonDetails() throws IOException, RateLimitException, SageCallApiException
     {
-        File detailsFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/season.json");
-        
+        File detailsFile = this.GetTVSeasonFile(show.GetTheMovieDBID(), this.show.GetSeasonNumber());
+
         Season season = null;
 
         if(!detailsFile.exists())
@@ -889,11 +902,11 @@ public class Metadata
 
                 if(MediaType.equalsIgnoreCase("TV"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
+                    file = this.GetTVPoster(tmdb_id, poster_width, images.getPoster().getFileName());
                 }
                 else if(MediaType.equalsIgnoreCase("MOVIE"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/posters/" + poster_width + images.getPoster().getFileName());
+                    file = this.GetMoviePoster(tmdb_id, poster_width, images.getPoster().getFileName());
                 }
 
                 if(file != null && !file.exists())
@@ -1023,11 +1036,11 @@ public class Metadata
 
                 if(MediaType.equalsIgnoreCase("TV"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                    file = this.GetTVBackdrops(tmdb_id, backdrops_width, images.getBackdrop().getFileName());
                 }
                 else if(MediaType.equalsIgnoreCase("MOVIE"))
                 {
-                    file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/backdrops/" + backdrops_width + images.getBackdrop().getFileName());
+                    file = this.GetMovieBackdrops(tmdb_id, backdrops_width, images.getBackdrop().getFileName());
                 }
 
                 if(file != null && !file.exists())
@@ -1133,11 +1146,11 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/posters/" + poster_width + image.getFileName());
+                file = this.GetTVPoster(show.GetTheMovieDBID(), poster_width, image.getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/posters/" + poster_width + image.getFileName());
+                file = this.GetMoviePoster(show.GetTheMovieDBID(), poster_width, image.getFileName());
             }
             
             if(file != null && !file.exists())
@@ -1278,7 +1291,8 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/posters/" + poster_width + image.getFileName());
+                file = this.GetTVSeasonPoster(this.show.GetTheMovieDBID(), poster_width, show.GetSeasonNumber(), image.getFileName());
+                
             }
             
             if(file != null && !file.exists())
@@ -1334,7 +1348,7 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + this.show.GetTheMovieDBID() + "/season_" + this.show.GetSeasonNumber() + "/episode_" + this.show.GetEpisodeNumber() + "/stills/" + still_width + images.getStill().getFileName());
+                file = this.GetTVEpisodeStill(show.GetTheMovieDBID(), still_width, show.GetSeasonNumber(), show.GetEpisodeNumber(), images.getStill().getFileName());
             }
             
             if(file != null && !file.exists())
@@ -1433,11 +1447,11 @@ public class Metadata
             
             if(this.show.GetMediaType().equalsIgnoreCase("TV"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + image.getFileName());
+                file = this.GetTVBackdrops(show.GetTheMovieDBID(), backdrop_width, image.getFileName());
             }
             else if(this.show.GetMediaType().equalsIgnoreCase("MOVIE"))
             {
-                file = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + show.GetTheMovieDBID() + "/backdrops/" + backdrop_width + image.getFileName());
+                file = this.GetMovieBackdrops(show.GetTheMovieDBID(), backdrop_width, image.getFileName());
             }
             
             if(file != null && !file.exists())
@@ -1462,8 +1476,8 @@ public class Metadata
         
         if(MediaType.equalsIgnoreCase("TV"))
         {
-            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/images.json");
-
+            File imagesFile = this.GetTVSeasonImagesFile(TheMovieDBID, seasonNumber);
+            
             if(imagesFile.exists())
             {
                 images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
@@ -1498,8 +1512,8 @@ public class Metadata
         
         if(MediaType.equalsIgnoreCase("TV"))
         {
-            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
-
+            File imagesFile = this.GetTVEpisodeImagesFile(TheMovieDBID, seasonNumber, episodeNumber);
+            
             if(imagesFile.exists())
             {
                 images = Images.parse(imagesFile, ConfigAPI.getConfig(this.request, blocking));
@@ -1535,7 +1549,7 @@ public class Metadata
         
         if(MediaType.equalsIgnoreCase("TV"))
         {
-            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/tv/" + TheMovieDBID + "/images.json");
+            File imagesFile = this.GetTVImagesFile(TheMovieDBID);
 
             if(imagesFile.exists())
             {
@@ -1563,7 +1577,7 @@ public class Metadata
         }
         else if(MediaType.equalsIgnoreCase("MOVIE"))
         {
-            File imagesFile = new File(this.cacheFolder.getAbsolutePath() + "/movies/" + TheMovieDBID + "/images.json");
+            File imagesFile = this.GetMovieImagesFile(TheMovieDBID);
 
             if(imagesFile.exists())
             {
@@ -1597,10 +1611,56 @@ public class Metadata
     
    // <editor-fold defaultstate="collapsed" desc="File Path Builder Methods for data cache">
     
+    /*
+    *  Directory Structure
+    *      Root ->
+    *              movies ->
+    *                      [TMDB ID] ->
+    *                                  details.json
+    *                                  images.json
+                                       releases.json
+                                       credits.json
+    *                                  posters ->
+    *                                              size ->
+    *                                                      name.jpg
+    *                                  backdrops ->
+    *                                              size ->
+    *                                                      name.jpg
+    *
+    *      Root ->
+    *              TV ->
+    *                      {TMDB ID} ->
+    *                                  details.json
+    *
+    *                                  images.json
+    *                                  posters (Show) ->
+    *                                                  size ->
+                                                               name.jpg
+    *                                  backdrops (Show) ->
+    *                                                  size ->
+                                                               name.jpg
+    *                                  season_{n} ->
+    *                                                  season.json
+    *                                                  posters ->
+    *                                                              size ->
+                                                                           name.jpg
+    *                                                  episode_{n} ->
+                                                                       stills
+               *                                                              size ->
+    *                                                                                  name.jpg
+    *
+   */
+
+    
     private File GetTVDetailsFile(int tmdb_id)
     {
         //TODO: Rename details.json to the proper name
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+    }
+    
+    private File GetTVOverridesFile(int tmdb_id)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/overrides.properties");
     }
  
     private File GetTVImagesFile(int tmdb_id)
@@ -1618,9 +1678,68 @@ public class Metadata
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/images.json"); 
     }
     
-    private File SetTVEpisodeImagesFile(int tmdb_id, int seasonNumber, int episodeNumber)
+    private File GetTVEpisodeImagesFile(int tmdb_id, int seasonNumber, int episodeNumber)
     {
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
+    }
+    
+    private File GetTVPoster(int tmdb_id, String width, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/posters/" + width + fileName);
+    }
+    
+    private File GetTVBackdrops(int tmdb_id, String width, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/backdrops/" + width + fileName);
+    }
+    
+    private File GetTVSeasonPoster(int tmdb_id, String width, int seasonNumber, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/posters/" + width + fileName);
+    }
+    
+    private File GetTVEpisodeStill(int tmdb_id, String width, int seasonNumber, int episodeNumber, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/stills/" + width + fileName);
+    }
+    
+    
+    private File GetMovieDetailsFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
+    }
+    
+    private File GetMovieReleasesFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/releases.json");
+    }
+    
+    private File GetMovieCreditsFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/credits.json");
+    }
+    
+    private File GetMovieOverridesFile(int tmdb_id)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/overrides.properties");
+    }
+    
+    private File GetMovieImagesFile(int tmdb_id)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/images.json");
+    }
+    
+    private File GetMoviePoster(int tmdb_id, String width, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/posters/" + width + fileName);
+    }
+    
+    private File GetMovieBackdrops(int tmdb_id, String width, String fileName)
+    {
+        return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/backdrops/" + width + fileName);
     }
     
     /*

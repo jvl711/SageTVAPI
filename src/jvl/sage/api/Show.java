@@ -9,6 +9,7 @@ import jvl.sage.SageObject;
 import jvl.metadata.Metadata;
 import jvl.sage.Debug;
 import jvl.tmdb.RateLimitException;
+import jvl.tmdb.model.Crew;
 import jvl.tmdb.model.Image;
 
 
@@ -116,6 +117,59 @@ public class Show extends SageObject
         } 
     }
     
+    public String GetDirectorString()
+    {
+        ArrayList<Crew> value;
+        String directors = "";
+        
+        try
+        {
+            if(this.meta.HasMetadata() && this.IsMovie())
+            {
+                value = this.meta.GetMovieCredits().getDirectors();
+                
+                for(int i = 0; i < value.size(); i++)
+                {
+                    directors = value.get(i).getName() + ",";
+                }
+                
+                if(directors.length() > 0)
+                {
+                    directors = directors.substring(0, directors.length() -1);
+                }
+                
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        return directors;
+    }
+    
+    public String GetParentalRating()
+    {
+        String value = "";
+        
+        try
+        {
+            if(this.meta.HasMetadata() && this.IsMovie())
+            {
+                value = this.meta.GetMovieReleases().getParentalRating();
+                
+                System.out.println("JVL - getParentalRating: " + value);
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL - Error GetParentalRating");
+            ex.printStackTrace();
+        }
+        
+        return value;
+    }
+    
     public String GetTagline()
     {
         String value = "";
@@ -140,7 +194,7 @@ public class Show extends SageObject
         {
             if(this.meta.HasMetadata() && !this.IsMovie())
             {
-                value = this.meta.getShowDetails().getVoteAverage();
+                value = this.meta.GetShowDetails().getVoteAverage();
             }
         }
         catch(Exception ex){ }
@@ -341,10 +395,14 @@ public class Show extends SageObject
     
     public boolean IsMovie() throws SageCallApiException
     {
-        return Show.callAPIBoolean("IsMovie");
+        return this.GetMediaType().equalsIgnoreCase("movie");
     }
-            
     
+    public boolean IsTV() throws SageCallApiException
+    {
+        return this.GetMediaType().equalsIgnoreCase("tv");
+    }
+                
     public char GetTitleSearchChar() throws SageCallApiException
     {
         String title = this.GetSortableTitle();
