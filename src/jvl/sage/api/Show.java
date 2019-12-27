@@ -4,10 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import jvl.metadata.Metadata;
-import jvl.sage.Debug;
 import jvl.tmdb.RateLimitException;
 import jvl.tmdb.model.Crew;
 import jvl.tmdb.model.Image;
@@ -24,6 +27,12 @@ public class Show extends SageObject
     private Object lookupObject;
     
     private Metadata meta;
+    
+    
+    static
+    {
+        Logger.getGlobal().addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+    }
     
     /**
      * This constructor will only construct if it is given a
@@ -395,12 +404,32 @@ public class Show extends SageObject
     
     public boolean IsMovie() throws SageCallApiException
     {
-        return this.GetMediaType().equalsIgnoreCase("movie");
+        if(this.meta.HasMetadata())
+        {
+            return this.GetMediaType().equalsIgnoreCase("movie");
+        }
+        else
+        {
+            return Show.callAPIBoolean("IsMovie");
+        }
     }
     
+    /**
+     * Attempts to use metadata to determine if this is a tv show.  If not
+     * it tries to see if Sage thinks it is not a movie.
+     * @return True if it is marked as a TV show
+     * @throws SageCallApiException 
+     */
     public boolean IsTV() throws SageCallApiException
     {
-        return this.GetMediaType().equalsIgnoreCase("tv");
+        if(this.GetMediaFile() != null && this.meta.HasMetadata())
+        {
+            return this.GetMediaType().equalsIgnoreCase("tv");
+        }
+        else
+        {
+            return !Show.callAPIBoolean("IsMovie");
+        }
     }
                 
     public char GetTitleSearchChar() throws SageCallApiException
@@ -449,7 +478,7 @@ public class Show extends SageObject
         return this.meta.GetEpisodeStill();
     }
     
-    public String GetSeasonPoster() throws SageCallApiException, IOException
+    public String GetSeasonPoster() throws SageCallApiException, IOException, RateLimitException
     {
         if(this.mediafile == null)
         {
@@ -471,7 +500,7 @@ public class Show extends SageObject
         return "";
     }
     
-    public String GetPoster() throws SageCallApiException, IOException
+    public String GetPoster() throws SageCallApiException, IOException, RateLimitException
     {
         if(this.mediafile == null)
         {
@@ -594,7 +623,7 @@ public class Show extends SageObject
         }
         catch(Exception ex)
         {
-            if(this.GetMediaFile().IsTVFile())
+            if(this.mediafile != null && this.GetMediaFile().IsTVFile())
             {
                 return -2;
             }

@@ -791,18 +791,19 @@ public class Metadata
         return season;
     }
 
-    public String GetPosterRealtime()
+    public String GetPosterRealtime() throws SageCallApiException, IOException, RateLimitException
     {
         String ret = "";
         
-        try 
-        {
+        //try 
+        //{
             ret = this.GetPosterRealtime(false);
-        } 
-        catch (Exception ex) 
-        {
-            System.out.println("JVL Metadata - Exception calling GetPosterRealtime: " + ex.getMessage());
-        } 
+        //} 
+        //catch (Exception ex) 
+        //{
+        //    System.out.println("JVL Metadata - Exception calling GetPosterRealtime: " + ex.getMessage());
+        //    ex.printStackTrace();
+        //} 
         
         return ret;
     }

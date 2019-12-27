@@ -232,7 +232,7 @@ public class SageAPI
             ret = (Object)SageTV.api(method, args);
                     
             if(ret == null)
-            {
+            {   
                 Debug.Writeln("SageAPI returned: null", Debug.INFO);
             }
             else
