@@ -86,8 +86,9 @@
             <arg line="/im SageTVClient.exe /f /t"/>
         </exec>
         <copy file="${dist.jar}" todir="C:\Program Files (x86)\SageTV\SageTV\JARs" />
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="C:\Program Files (x86)\SageTV\SageTV\JARs" />
         <exec executable="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" >
-            <arg line="-connect zion"/>
+            <arg line="-connect sagetv"/>
         </exec>
 
     </target>

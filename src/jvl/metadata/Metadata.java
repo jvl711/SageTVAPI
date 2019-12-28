@@ -19,6 +19,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 import jvl.tmdb.ConfigAPI;
 import jvl.tmdb.MovieAPI;
 import jvl.tmdb.RateLimitException;
@@ -47,6 +50,7 @@ public class Metadata
     private static final int DEFAULT_STILL_SIZE_WIDTH = 600;
     private static final int DEFAULT_BACKDROP_SIZE_WIDTH = 3840;
     
+    private static final Logger LOG = Logging.getLogger(Metadata.class.getName());
     
     public Metadata(Show show)
     {
@@ -692,7 +696,13 @@ public class Metadata
      */
     public boolean HasMetadata() throws SageCallApiException
     {
-        return this.show.GetTheMovieDBID() > -1;
+        LOG.log(Level.INFO, "Called HasMetadata");
+        
+        int tmdb = this.show.GetTheMovieDBID();
+        
+        LOG.log(Level.INFO, "GetTheMovieDBID returned {0}", tmdb);
+        
+        return (this.show.GetTheMovieDBID() > 0);
     }
     
     public MovieReleases GetMovieReleases() throws SageCallApiException, IOException, RateLimitException
@@ -795,15 +805,7 @@ public class Metadata
     {
         String ret = "";
         
-        //try 
-        //{
-            ret = this.GetPosterRealtime(false);
-        //} 
-        //catch (Exception ex) 
-        //{
-        //    System.out.println("JVL Metadata - Exception calling GetPosterRealtime: " + ex.getMessage());
-        //    ex.printStackTrace();
-        //} 
+        ret = this.GetPosterRealtime(false);
         
         return ret;
     }
@@ -820,7 +822,8 @@ public class Metadata
         SearchResults results;
         File file = null;
         
-        System.out.println("JVL - Realtime poster lookup called");
+        LOG.log(Level.INFO, "GetPosterRealtime PreferedSize: {0} Blocking: {1}", new Object[] {preferredSize, blocking});
+        
         
         if(this.show.IsMovie())
         {

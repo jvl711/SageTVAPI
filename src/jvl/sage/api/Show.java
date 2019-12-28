@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
+import jvl.logging.Logging;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import jvl.metadata.Metadata;
@@ -28,11 +29,7 @@ public class Show extends SageObject
     
     private Metadata meta;
     
-    
-    static
-    {
-        Logger.getGlobal().addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-    }
+    private static final Logger LOG = Logging.getLogger(Show.class.getName());
     
     /**
      * This constructor will only construct if it is given a
@@ -404,13 +401,18 @@ public class Show extends SageObject
     
     public boolean IsMovie() throws SageCallApiException
     {
+        LOG.log(Level.INFO, "Called IsMovie");
+        
+        
         if(this.meta.HasMetadata())
         {
             return this.GetMediaType().equalsIgnoreCase("movie");
         }
         else
         {
-            return Show.callAPIBoolean("IsMovie");
+            return Show.callAPIBoolean("IsMovie", Airing.GetShowForAiring(airing));
+            
+            //return this.callAPIBoolean("IsMovie");
         }
     }
     
@@ -502,12 +504,16 @@ public class Show extends SageObject
     
     public String GetPoster() throws SageCallApiException, IOException, RateLimitException
     {
+        LOG.log(Level.INFO, "GetPoster Called");
+        
         if(this.mediafile == null)
         {
+            LOG.log(Level.FINE, "MediaFile null, calling Metasata.GetPosterRealtime");
             return this.meta.GetPosterRealtime();
         }
         else if(this.meta.HasMetadata())
         {
+            LOG.log(Level.FINE, "MediaFile is not null, calling Metadata.GetPoster");
             return this.meta.GetPoster();
         }
         
@@ -610,11 +616,19 @@ public class Show extends SageObject
     
     /**
      * Gets the TMDB ID if it is set in the database.  If it is not set, or there
-     * is an error parsing the value it will return 0
+     * is an error parsing the value it will return -1
      * @return TMDB ID
      */
     public int GetTheMovieDBID() throws SageCallApiException
     {
+        LOG.log(Level.INFO, "Called GetTheMovieDBID");
+        
+        if(this.mediafile == null)
+        {
+            LOG.log(Level.INFO, "MediaFile is null.  Exiting GetTheMovieDBID");
+            return -1;
+        }
+        
         try
         {
             String temp_id = this.GetMediaFile().GetMetadata("metadata.tmdb.id");
@@ -623,7 +637,7 @@ public class Show extends SageObject
         }
         catch(Exception ex)
         {
-            if(this.mediafile != null && this.GetMediaFile().IsTVFile())
+            if(this.GetMediaFile().IsTVFile())
             {
                 return -2;
             }
