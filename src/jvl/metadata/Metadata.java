@@ -363,6 +363,7 @@ public class Metadata
     public void SaveTVMetadata(int tmdb_id, int seasonNumber, int episodeNumber, boolean forceRefresh, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
         File detailsFile = this.GetTVDetailsFile(tmdb_id);
+        File creditsFile = this.GetTVCreditsFile(tmdb_id);
         File imagesFile = this.GetTVImagesFile(tmdb_id);
         File seasonFile = this.GetTVSeasonFile(tmdb_id, seasonNumber);
         File seasonImagesFile = this.GetTVSeasonImagesFile(tmdb_id, seasonNumber);
@@ -374,12 +375,11 @@ public class Metadata
         //then skip.  If we are missing anything than update it all.
         if(!detailsFile.exists()) { updateCache = true; }
         
+        if(!creditsFile.exists()) { updateCache = true; }
+        
         if(!imagesFile.exists()) { updateCache = true; }
     
-        if(!seasonFile.exists())
-        {
-            updateCache = true;
-        }
+        if(!seasonFile.exists()){ updateCache = true; }
         else
         {
             TV tv = TV.parse(detailsFile, ConfigAPI.getConfig(request, blocking));
@@ -402,6 +402,7 @@ public class Metadata
         Date now = new Date();
 
         TV tv = null;
+        Credits credits = null;
         Season season = null;
         Episode episode = null;
             
@@ -413,6 +414,8 @@ public class Metadata
             {
                 return;
             }
+            
+            credits = TVAPI.getCredits(request, tmdb_id, blocking);
             
             try
             {
@@ -775,6 +778,24 @@ public class Metadata
         }
         
         return tv;
+    }
+    
+    public Credits GetShowCredits() throws IOException, RateLimitException, SageCallApiException
+    {
+        File detailsFile = this.GetTVCreditsFile(show.GetTheMovieDBID());
+        
+        Credits credits = null;
+
+        if(!detailsFile.exists())
+        {
+            credits = TVAPI.getCredits(this.request, this.show.GetTheMovieDBID(), true);
+        }
+        else
+        {
+            credits = Credits.parse(detailsFile, ConfigAPI.getConfig(request, true));
+        }
+        
+        return credits;
     }
     
     public Episode getEpisodeDetails() throws IOException, RateLimitException, SageCallApiException
@@ -1635,7 +1656,7 @@ public class Metadata
     *              TV ->
     *                      {TMDB ID} ->
     *                                  details.json
-    *
+    *                                  credits.json 
     *                                  images.json
     *                                  posters (Show) ->
     *                                                  size ->
@@ -1660,6 +1681,12 @@ public class Metadata
     {
         //TODO: Rename details.json to the proper name
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/detials.json");
+    }
+    
+    private File GetTVCreditsFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/credits.json");
     }
     
     private File GetTVOverridesFile(int tmdb_id)

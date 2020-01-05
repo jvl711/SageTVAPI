@@ -13,6 +13,7 @@ import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import jvl.metadata.Metadata;
 import jvl.tmdb.RateLimitException;
+import jvl.tmdb.model.Cast;
 import jvl.tmdb.model.Crew;
 import jvl.tmdb.model.Image;
 
@@ -123,6 +124,42 @@ public class Show extends SageObject
         } 
     }
     
+    public String GetCastString()
+    {
+        ArrayList<Cast> value;
+        String cast = "";
+        
+        LOG.log(Level.INFO, "GetCastString called");
+        
+        try
+        {
+            if(this.meta.HasMetadata() && this.IsMovie())
+            {
+                value = this.meta.GetMovieCredits().getCast();   
+            }
+            else
+            {
+               value = this.meta.GetShowCredits().getCast();
+            }
+            
+            for(int i = 0; i < 3 && i < value.size(); i++)
+            {
+                cast += value.get(i).getName() + " (" + value.get(i).getCharacter() + "), ";
+            }
+
+            if(cast.length() > 0)
+            {
+                cast = cast.substring(0, cast.length() -2);
+            }
+        }
+        catch(Exception ex)
+        {
+            LOG.log(Level.WARNING, "GetCastString exception: " + ex.getMessage(), ex);
+        }
+        
+        return cast;
+    }
+    
     public String GetDirectorString()
     {
         ArrayList<Crew> value;
@@ -132,16 +169,19 @@ public class Show extends SageObject
         {
             if(this.meta.HasMetadata() && this.IsMovie())
             {
-                value = this.meta.GetMovieCredits().getDirectors();
+                value = this.meta.GetMovieCredits().getCrew();
                 
                 for(int i = 0; i < value.size(); i++)
                 {
-                    directors = value.get(i).getName() + ",";
+                    if(value.get(i).getJob().equalsIgnoreCase("director"))
+                    {
+                        directors = value.get(i).getName() + ", ";
+                    }
                 }
                 
                 if(directors.length() > 0)
                 {
-                    directors = directors.substring(0, directors.length() -1);
+                    directors = directors.substring(0, directors.length() -2);
                 }
                 
             }
