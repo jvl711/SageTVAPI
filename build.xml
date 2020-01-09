@@ -78,23 +78,42 @@
     
     </target>
     
-    <target name="deploy-test-run-sageclient" depends="jar,sageclient" if="sagetvclient.exists">
+    
+    <target name="deploy-test-run-sageclient" depends="jar,sageclient" if="sagetvclient.path">
         
-        <echo>Running deploy and test on SageTV Client</echo>
-
+        <echo>Deploy and testing on SageTV Client using sagetv path ${sagetvclient.path}</echo>
+        
         <exec executable="taskkill">
             <arg line="/im SageTVClient.exe /f /t"/>
         </exec>
-        <copy file="${dist.jar}" todir="C:\Program Files (x86)\SageTV\SageTV\JARs" />
-        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="C:\Program Files (x86)\SageTV\SageTV\JARs" />
-        <exec executable="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" >
+        
+        <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
+        <exec executable="${sagetvclient.path}SageTVClient.exe" >
             <arg line="-connect sagetv"/>
         </exec>
 
     </target>
     
     <target name="sageclient">
-        <available property="sagetvclient.exists" file="C:\Program Files (x86)\SageTV\" type="dir"/>
-        <echo unless:set="sagetvclient.exists">SageTV Client Not Installed!</echo>
+        <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
+       
+        <condition property="sagetvclient.path" value="C:\Program Files (x86)\SageTV\SageTV\">
+            <istrue value="${sagetvclientx86.exists}"></istrue>
+        </condition>
+        
+        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\SageTV\SageTVClient.exe" type="file"/>
+        
+        <condition property="sagetvclient.path" value="C:\Program Files\SageTV\SageTV\">
+            <istrue value="${sagetvclientx64.exists}"></istrue>
+        </condition>
+        
+        <echo message="${sagetvclient.path}"/>
+    </target>
+    
+    <target name="sageclientx64">
+        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\" type="dir"/>
+        <echo unless:set="sagetvclientx64.exists">SageTV Client x64 Not Installed!</echo>
     </target>
 </project>

@@ -19,8 +19,14 @@ public class StdOutHandler extends Handler
     public synchronized void publish(LogRecord record) 
     {
         
-        
-        System.out.println(record.getLoggerName() + " [" + record.getLevel().getName() + "] : " +  MessageFormat.format(record.getMessage(), record.getParameters()));
+        try
+        {
+            System.out.println(record.getLoggerName() + " [" + record.getLevel().getName() + "] : " +  MessageFormat.format(record.getMessage(), record.getParameters()));
+        }
+        catch(Exception ex)
+        {
+            System.out.println(record.getLoggerName() + " [" + record.getLevel().getName() + "] : " +  record.getMessage());
+        }
     }
 
     @Override

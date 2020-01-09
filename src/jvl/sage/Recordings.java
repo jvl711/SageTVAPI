@@ -1,6 +1,11 @@
 package jvl.sage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
+import jvl.sage.api.Airings;
 import jvl.sage.api.Configuration;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
@@ -16,14 +21,31 @@ public class Recordings
     
     
     private ArrayList<String> categories;
+    private HashMap<String, Shows> showsByTitle;
     private UIContext context;
+    private Shows shows;
+    
+    private static final Logger LOG = Logging.getLogger(Recordings.class.getName());
    
     public Recordings(String context)
     {
         System.out.println("JVL - Recordings Constructor Called: " + context);
+        LOG.log(Level.INFO, "Recordings Constructor Called");
         this.context = new UIContext(context);
         this.categories = new ArrayList<String>();
+        
+        try
+        {
+            this.shows = this.RefreshRecordingsList();
+            this.showsByTitle = this.shows.SegmentByTitle();
+        }
+        catch(Exception ex)
+        {
+            LOG.log(Level.SEVERE, "There was an error loading the recordings");
+        }
     }
+    
+    
     
     public void SetFilterCategory(String cat)
     {
@@ -70,12 +92,46 @@ public class Recordings
         return this.categories;
     }
     
-    public Shows GetRecordings() throws SageCallApiException
+    public Shows GetRecordings()
+    {
+        return shows;
+    }
+    
+    public ArrayList<String> GetShowTitles() throws SageCallApiException
+    {
+        return shows.GetShowTitles();
+    }
+    
+    public int GetShowTitlesCount() throws SageCallApiException
+    {
+        return shows.GetShowTitleCount();
+    }
+    
+    public Airings GetAirings(String title) throws SageCallApiException
+    {
+        return this.showsByTitle.get(title).GetAirings();
+    }
+    
+    public MediaFiles GetMediaFiles(String title) throws SageCallApiException
+    {
+        return this.showsByTitle.get(title).GetMediaFiles();
+    }
+    
+    public Shows GetShows(String title) throws SageCallApiException
+    {
+        return this.showsByTitle.get(title);
+    }
+    
+    private Shows RefreshRecordingsList() throws SageCallApiException
     {
         try
         {
+            LOG.log(Level.INFO, "GetRecordings called");
+            
+            LOG.log(Level.FINE, "MediaFile.GetTVFiles() Start");
             MediaFiles mediaFiles = MediaFile.GetTVFiles();
-
+            LOG.log(Level.FINE, "MediaFile.GetTVFiles() End");
+            
             SortDirection sortDir = this.GetSortDirection();
             RecordingsSortColumn sortCol = this.GetSortColumn();
             boolean sortDesc = false;
@@ -92,7 +148,9 @@ public class Recordings
             
             if(!this.GetFilterCategory().equalsIgnoreCase("all"))
             {
+                LOG.log(Level.FINE, "shows.FilterByCategory Start");
                 shows.FilterByCategory(this.GetFilterCategory());
+                LOG.log(Level.FINE, "shows.FilterByCategory End");
             }
             
             if(sortDir == SortDirection.DESC)
@@ -104,21 +162,29 @@ public class Recordings
                 sortDesc = false;
             }
             
+            
             switch (sortCol) 
             {
                 case TITLE:
+                    LOG.log(Level.FINE, "shows.SortByTitle Start");
                     shows.SortByTitle(sortDesc);
                     break;
                     
                 case DATE_AIRED:
+                    LOG.log(Level.FINE, "shows.SortByDateAdded Start");
                     shows.SortByDateAdded(sortDesc);
                     break;
                     
                 default:
                     //Just in case
+                    LOG.log(Level.FINE, "shows.SortByTitle Start");
                     shows.SortByTitle();
                     break;
             }
+            
+            LOG.log(Level.FINE, "shows.SortX End");
+            
+            LOG.log(Level.INFO, "GetRecordings completed");
             
             return shows;
         }

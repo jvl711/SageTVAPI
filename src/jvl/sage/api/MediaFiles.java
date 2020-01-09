@@ -91,56 +91,18 @@ public class MediaFiles extends SageArrayObject<MediaFile>
         this.baseList = tempmediafiles;
     }
     
-    
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public MediaFile Remove(int index) 
-    //{
-    //    System.out.println("JVL - Deprecated called (MediaFiles.Remove)");
-    //    return this.remove(index);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public MediaFile Get(int index) 
-    //{
-    //    System.out.println("JVL - Deprecated called (MediaFiles.Get)");
-    //    return this.get(index);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public void Set(int index, MediaFile d) 
-    //{
-    //    System.out.println("JVL - Deprecated called (MediaFiles.Set)");
-    //    this.set(index, d);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public void Add(MediaFile d) 
-    //{
-    //    System.out.println("JVL - Deprecated called (MediaFiles.Add)");
-    //    this.add(d);
-    //}
-
-    /**
-     * @deprecated 
-     */
-    //@Override
-    //public int Size() 
-    //{
-    //    System.out.println("JVL - Deprecated called (MediaFiles.Size)");
-    //    return this.size();
-    //}
+    public boolean IsFileCurrentlyRecording() throws SageCallApiException
+    {
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(this.get(i).IsFileCurrentlyRecording())
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
     
     @Override
     public Object[] UnwrapObject() 

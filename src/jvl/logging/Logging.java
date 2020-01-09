@@ -22,9 +22,17 @@ public class Logging
         //Add stdout logger
         root.addHandler(handler);
         //Defailt logging to info level
-        root.setLevel(Level.INFO);
+        root.setLevel(Level.WARNING);
         
-        Logger.getLogger("jvl.sage.api.Show").setLevel(Level.SEVERE);
+        Logger.getLogger("jvl.sage.api").setLevel(Level.WARNING);
+        Logger.getLogger("jvl.tmdb").setLevel(Level.WARNING);
+        Logger.getLogger("jvl.metadata").setLevel(Level.WARNING);
+        Logger.getLogger("sun.awt").setLevel(Level.WARNING);
+        Logger.getLogger("java.awt").setLevel(Level.WARNING);
+        Logger.getLogger("javax.awt").setLevel(Level.WARNING);
+        Logger.getLogger("java.swing").setLevel(Level.WARNING);
+        Logger.getLogger("javax.swing").setLevel(Level.WARNING);
+        
     }
     
     public static Logger getLogger(String name)

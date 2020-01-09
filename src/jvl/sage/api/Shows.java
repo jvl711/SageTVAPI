@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import jvl.sage.SageArrayObject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import jvl.sage.SageCallApiException;
 
@@ -174,6 +175,28 @@ public class Shows extends SageArrayObject<Show>
         }
         
         return shows;
+    }
+    
+    public HashMap<String, Shows> SegmentByTitle() throws SageCallApiException
+    {
+        HashMap<String, Shows> temp = new HashMap<String, Shows>();
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(temp.containsKey(this.get(i).GetTitle()))
+            {
+                Shows lshows = temp.get(this.get(i).GetTitle());
+                lshows.add(this.get(i));
+            }
+            else
+            {
+                Shows lshows = new Shows();
+                lshows.add(this.get(i));
+                temp.put(this.get(i).GetTitle(), lshows);
+            }
+        }
+        
+        return temp;
     }
     
     public void FilterByCategory(String Category) throws SageCallApiException
