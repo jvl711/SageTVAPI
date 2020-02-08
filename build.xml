@@ -79,7 +79,7 @@
     </target>
     
     
-    <target name="deploy-test-run-sageclient" depends="jar,sageclient" if="sagetvclient.path">
+    <target name="deploy-test-run-sageclient" depends="sageclient,copySupportLibraries" if="sagetvclient.path">
         
         <echo>Deploy and testing on SageTV Client using sagetv path ${sagetvclient.path}</echo>
         
@@ -87,14 +87,21 @@
             <arg line="/im SageTVClient.exe /f /t"/>
         </exec>
         
-        <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
+        
         <exec executable="${sagetvclient.path}SageTVClient.exe" >
             <arg line="-connect sagetv"/>
         </exec>
 
     </target>
+    
+    <target name="copySupportLibraries" depends="jar">
+        <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="${sagetvclient.path}" />
+    </target> 
+        
     
     <target name="sageclient">
         <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
@@ -116,4 +123,42 @@
         <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\" type="dir"/>
         <echo unless:set="sagetvclientx64.exists">SageTV Client x64 Not Installed!</echo>
     </target>
+    
+    <target name="deploy-to-server-and-restart" depends="deploySageJar, copySupportLibraries">
+        
+        <echo>Stopping SageTV64 service</echo>
+        <exec executable="cmd.exe" >
+            <arg line="/c net stop SageTV64"/>
+        </exec>
+        
+        <echo>Taskkill SageTV64 incase service did not stop</echo>
+        <exec executable="taskkill">
+            <arg line="/im SageTVService.exe /f /t"/>
+        </exec>
+        
+        <echo>Start SageTV64 service</echo>
+       <exec executable="cmd.exe" >
+            <arg line="/c net start SageTV64"/>
+        </exec>
+        
+    </target>
+    
+    <target name="buildSageJar" depends="">
+        
+        <exec executable="cmd" dir="../SageTV/">
+            <arg value="/c"/>
+            <arg value="gradlew.bat"/>
+            <arg value="sageJar"/>
+        </exec>
+        
+    </target>
+    
+    <target name="deploySageJar" depends="sageclient,buildSageJar">
+        
+        <copy file="..\SageTV\build\release\Sage.jar" todir="${sagetvclient.path}" />
+        <copy file="..\SageTV\build\release\Sage.jar" todir=".\src\library" />
+        
+    </target>
+    
+    
 </project>

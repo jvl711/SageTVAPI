@@ -3,6 +3,13 @@ package jvl.sage.api;
 
 import java.io.File;
 import java.util.ArrayList;
+import jvl.FFmpeg.jni.AVCodec;
+import jvl.FFmpeg.jni.AVCodecContext;
+import jvl.FFmpeg.jni.AVCodecParameters;
+import jvl.FFmpeg.jni.AVFieldOrder;
+import jvl.FFmpeg.jni.AVFormatContext;
+import jvl.FFmpeg.jni.AVMediaType;
+import jvl.FFmpeg.jni.AVStream;
 import jvl.chapterdb.ChapterSearch;
 import jvl.chapterdb.ChapterSet;
 import jvl.playback.Marker;
@@ -123,6 +130,11 @@ public class MediaFile extends SageObject
         return MediaFile.callApiObject("GetMediaFileAiring", this.mediafile);
     }
     
+     public boolean SetMediaFileAiring(Airing airing) throws SageCallApiException
+    {
+        return MediaFile.callAPIBoolean("SetMediaFileAiring", mediafile, airing.UnwrapObject());
+    }
+    
     public String GetRelativePath() throws SageCallApiException
     {
         return MediaFile.callApiString("GetMediaFileRelativePath", mediafile);
@@ -218,6 +230,8 @@ public class MediaFile extends SageObject
         return new Airing(this.UnwrapObject());
     }
     
+    // <editor-fold defaultstate="collapsed" desc="Subtitle Track Methods">
+    
     /*
      * Format.Subtitle.NumStreams
      * Format.Subtitle[.#].Codec
@@ -243,7 +257,14 @@ public class MediaFile extends SageObject
         }
     }
     
-    private String GetSubtitleCode(int index) throws SageCallApiException
+    private String GetSubtitleCodecID(int index) throws SageCallApiException
+    {
+        String ret = this.GetMetadata("Format.Subtitle." + index + ".ID");
+        
+        return ret;
+    }
+    
+    private String GetSubtitleCodec(int index) throws SageCallApiException
     {
         String ret = this.GetMetadata("Format.Subtitle." + index + ".Codec");
         
@@ -271,14 +292,14 @@ public class MediaFile extends SageObject
     
     public MediaFileSubtitleTrack GetSubtitleTrack(int index) throws SageCallApiException
     {
-        return GetSubtitleTrack(index, (index + 1) + " - " + this.GetSubtitleLanguage(index) + ", " + this.GetSubtitleCode(index));
+        return GetSubtitleTrack(index, (index + 1) + " - " + this.GetSubtitleLanguage(index) + ", " + this.GetSubtitleCodec(index));
     }
     
     public MediaFileSubtitleTrack GetSubtitleTrack(int index, String description) throws SageCallApiException
     {
         if(index < this.GetSubtitleTrackCount() && index >= 0)
         {
-            return new MediaFileSubtitleTrack(index, description, this.GetSubtitleCode(index), this.GetSubtitleLanguage(index));
+            return new MediaFileSubtitleTrack(index, description, this.GetSubtitleCodec(index), this.GetSubtitleLanguage(index));
         }
         else
         {
@@ -286,7 +307,7 @@ public class MediaFile extends SageObject
         }
     }
     
-   
+   // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Audio Track Methods">
     
@@ -403,7 +424,7 @@ public class MediaFile extends SageObject
     private String GetAudioChannels(int tracknum) throws SageCallApiException
     {
         String ret;
-        
+
         ret = this.GetMetadata("Format.Audio." + tracknum + ".Channels");
         
         return ret;
@@ -418,7 +439,18 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    private String GetAudioCodecID(int tracknum) throws SageCallApiException
+    {
+        String ret;
+        
+        ret = this.GetMetadata("Format.Audio." + tracknum + ".ID");
+        
+        return ret;
+    }
+    
     // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Audio Track Methods">
     
     /**
      * Making an assumption that if this media file is VideoFile or DVDFile
@@ -442,7 +474,7 @@ public class MediaFile extends SageObject
     {
         if(index >= 0 || index < this.GetVideoTrackCount())
         {
-            return new MediaFileVideoTrack(index, this.GetVideoCodec(), this.GetVideoAspect() ,this.GetVideoWidth(), this.GetVideoHeight(), this.GetVideoFPS(), this.GetVideoProgressive());
+            return new MediaFileVideoTrack(index, this.GetVideoCodec(), this.GetVideoAspect() ,this.GetVideoWidth(), this.GetVideoHeight(), this.GetVideoFPS(), this.GetVideoResolution());
         }
         else
         {
@@ -553,6 +585,137 @@ public class MediaFile extends SageObject
         
         return retDouble;
     }
+    
+    // </editor-fold>
+    
+    public void Debug() throws SageCallApiException
+    {
+        int audioTrack = 0;
+        int subTrack = 0;
+
+        System.out.println("Create Context");
+        AVFormatContext avformat = AVFormatContext.buildAVFormatContext();
+
+        System.out.println("Open file");
+        avformat.openInput(this.GetFilePath());
+
+        System.out.println("Number of streams: " + avformat.getNumberOfStreams());
+
+        for(int i = 0; i < avformat.getNumberOfStreams(); i++)
+        {
+            //System.out.println("Checking stream: " + i);
+
+            AVCodecParameters avparm = avformat.getAVCodecParameters(i);
+            AVCodec avcodec = AVCodec.getAVCodec(avparm);
+            AVStream avstream = avformat.getAVStream(i);
+            //AVCodecContext avcodecContext = avcodec.allocateContext();
+
+            System.out.println(i + " - " + avparm.getCodecType());
+
+            if(avparm.getCodecType() == AVMediaType.VIDEO)
+            {
+                System.out.println("\tSage Airing Duration: " + this.GetAiring().GetDuration());
+                System.out.println("\tSage Media File Duration: " + this.GetMediaDuration());
+                System.out.println("\t\tFFMPEG Duration: " + avformat.getDuration());
+
+                System.out.println("\tSage Resolution: " + this.GetVideoResolution());
+                System.out.println("\tSage Height: " + this.GetVideoHeight());
+                System.out.println("\tSage Width: " + this.GetVideoWidth());
+                
+                if(this.GetVideoProgressive())
+                {
+                    System.out.println("\tSage Progressive: true");
+                }
+                
+                System.out.println("\t\tFFMPEG Height: " + avparm.getHeight());
+                System.out.println("\t\tFFMPEG Width: " + avparm.getWidth());
+                System.out.println("\t\tFFMPEG Field Order: " + avparm.getFieldOrder());
+
+                System.out.println("\tSage FPS: " + this.GetVideoFPS());
+                System.out.println("\t\tFFMPEG FPS: " + avstream.getFramerate());
+                System.out.println("\t\tFFMPEG FPS Num: " + avstream.getFramerateNumerator());
+                System.out.println("\t\tFFMPEG FPS Den: " + avstream.getFramerateDenominator());
+
+                System.out.println("\tSage Codec: " + this.GetVideoCodec());
+                System.out.println("\tSage Codec.ID: " + this.GetMetadata("Format.Video.ID"));
+                System.out.println("\t\tFFMPEG Codec: " + avcodec.getName());
+                System.out.println("\t\tFFMPEG Codec Long: " + avcodec.getLongName());
+                System.out.println("\t\tFFMPEG Codec ID: " + avparm.getCodecID());
+
+                System.out.println("\tSage Bitrate: " + this.GetMetadata("Format.Video.Bitrate"));
+                System.out.println("\t\tFFMPEG Video Params Bitrate: " + avparm.getBitrate());
+                System.out.println("\t\tFFMPEG AVFormat Bitrate: " + avformat.getBitrate());
+
+                System.out.println("\tSage Aspect Ratio: " + this.GetVideoAspect());
+                System.out.println("\t\tFFMPEG Aspect Num: " + avparm.getSampleAspectRatioNumerator());
+                System.out.println("\t\tFFMPEG Aspect Den: " + avparm.getSampleAspectRatioDenominator());
+                System.out.println("\t\tFFMPEG Aspect: " + avparm.getAspectRatio());
+                System.out.println("\t\tFFMPEG Aspect: " + avparm.getAspectRatioString());
+            }
+            else if(avparm.getCodecType() == AVMediaType.AUDIO)
+            {
+                if(this.GetAudioTrackCount() > audioTrack)
+                {
+                    System.out.println("\tSage Lang: " + this.GetAudioLanguage(audioTrack));
+                    System.out.println("\tSage Channels: " + this.GetAudioChannels(audioTrack));
+                    System.out.println("\tSage Bitrate: " + this.GetAudioBitrate(audioTrack));
+                    System.out.println("\tSage Code:" + this.GetAudioCodec(audioTrack));
+                    System.out.println("\tSage CodeID:" + this.GetAudioCodecID(audioTrack));
+                    System.out.println("\tSage SampleRate: " + this.GetAudioSampleRate(audioTrack));
+                    System.out.println("\tSage Track Count: " + this.GetAudioTrackCount());
+                }
+                
+                System.out.println("\t\tFFMPEG Lang: " + avstream.getLanguage());
+                System.out.println("\t\tFFMPEG Channels: " + avparm.getChannels());
+                System.out.println("\t\tFFMPEG Bitrate: " + avparm.getBitrate());
+                System.out.println("\t\tFFMPEG SampleRate: " + avparm.getSampleRate());
+                System.out.println("\t\tFFMPEG Codec: " + avcodec.getName());
+                System.out.println("\t\tFFMPEG Codec Long: " + avcodec.getLongName());
+                System.out.println("\t\tFFMPEG Codec ID: " + avparm.getCodecID());
+                
+                
+                audioTrack++;
+            }
+            else if(avparm.getCodecType() == AVMediaType.SUBTITLE)
+            {
+                if(this.GetSubtitleTrackCount() > subTrack)
+                {
+                    System.out.println("\tSage Lang: " + this.GetSubtitleLanguage(subTrack));
+                    System.out.println("\tSage Codec: " + this.GetSubtitleCodec(subTrack));
+                    System.out.println("\tSage Track Count: " + this.GetSubtitleTrackCount());
+                }
+                
+                System.out.println("\t\tFFMPEG Languag: " + avstream.getLanguage());
+                System.out.println("\t\tFFMPEG Codec: " + avcodec.getName());
+                System.out.println("\t\tFFMPEG Codec Long: " + avcodec.getLongName());
+                System.out.println("\t\tFFMPEG Codec ID: " + avparm.getCodecID());
+                
+                subTrack++;
+            }
+            else if(avparm.getCodecType() == AVMediaType.DATA)
+            {
+
+            }
+            else if(avparm.getCodecType() == AVMediaType.ATTACHMENT)
+            {
+
+            }
+            else if(avparm.getCodecType() == AVMediaType.NB)
+            {
+
+            }
+            else //Unknown
+            {
+
+            }
+
+
+        }
+        
+        avformat.closeInput();
+        System.out.println("Closing input");    
+    }
+    
     
     /*
      Format.Video.Codec
@@ -1015,6 +1178,11 @@ public class MediaFile extends SageObject
     public Object UnwrapObject() 
     {
         return mediafile;
+    }
+    
+    public void Reinitialize()
+    {
+        ((sage.MediaFile)this.mediafile).reinitializeMetadata(true, true, "");
     }
     
 }

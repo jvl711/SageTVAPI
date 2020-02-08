@@ -27,8 +27,9 @@ public class MediaFileVideoTrack
     private int height;
     private double fps;
     private boolean progressive;
+    private String resolution;
     
-    public MediaFileVideoTrack(int tracknum, String codec, String aspect, int width, int height, double fps, boolean progressive)
+    public MediaFileVideoTrack(int tracknum, String codec, String aspect, int width, int height, double fps, String resolution)
     {
         this.tracknum = tracknum;
         this.codec = codec;
@@ -36,6 +37,7 @@ public class MediaFileVideoTrack
         this.width = width;
         this.height = height;
         this.fps = fps;
+        this.resolution = resolution;
         this.progressive = progressive;
     }
     
@@ -63,6 +65,12 @@ public class MediaFileVideoTrack
         return this.aspect;
     }
     
+    public String GetResolutionString()
+    {
+        return this.resolution;
+    }
+    
+    /*
     public String GetResolutionString()
     {
         String resolution;
@@ -99,6 +107,7 @@ public class MediaFileVideoTrack
         
         return resolution;
     }
+    */
     
     public String toString(int format)
     {

@@ -47,6 +47,21 @@ public class Airing extends SageObject
     }
     
     /**
+     * Adds a new Airing object to the database. This call should be used with caution.
+     * 
+     * @param ShowExternalID a GUID which uniquely identifies the Show that correlates with this Airing, this Show should already have been added
+     * @param StationID the GUID which uniquely identifies a "Station" (sort of like a Channel)
+     * @param StartTime the time at which the new Airing starts
+     * @param Duration the duration of the new Airing in milliseconds
+     * @return the newly added Airing
+     * @throws SageCallApiException 
+     */
+    public static Object AddAiring(String ShowExternalID, int StationID, long StartTime, long Duration) throws SageCallApiException
+    {
+        return Airing.callApiObject("AddAiring", ShowExternalID, StationID, StartTime, Duration);
+    }
+    
+    /**
      * Returns true if the argument is an Airing object. Automatic type conversion is NOT done in this call.
      * 
      

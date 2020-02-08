@@ -123,8 +123,6 @@ public class FileNameParser
         
         for(int i = 0; i < parts.length; i++)
         {        
-            System.out.println("Part: " + parts[i]);
-            
             if(this.isIgnoreWord(parts[i]))
             {
                 break;
@@ -152,8 +150,6 @@ public class FileNameParser
         
         this.title = output.trim();
         this.parsed = true;
-        
-        
     }
 
     private boolean isIgnoreWord(String input)

@@ -94,6 +94,11 @@ public class Show extends SageObject
         return new Airing(this.airing);
     }
     
+    public String GetExternalID() throws SageCallApiException
+    {
+        return callApiString("GetShowExternalID", Airing.GetShowForAiring(airing));
+    }
+    
     public void SaveTVMetadata(int tmbdID, int seasonNumber, int episodeNumber, boolean blocking) throws IOException, SageCallApiException, RateLimitException
     {
         meta.SaveTVMetadata(tmbdID, seasonNumber, episodeNumber, blocking, blocking);
@@ -470,7 +475,7 @@ public class Show extends SageObject
         }
         else
         {
-            return !Show.callAPIBoolean("IsMovie");
+            return !Show.callAPIBoolean("IsMovie", Airing.GetShowForAiring(airing));
         }
     }
                 
