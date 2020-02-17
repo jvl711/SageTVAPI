@@ -278,6 +278,20 @@ public class MediaFile extends SageObject
         return ret;
     }
     
+    private boolean GetSubtitleForced(int index) throws SageCallApiException
+    {
+        String temp = this.GetMetadata("Format.Subtitle." + index + ".Forced");
+        boolean ret = false;
+        
+        try
+        {
+            ret = Boolean.parseBoolean(temp);
+        }
+        catch(Exception ex) {} 
+        
+        return ret;
+    }
+    
     public MediaFileSubtitleTrack[] GetSubtitleTracks() throws SageCallApiException
     {
         MediaFileSubtitleTrack[] tracks = new MediaFileSubtitleTrack[this.GetSubtitleTrackCount()];
@@ -299,7 +313,7 @@ public class MediaFile extends SageObject
     {
         if(index < this.GetSubtitleTrackCount() && index >= 0)
         {
-            return new MediaFileSubtitleTrack(index, description, this.GetSubtitleCodec(index), this.GetSubtitleLanguage(index));
+            return new MediaFileSubtitleTrack(index, description, this.GetSubtitleCodec(index), this.GetSubtitleLanguage(index), this.GetSubtitleForced(index));
         }
         else
         {

@@ -116,7 +116,7 @@ public class MediaPlayer extends SageAPI
             for(int i = 0; i < temp.length; i++)
             {
                 Debug.Writeln("\tAdding subtitle to collection: " + temp[i], Debug.INFO);
-                subtitles.add(new MediaFileSubtitleTrack(i, temp[i], "", ""));
+                subtitles.add(new MediaFileSubtitleTrack(i, temp[i], "", "", false));
             }   
         }
         

@@ -9,6 +9,7 @@ public class MediaFileSubtitleTrack
     private String description;
     private String codec;
     private String language;
+    private boolean forced;
     
     /*
     public MediaFileSubtitle(MediaFile mediaFile, int tracknum, String description)
@@ -19,13 +20,14 @@ public class MediaFileSubtitleTrack
     }
     */
     
-    public MediaFileSubtitleTrack(int tracknum, String description, String codec, String language)
+    public MediaFileSubtitleTrack(int tracknum, String description, String codec, String language, boolean forced)
     {
         
         this.tracknum = tracknum;
         this.description = description;
         this.codec = codec;
         this.language = language;
+        this.forced = forced;
     }
     
     public int GetTrackNumber()
@@ -60,6 +62,11 @@ public class MediaFileSubtitleTrack
         return this.codec;
     }
     
+    public boolean isForced()
+    {
+        return this.forced;
+    }
+    
     public String GetLanguageString()
     {
         
@@ -91,7 +98,7 @@ public class MediaFileSubtitleTrack
     
     public static MediaFileSubtitleTrack GetNullTrack()
     {
-        return new MediaFileSubtitleTrack(-1, "Off", "", "");
+        return new MediaFileSubtitleTrack(-1, "Off", "", "", false);
     }
     
     @Override
@@ -118,13 +125,13 @@ public class MediaFileSubtitleTrack
     {
         if(format == 1)
         {
-            return this.GetLanguageString() + ", " + this.GetCodecString();
+            return this.GetLanguageString() + ", " + this.GetCodecString() + (this.isForced() ? " [Forced]" : "");
         }
         else
         {
             if(!this.GetLanguageString().equals("") && !this.GetCodecString().equals(""))
             {
-                return (this.GetTrackNumber() + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodecString();
+                return (this.GetTrackNumber() + 1) + " - " + this.GetLanguageString() + ", " + this.GetCodecString() + (this.isForced() ? " [Forced]" : "");
             }
             else
             {    
