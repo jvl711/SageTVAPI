@@ -60,6 +60,20 @@ public class General
     
     
     @Test
+    public void test()
+    {
+        String testFileName;
+        
+        testFileName = "Star Trek Picard - S01E01 - Remembrance.mkv";
+        
+        FileNameParser parser = new FileNameParser(testFileName);
+        
+        System.out.println(parser.GetTitle());
+        
+        
+    }
+    
+    @Test
     public void getTitleFromFileName()
     {
         FileNameParser parser;

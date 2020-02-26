@@ -43,6 +43,7 @@ public class FileNameParser
         ignoreWords.add("dts-hd".toLowerCase());
         ignoreWords.add("TRUEFRENCH".toLowerCase());
         ignoreWords.add("UNRATED".toLowerCase());
+        ignoreWords.add("-".toLowerCase());
     }
     
     public FileNameParser(String fileName)

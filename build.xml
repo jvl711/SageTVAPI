@@ -101,7 +101,35 @@
         <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="${sagetvclient.path}JARs" />
         <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="${sagetvclient.path}" />
     </target> 
+    
+    <target name="publishAll" depends="publishSupportLibraries, publishSageJar">    
         
+        <echo>Deploy all jar and dll files to U:\Apps\SageTVLibraries\</echo>
+        
+    </target>
+        
+    <target name="publishSupportLibraries" depends="jar">
+        
+        <echo>Deploying SageAPI.jar</echo>
+        <copy file="${dist.jar}" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying TheMovieAPI.jar</echo>
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying json-20160810.jar</echo>
+        <copy file="${dist.dir}\lib\json-20160810.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying JavaFFmpeg.jar</echo>
+        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying libFFmpegJNIWrapper.dll</echo>
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="U:\Apps\SageTVLibraries\" />
+        <echo>Deploying ffmpeg.dlls</echo>
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avcodec-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avdevice-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avfilter-7.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avformat-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avutil-56.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\postproc-55.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swresample-3.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swscale-5.dll" todir="U:\Apps\SageTVLibraries\" />
+    </target>            
     
     <target name="sageclient">
         <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
@@ -157,6 +185,12 @@
         
         <copy file="..\SageTV\build\release\Sage.jar" todir="${sagetvclient.path}" />
         <copy file="..\SageTV\build\release\Sage.jar" todir=".\src\library" />
+        
+    </target>
+    
+    <target name="publishSageJar" depends="buildSageJar">
+        <echo>Deploying Sage.jar</echo>
+        <copy file="..\SageTV\build\release\Sage.jar" todir="U:\Apps\SageTVLibraries" />
         
     </target>
     
