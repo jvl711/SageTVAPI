@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jvl.logging.Logging;
+import static jvl.sage.Movies.PROPERTY_FILTER_WATCHED;
+import static jvl.sage.Movies.PROPERTY_PREFIX;
 import jvl.sage.api.Airings;
 import jvl.sage.api.Configuration;
 import jvl.sage.api.MediaFile;
@@ -18,6 +20,7 @@ public class Recordings
     public static final String PROPERTY_SORT_DIR = PROPERTY_PREFIX + ".sort.direction";
     public static final String PROPERTY_SORT_COL = PROPERTY_PREFIX + ".sort.column";
     public static final String PROPERTY_FILTER_CAT = PROPERTY_PREFIX + ".filter.category";
+    public static final String PROPERTY_FILTER_WATCHED = PROPERTY_PREFIX + ".filter.watched";
     
     
     private ArrayList<String> categories;
@@ -45,8 +48,6 @@ public class Recordings
         }
     }
     
-    
-    
     public void SetFilterCategory(String cat)
     {
         Configuration.SetProperty(context, PROPERTY_FILTER_CAT, cat);
@@ -55,6 +56,16 @@ public class Recordings
     public String GetFilterCategory()
     {
         return Configuration.GetProperty(context, PROPERTY_FILTER_CAT, "All");
+    }
+    
+    public void SetFilterWatched(boolean filter)
+    {
+        Configuration.SetProperty(context, PROPERTY_FILTER_WATCHED, filter + "");
+    }
+    
+    public boolean GetFilterWatched()
+    {
+        return Boolean.parseBoolean(Configuration.GetProperty(context, PROPERTY_FILTER_WATCHED, "false"));
     }
     
     public void SetSortDirection(String sort)
@@ -151,6 +162,11 @@ public class Recordings
                 LOG.log(Level.FINE, "shows.FilterByCategory Start");
                 shows.FilterByCategory(this.GetFilterCategory());
                 LOG.log(Level.FINE, "shows.FilterByCategory End");
+            }
+            
+            if(this.GetFilterWatched())
+            {
+                shows.FilterWatched();
             }
             
             if(sortDir == SortDirection.DESC)

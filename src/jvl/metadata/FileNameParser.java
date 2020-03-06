@@ -43,7 +43,6 @@ public class FileNameParser
         ignoreWords.add("dts-hd".toLowerCase());
         ignoreWords.add("TRUEFRENCH".toLowerCase());
         ignoreWords.add("UNRATED".toLowerCase());
-        ignoreWords.add("-".toLowerCase());
     }
     
     public FileNameParser(String fileName)
@@ -139,6 +138,10 @@ public class FileNameParser
                 this.season = this.getSeason(parts[i]);
                 this.episode = this.GetEpisode(parts[i]);
                 break;
+            }
+            else if(parts[i].equalsIgnoreCase("-"))
+            {
+                //Do nothing.  This is probably just a delimiter
             }
             else
             {

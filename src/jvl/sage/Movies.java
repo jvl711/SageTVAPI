@@ -18,6 +18,7 @@ public class Movies
     public static final String PROPERTY_SORT_DIR = PROPERTY_PREFIX + ".sort.direction";
     public static final String PROPERTY_SORT_COL = PROPERTY_PREFIX + ".sort.column";
     public static final String PROPERTY_FILTER_CAT = PROPERTY_PREFIX + ".filter.category";
+    public static final String PROPERTY_FILTER_WATCHED = PROPERTY_PREFIX + ".filter.watched";
     
     
     private ArrayList<String> categories;
@@ -39,6 +40,16 @@ public class Movies
     public String GetFilterCategory()
     {
         return Configuration.GetProperty(context, PROPERTY_FILTER_CAT, "All");
+    }
+    
+    public void SetFilterWatched(boolean filter)
+    {
+        Configuration.SetProperty(context, PROPERTY_FILTER_WATCHED, filter + "");
+    }
+    
+    public boolean GetFilterWatched()
+    {
+        return Boolean.parseBoolean(Configuration.GetProperty(context, PROPERTY_FILTER_WATCHED, "false"));
     }
     
     public void SetSortDirection(String sort)
@@ -70,9 +81,7 @@ public class Movies
     {
         return MoviesSortColumn.Parse(Configuration.GetProperty(context, PROPERTY_SORT_COL, MoviesSortColumn.GetDefault().GetName()));
     }
-    
-    
-    
+
     public ArrayList<String> GetCategories()
     {
         return this.categories;
@@ -108,6 +117,11 @@ public class Movies
             if(!this.GetFilterCategory().equalsIgnoreCase("all"))
             {
                 shows.FilterByCategory(this.GetFilterCategory());
+            }
+
+            if(this.GetFilterWatched())
+            {
+                shows.FilterWatched();
             }
             
             if(sortDir == SortDirection.DESC)

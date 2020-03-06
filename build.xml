@@ -89,7 +89,7 @@
         
         
         <exec executable="${sagetvclient.path}SageTVClient.exe" >
-            <arg line="-connect sagetv"/>
+            <arg line="-connect development"/>
         </exec>
 
     </target>

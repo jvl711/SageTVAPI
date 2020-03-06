@@ -218,8 +218,11 @@ public class Shows extends SageArrayObject<Show>
         }
         
         this.baseList = shows;
-        
-        //return shows;
+    }
+    
+    public void FilterWatched() throws SageCallApiException
+    {
+        this.baseList = this.GetAirings().GetUnwatchedAirings().GetShows().baseList;
     }
     
     public int GetSeasonCount() throws SageCallApiException
