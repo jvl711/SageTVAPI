@@ -22,7 +22,7 @@ import sage.media.format.VideoFormat;
  *
  * @author jvl711
  */
-public class MediaFormatParserPlugin implements sage.media.format.FormatParserPlugin
+public class MediaFormatParserPluginOld implements sage.media.format.FormatParserPlugin
 {
     AVFormatContext avformat;
     

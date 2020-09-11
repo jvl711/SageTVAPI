@@ -41,6 +41,11 @@ public class MetadataPlugin implements SageTVPlugin
         this.registry.eventSubscribe(this, "MediaFileImported");
         this.registry.eventSubscribe(this, "MediaFileRemoved");
         this.registry.eventSubscribe(this, "ImportingCompleted");
+        this.registry.eventSubscribe(this, "PlaybackStarted");
+        this.registry.eventSubscribe(this, "PlaybackFinished");
+        this.registry.eventSubscribe(this, "PlaybackStopped");
+        
+        
         
         System.out.println("JVL Starting the MiniServer");
         this.miniserver.start();
@@ -197,6 +202,18 @@ public class MetadataPlugin implements SageTVPlugin
             {
                 System.out.println("JVL Metadata Plugin - Importing Completed");
                 this.ImportingCompletedHandler();
+            }
+            else if(event.equalsIgnoreCase("PlaybackStarted"))
+            {
+                System.out.println("JVL Metadata Plugin - PlaybackStarted");
+            }
+            else if(event.equalsIgnoreCase("PlaybackStopped"))
+            {
+                System.out.println("JVL Metadata Plugin - PlaybackStopped");
+            }
+            else if(event.equalsIgnoreCase("PlaybackFinished"))
+            {
+                System.out.println("JVL Metadata Plugin - PlaybackFinished");
             }
             else
             {
