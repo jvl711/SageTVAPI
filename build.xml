@@ -7,9 +7,154 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="SageAPI" xmlns:if="ant:if" xmlns:unless="ant:unless" default="default" basedir=".">
+<project name="SageTVAPI" xmlns:if="ant:if" xmlns:unless="ant:unless" default="default" basedir=".">
     <description>Builds, tests, and runs the project SageAPI.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    <property name="build.version" value="3.0"/>
+    <buildnumber file="mybuild.number"/>
+    <tstamp>
+        <format property="build.time" pattern="MM/dd/yyyy HH:mm:ss"/>
+    </tstamp>
+    <tstamp>
+        <format property="build.date" pattern="yyyy.MM.dd"/>
+    </tstamp>
+    
+    <target name="-pre-compile">
+        
+        <delete file="./src/jvl/sage/api/Version.java"/>
+        
+        <filter token="BUILDNUMBER" value="${build.number}" />
+        <filter token="BUILDTIME" value="${build.time}" />
+        <filter token="VERSION" value="${build.version}" />
+        <copy file="./version.template" tofile="./src/jvl/sage/api/Version.java" filtering="true"/>
+            
+    </target>
+    
+    <target name="generate-jar-md5" depends="jar">
+        
+        <echo>Running generate MD5</echo>
+        <checksum file="${dist.jar}"/>
+    
+    </target>
+    
+     <target name="-post-jar">
+        
+        <echo>POST JAR</echo>
+        
+        <zip destfile="${dist.jar.dir}/JVLSageTVAPI_v${build.version}.zip">
+            <zipfileset  dir="${dist.jar.dir}" includes="*.jar"/>
+        </zip>
+        
+        <checksum file="${dist.jar.dir}/JVLSageTVAPI_v${build.version}.zip" property="jarmd5"/>   
+        <delete file="${dist.jar.dir}/JVLSageTVAPI.xml"/>
+        
+        <!--<filter token="BUILDNUMBER" value="${build.number}" />-->
+        <filter token="BUILDTIME" value="${build.date}" />
+        <filter token="VERSION" value="${build.version}" />
+        <filter token="JARMD5" value="${jarmd5}" />
+        <copy file="./JVLSageTVAPI.template" tofile="${dist.jar.dir}/JVLSageTVAPI.xml" filtering="true"/>
+        
+    </target>
+    
+    <target name="deploy-test-run-sageclient" depends="sageclient,copySupportLibraries" if="sagetvclient.path">
+        
+        <echo>Deploy and testing on SageTV Client using sagetv path ${sagetvclient.path}</echo>
+        
+        <exec executable="taskkill">
+            <arg line="/im SageTVClient.exe /f /t"/>
+        </exec>
+        
+        
+        <exec executable="${sagetvclient.path}SageTVClient.exe" >
+            <arg line="-connect development"/>
+        </exec>
+
+    </target>
+    
+    <target name="copySupportLibraries" depends="jar">
+        <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="${sagetvclient.path}JARs" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="${sagetvclient.path}" />
+    </target> 
+    
+    <target name="publishAll" depends="publishSupportLibraries">    
+        <echo>Deploy all jar and dll files to U:\Apps\SageTVLibraries\</echo>
+    </target>
+        
+    <target name="publishSupportLibraries" depends="jar">
+        
+        <echo>Deploying SageAPI.jar</echo>
+        <copy file="${dist.jar}" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying TheMovieAPI.jar</echo>
+        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+        <echo>Deploying json-20160810.jar</echo>
+        <copy file="${dist.dir}\lib\json-20160810.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+        
+         <!--
+        <echo>Deploying JavaFFmpeg.jar</echo>
+        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="U:\Apps\SageTVLibraries\Jars" />
+       
+
+        <echo>Deploying libFFmpegJNIWrapper.dll</echo>
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="U:\Apps\SageTVLibraries\" />
+        
+       
+        <echo>Deploying ffmpeg.dlls</echo>
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avcodec-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avdevice-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avfilter-7.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avformat-58.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avutil-56.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\postproc-55.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swresample-3.dll" todir="U:\Apps\SageTVLibraries\" />
+        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swscale-5.dll" todir="U:\Apps\SageTVLibraries\" />-->
+    </target>            
+    
+    <target name="sageclient">
+        <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
+       
+        <condition property="sagetvclient.path" value="C:\Program Files (x86)\SageTV\SageTV\">
+            <istrue value="${sagetvclientx86.exists}"></istrue>
+        </condition>
+        
+        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\SageTV\SageTVClient.exe" type="file"/>
+        
+        <condition property="sagetvclient.path" value="C:\Program Files\SageTV\SageTV\">
+            <istrue value="${sagetvclientx64.exists}"></istrue>
+        </condition>
+        
+        <echo message="${sagetvclient.path}"/>
+    </target>
+    
+    <target name="sageclientx64">
+        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\" type="dir"/>
+        <echo unless:set="sagetvclientx64.exists">SageTV Client x64 Not Installed!</echo>
+    </target>
+    
+    <target name="deploy-to-server-and-restart" depends="copySupportLibraries">
+        
+        <echo>Stopping SageTV64 service</echo>
+        <exec executable="cmd.exe" >
+            <arg line="/c net stop SageTV64"/>
+        </exec>
+        
+        <echo>Taskkill SageTV64 incase service did not stop</echo>
+        <exec executable="taskkill">
+            <arg line="/im SageTVService.exe /f /t"/>
+        </exec>
+        
+        <echo>Start SageTV64 service</echo>
+       <exec executable="cmd.exe" >
+            <arg line="/c net start SageTV64"/>
+        </exec>
+        
+    </target>
+    
+    
+    
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -70,129 +215,5 @@
     nbproject/build-impl.xml file. 
 
     -->
-    
-    <target name="generate-jar-md5" depends="jar">
-        
-        <echo>Running generate MD5</echo>
-        <checksum file="${dist.jar}"/>
-    
-    </target>
-    
-    
-    <target name="deploy-test-run-sageclient" depends="sageclient,copySupportLibraries" if="sagetvclient.path">
-        
-        <echo>Deploy and testing on SageTV Client using sagetv path ${sagetvclient.path}</echo>
-        
-        <exec executable="taskkill">
-            <arg line="/im SageTVClient.exe /f /t"/>
-        </exec>
-        
-        
-        <exec executable="${sagetvclient.path}SageTVClient.exe" >
-            <arg line="-connect development"/>
-        </exec>
-
-    </target>
-    
-    <target name="copySupportLibraries" depends="jar">
-        <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="${sagetvclient.path}" />
-    </target> 
-    
-    <target name="publishAll" depends="publishSupportLibraries, publishSageJar">    
-        
-        <echo>Deploy all jar and dll files to U:\Apps\SageTVLibraries\</echo>
-        
-    </target>
-        
-    <target name="publishSupportLibraries" depends="jar">
-        
-        <echo>Deploying SageAPI.jar</echo>
-        <copy file="${dist.jar}" todir="U:\Apps\SageTVLibraries\Jars" />
-        <echo>Deploying TheMovieAPI.jar</echo>
-        <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="U:\Apps\SageTVLibraries\Jars" />
-        <echo>Deploying json-20160810.jar</echo>
-        <copy file="${dist.dir}\lib\json-20160810.jar" todir="U:\Apps\SageTVLibraries\Jars" />
-        <echo>Deploying JavaFFmpeg.jar</echo>
-        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="U:\Apps\SageTVLibraries\Jars" />
-        <echo>Deploying libFFmpegJNIWrapper.dll</echo>
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="U:\Apps\SageTVLibraries\" />
-        <echo>Deploying ffmpeg.dlls</echo>
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avcodec-58.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avdevice-58.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avfilter-7.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avformat-58.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\avutil-56.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\postproc-55.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swresample-3.dll" todir="U:\Apps\SageTVLibraries\" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\swscale-5.dll" todir="U:\Apps\SageTVLibraries\" />
-    </target>            
-    
-    <target name="sageclient">
-        <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
-       
-        <condition property="sagetvclient.path" value="C:\Program Files (x86)\SageTV\SageTV\">
-            <istrue value="${sagetvclientx86.exists}"></istrue>
-        </condition>
-        
-        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\SageTV\SageTVClient.exe" type="file"/>
-        
-        <condition property="sagetvclient.path" value="C:\Program Files\SageTV\SageTV\">
-            <istrue value="${sagetvclientx64.exists}"></istrue>
-        </condition>
-        
-        <echo message="${sagetvclient.path}"/>
-    </target>
-    
-    <target name="sageclientx64">
-        <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\" type="dir"/>
-        <echo unless:set="sagetvclientx64.exists">SageTV Client x64 Not Installed!</echo>
-    </target>
-    
-    <target name="deploy-to-server-and-restart" depends="deploySageJar, copySupportLibraries">
-        
-        <echo>Stopping SageTV64 service</echo>
-        <exec executable="cmd.exe" >
-            <arg line="/c net stop SageTV64"/>
-        </exec>
-        
-        <echo>Taskkill SageTV64 incase service did not stop</echo>
-        <exec executable="taskkill">
-            <arg line="/im SageTVService.exe /f /t"/>
-        </exec>
-        
-        <echo>Start SageTV64 service</echo>
-       <exec executable="cmd.exe" >
-            <arg line="/c net start SageTV64"/>
-        </exec>
-        
-    </target>
-    
-    <target name="buildSageJar" depends="">
-        
-        <exec executable="cmd" dir="../SageTV/">
-            <arg value="/c"/>
-            <arg value="gradlew.bat"/>
-            <arg value="sageJar"/>
-        </exec>
-        
-    </target>
-    
-    <target name="deploySageJar" depends="sageclient,buildSageJar">
-        
-        <copy file="..\SageTV\build\release\Sage.jar" todir="${sagetvclient.path}" />
-        <copy file="..\SageTV\build\release\Sage.jar" todir=".\src\library" />
-        
-    </target>
-    
-    <target name="publishSageJar" depends="buildSageJar">
-        <echo>Deploying Sage.jar</echo>
-        <copy file="..\SageTV\build\release\Sage.jar" todir="U:\Apps\SageTVLibraries" />
-        
-    </target>
-    
     
 </project>

@@ -39,6 +39,7 @@ public class Metadata
 {
     //private String cacheFolder;
     private File cacheFolder;
+    private File dataFolder;
     private Show show;
     private TMDBRequest request;
     
@@ -54,12 +55,13 @@ public class Metadata
     
     public Metadata(Show show)
     {
-        this("metacache", show);
+        this("metacache", "metadata", show);
     }
     
-    public Metadata(String cacheFolder, Show show)
+    public Metadata(String cacheFolder, String dataFolder, Show show)
     {
         this.cacheFolder = new File(cacheFolder);
+        this.dataFolder = new File(dataFolder);
         this.show = show;
         this.request = new TMDBRequest();
         
@@ -743,7 +745,7 @@ public class Metadata
         
         return credits;
     }
-    
+
     public Movie GetMovieDetails() throws IOException, RateLimitException, SageCallApiException
     {
         File detailsFile = this.GetMovieDetailsFile(show.GetTheMovieDBID());
@@ -796,6 +798,18 @@ public class Metadata
         }
         
         return credits;
+    }
+    
+    public Watched GetWatchedDetails() throws SageCallApiException, IOException
+    {
+        if(this.show.IsTV())
+        {
+            return Watched.constructModel(this.GetTVWatchedFileFile(this.show.GetTheMovieDBID(), this.show.GetSeasonNumber(), this.show.GetEpisodeNumber()));
+        }
+        else
+        {
+            return Watched.constructModel(this.GetMovieWatchedFile(show.GetTheMovieDBID()));
+        }
     }
     
     public Episode getEpisodeDetails() throws IOException, RateLimitException, SageCallApiException
@@ -1637,7 +1651,7 @@ public class Metadata
    // <editor-fold defaultstate="collapsed" desc="File Path Builder Methods for data cache">
     
     /*
-    *  Directory Structure
+    *  Directory Structure for cache folders
     *      Root ->
     *              movies ->
     *                      [TMDB ID] ->
@@ -1673,6 +1687,18 @@ public class Metadata
                                                                        stills
                *                                                              size ->
     *                                                                                  name.jpg
+    *  Directory Structure for data folders
+    *      Root ->
+    *              movies ->
+    *                      [TMDB ID] ->
+    *                                  watched.json
+    *
+    *      Root ->
+    *              TV ->
+    *                      {TMDB ID} ->
+    *                                  season_{n} ->
+    *                                                  episode_{n} ->
+                                                                       watched.json
     *
    */
 
@@ -1714,6 +1740,11 @@ public class Metadata
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/images.json");
     }
     
+    private File GetTVWatchedFileFile(int tmdb_id, int seasonNumber, int episodeNumber)
+    {
+        return new  File(this.dataFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/season_" + seasonNumber + "/episode_" + episodeNumber + "/watched.json");
+    }
+    
     private File GetTVPoster(int tmdb_id, String width, String fileName)
     {
         return new File(this.cacheFolder.getAbsolutePath() + "/tv/" + tmdb_id + "/posters/" + width + fileName);
@@ -1739,6 +1770,12 @@ public class Metadata
     {
         //TODO: Rename details.json to the proper name
         return new File(this.cacheFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/detials.json");
+    }
+    
+    private File GetMovieWatchedFile(int tmdb_id)
+    {
+        //TODO: Rename details.json to the proper name
+        return new File(this.dataFolder.getAbsolutePath() + "/movies/" + tmdb_id + "/watched.json");
     }
     
     private File GetMovieReleasesFile(int tmdb_id)

@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 
+import java.io.File;
+import java.io.IOException;
 import jvl.metadata.FileNameParser;
+import jvl.metadata.Watched;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -58,6 +61,17 @@ public class General
         chernobyl.s01e02.internal.1080p.web.h264-memento.mkv
     */
     
+    @Test
+    public void testWatched() throws IOException
+    {
+        Watched watched = Watched.constructModel(new File("temp.json"));
+        
+        //watched.setWatched(true);
+        
+        System.out.println("Watched: " + watched.isWatched());
+                
+        
+    }
     
     @Test
     public void test()

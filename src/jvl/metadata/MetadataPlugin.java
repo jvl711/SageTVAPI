@@ -4,6 +4,7 @@ package jvl.metadata;
 import java.io.IOException;
 import java.util.Map;
 import jvl.sage.SageCallApiException;
+import jvl.sage.api.Airing;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
 import jvl.sage.api.Show;
@@ -22,6 +23,10 @@ public class MetadataPlugin implements SageTVPlugin
     public MetadataPlugin(SageTVPluginRegistry registry) throws IOException
     {
         System.out.println("JVL - Metadata Plugin Constructed");
+        System.out.println("\tjvl.sage.api.version: " + jvl.sage.api.Version.getVersion());
+        System.out.println("\tjvl.sage.api.build: " + jvl.sage.api.Version.getBuildNumber());
+        System.out.println("\tjvl.sage.api.buildtime: " + jvl.sage.api.Version.getBuildTime());
+        
         this.registry = registry;
         try
         {
@@ -44,9 +49,8 @@ public class MetadataPlugin implements SageTVPlugin
         this.registry.eventSubscribe(this, "PlaybackStarted");
         this.registry.eventSubscribe(this, "PlaybackFinished");
         this.registry.eventSubscribe(this, "PlaybackStopped");
-        
-        
-        
+        this.registry.eventSubscribe(this, "WatchedStateChanged");
+
         System.out.println("JVL Starting the MiniServer");
         this.miniserver.start();
     }
@@ -215,6 +219,29 @@ public class MetadataPlugin implements SageTVPlugin
             {
                 System.out.println("JVL Metadata Plugin - PlaybackFinished");
             }
+            else if(event.equalsIgnoreCase("WatchedStateChanged"))
+            {
+                System.out.println("JVL Metadata Plugin - Watch State Changed Called");
+                
+                if(args.containsKey("Airing"))
+                {
+                    if(Airing.IsAiringObject(args.get("Airing")))
+                    {
+                        Airing airing = new Airing(args.get("Airing"));
+                        WatchedStateChangedHandler(airing);
+                        
+                        System.out.println("JVL Metadata Plugin - Show: " + airing.GetShow().GetTitle());
+                    }
+                    else
+                    {
+                        System.out.println("JVL Metadata Plugin - Args was not reported as Airing object");
+                    }
+                }
+                else
+                {
+                    System.out.println("JVL Metadata Plugin - Args missing Airing object");
+                }
+            }
             else
             {
                 System.out.println("JVL Metadata Plugin - Unknown/Unregistered event fired: " + event);
@@ -231,7 +258,16 @@ public class MetadataPlugin implements SageTVPlugin
     {
         try 
         {
+            System.out.println("MetadataPlugin.MediaFileImportedHandler: " + show.GetMediaFile().GetFileName());
             show.MetadataLookup(true, true);
+            
+            Watched watched = show.GetWatchedDetails();
+            
+            //Update the watched status on import to match what we have store in data
+            if(watched != null)
+            {
+                show.GetAiring().SetWatchedStatus(watched.isWatched());
+            }
         } 
         catch (SageCallApiException ex) 
         {
@@ -254,6 +290,14 @@ public class MetadataPlugin implements SageTVPlugin
         try 
         {
             show.MetadataLookup(true, true);
+            
+            Watched watched = show.GetWatchedDetails();
+            
+            //Update the watched status on import to match what we have store in data
+            if(watched != null)
+            {
+                show.GetAiring().SetWatchedStatus(watched.isWatched());
+            }
         } 
         catch (SageCallApiException ex) 
         {
@@ -296,6 +340,30 @@ public class MetadataPlugin implements SageTVPlugin
                     System.out.println("JVL Metadata Plugin - Unexpected error looking up metadata");
                     ex1.printStackTrace();
                 }
+            }
+        }
+        catch(Exception ex)
+        {
+            System.out.println("JVL Metadata Plugin - Unexpected error");
+            ex.printStackTrace();
+        }
+    }
+    
+    public void WatchedStateChangedHandler(Airing airing)
+    {
+        try
+        {
+            Show show = airing.GetShow();
+            
+            System.out.println("\tTitle: " + show.GetTitle());
+            System.out.println("\tSeasonEpisode: " + show.GetSeasonEpisodeString());
+            System.out.println("\tWatched: " + airing.IsWatched());
+            
+            Watched watched = show.GetWatchedDetails();
+            
+            if(watched != null)
+            {
+                watched.setWatched(airing.IsWatched());
             }
         }
         catch(Exception ex)

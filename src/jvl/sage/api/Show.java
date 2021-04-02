@@ -12,6 +12,7 @@ import jvl.logging.Logging;
 import jvl.sage.SageCallApiException;
 import jvl.sage.SageObject;
 import jvl.metadata.Metadata;
+import jvl.metadata.Watched;
 import jvl.tmdb.RateLimitException;
 import jvl.tmdb.model.Cast;
 import jvl.tmdb.model.Crew;
@@ -251,6 +252,24 @@ public class Show extends SageObject
         catch(Exception ex){ }
         
         return value;
+    }
+    
+    /***
+     * Returns the Watched object which stores watched data in metadata folder.
+     * This allows the data to persist outside of SageTV wiz.bin.
+     * @return Watched object or null if the object does not have Metadata
+     * @throws SageCallApiException 
+     */
+    public Watched GetWatchedDetails() throws SageCallApiException, IOException
+    {
+        if(this.meta.HasMetadata())
+        {
+            return meta.GetWatchedDetails();
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public double GetVoteScore()
