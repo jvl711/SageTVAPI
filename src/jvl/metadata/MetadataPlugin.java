@@ -3,8 +3,12 @@ package jvl.metadata;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
+import jvl.sage.api.Configuration;
 import jvl.sage.api.MediaFile;
 import jvl.sage.api.MediaFiles;
 import jvl.sage.api.Show;
@@ -20,14 +24,31 @@ public class MetadataPlugin implements SageTVPlugin
     private final SageTVPluginRegistry registry;
     private MiniServer miniserver;
     
+    private static final Logger LOG = Logging.getLogger(MetadataPlugin.class.getName());
+    
     public MetadataPlugin(SageTVPluginRegistry registry) throws IOException
     {
-        System.out.println("JVL - Metadata Plugin Constructed");
-        System.out.println("\tjvl.sage.api.version: " + jvl.sage.api.Version.getVersion());
-        System.out.println("\tjvl.sage.api.build: " + jvl.sage.api.Version.getBuildNumber());
-        System.out.println("\tjvl.sage.api.buildtime: " + jvl.sage.api.Version.getBuildTime());
+        try
+        {
+            LOG.warning("Setting logging level for MetadataPlugin");
+            String value = Configuration.GetServerProperty("jvl.metadataplugin.debuglevel", Level.WARNING.intValue() + "");
+            
+            Level level = Level.parse(value.toUpperCase());
+            Logging.getLogger("jvl.metadata").setLevel(level);
+        }
+        catch(Exception ex)
+        {
+            LOG.log(Level.WARNING ,"Unable to parse and apply debug level for pluggin", ex);
+        }
+        
+        LOG.info("Metadata Plugin Constructed");
+        LOG.log(Level.INFO, "\tjvl.sage.api.version: {0}", jvl.sage.api.Version.getVersion());
+        LOG.log(Level.INFO, "\tjvl.sage.api.build: {0}", jvl.sage.api.Version.getBuildNumber());
+        LOG.log(Level.INFO, "\tjvl.sage.api.buildtime: {0}",  jvl.sage.api.Version.getBuildTime());
         
         this.registry = registry;
+        
+        /*
         try
         {
             miniserver = new MiniServer(8080);
@@ -36,12 +57,14 @@ public class MetadataPlugin implements SageTVPlugin
         {
             System.out.println("JVL - Error creating mini server.  Check that the port is available.");
         }
+        */
     }
     
     @Override
     public void start() 
     {
-        System.out.println("JVL Metadata Plugin - Started");
+        LOG.info("Metadata Plugin Starting");
+        LOG.info("\tRegistering Events");
         this.registry.eventSubscribe(this, "RecordingStarted");
         this.registry.eventSubscribe(this, "MediaFileImported");
         this.registry.eventSubscribe(this, "MediaFileRemoved");
@@ -51,53 +74,90 @@ public class MetadataPlugin implements SageTVPlugin
         this.registry.eventSubscribe(this, "PlaybackStopped");
         this.registry.eventSubscribe(this, "WatchedStateChanged");
 
-        System.out.println("JVL Starting the MiniServer");
-        this.miniserver.start();
+        //System.out.println("JVL Starting the MiniServer");
+        //this.miniserver.start();
     }
 
     @Override
     public void stop() 
     {
-        System.out.println("JVL Metadata Plugin - Stopping");
-        
+        LOG.info("Metadata Plugin Stopping");
+                
+        /*
         System.out.println("JVL Stopping the MiniServer");
         this.miniserver.stop();
+        */
     }
 
     @Override
     public void destroy() 
     {
-        System.out.println("JVL Metadata Plugin - Destroying");
+        LOG.info("Metadata Plugin Destroying");
     }
 
     @Override
     public String[] getConfigSettings() 
     {
-        return new String[0];
+        return new String[]{"DebugLevel", "APIKey"};
     }
 
     @Override
     public String getConfigValue(String string) 
     {
-        return "";
+        String value = "";
+        
+        //value = this.getProperty("jvl.MediaFormatParserPlugin.Debug", "false");
+        if(string.equals("DebugLevel"))
+        {
+            value = Configuration.GetServerProperty("jvl.metadataplugin.debuglevel", "Warning");
+        }
+        else if (string.equals("APIKey"))
+        {
+            value = Configuration.GetServerProperty("jvl.metadataplugin.apikey", "");
+        }
+        
+        return value;
     }
 
-    @Override
-    public String[] getConfigValues(String string) 
-    {
-        return new String[0];
-    }
 
     @Override
     public int getConfigType(String string) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        if(string.equals("DebugLevel"))
+        {
+            return SageTVPlugin.CONFIG_CHOICE;
+        }
+        else if (string.equals("APIKey"))
+        {
+            return SageTVPlugin.CONFIG_TEXT;
+        }
+        else
+        {
+            throw new UnsupportedOperationException("Not supported yet."); 
+        }
     }
 
     @Override
-    public void setConfigValue(String string, String string1) 
+    public void setConfigValue(String string, String value) 
     {
-        
+        if(string.equals("DebugLevel"))
+        {
+            jvl.sage.api.Configuration.SetServerProperty("jvl.metadataplugin.debuglevel", value);
+            
+            try
+            {
+                Level level = Level.parse(value.toUpperCase());
+                Logging.getLogger("jvl.metadata").setLevel(level);
+            }
+            catch(Exception ex)
+            {
+                LOG.log(Level.WARNING ,"Unable to parse and apply debug level for pluggin", ex);
+            }
+        }
+        else if (string.equals("APIKey"))
+        {
+            jvl.sage.api.Configuration.SetServerProperty("jvl.metadataplugin.apikey", value);
+        }
     }
 
     @Override
@@ -109,18 +169,42 @@ public class MetadataPlugin implements SageTVPlugin
     @Override
     public String[] getConfigOptions(String string) 
     {
-        return new String[0];
+        if(string.equals("DebugLevel"))
+        {
+            return new String[]{"Severe","Warning","Info","All"};
+        }
+
+        
+        return null;
     }
 
     @Override
     public String getConfigHelpText(String string) 
     {
+        if(string.equals("DebugLevel"))
+        {
+            return "The level of detail placed in the SageTV log file for the plugin";
+        }
+        else if (string.equals("APIKey"))
+        {
+            return "APIKey for TheMovieDB.  This is required to access the service.  You will need to create and account to get a key.";
+        }
+        
         return "";
     }
 
     @Override
     public String getConfigLabel(String string) 
     {
+        if(string.equals("DebugLevel"))
+        {
+            return "Debug Level";
+        }
+        else if (string.equals("APIKey"))
+        {
+            return "TheMovieDB API Key";
+        }
+        
         return "";
     }
 
@@ -371,6 +455,12 @@ public class MetadataPlugin implements SageTVPlugin
             System.out.println("JVL Metadata Plugin - Unexpected error");
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public String[] getConfigValues(String string)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

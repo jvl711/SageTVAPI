@@ -6,7 +6,11 @@
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 import jvl.metadata.FileNameParser;
+import jvl.metadata.Metadata;
 import jvl.metadata.Watched;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -60,6 +64,35 @@ public class General
         UglyDolls_2019_BR-Rip_H264.mkv
         chernobyl.s01e02.internal.1080p.web.h264-memento.mkv
     */
+    
+    @Test
+    public void testLoggingException()
+    {
+        Logger LOG = Logging.getLogger(Metadata.class.getName());
+        //Logger root  = Logging.getLogger("");
+        
+        //LOG.log(Level.SEVERE, "TEST");
+        
+        LOG.log(Level.SEVERE, "Test one param {0}", "test");
+        
+        
+        try
+        {
+            throw new RuntimeException("This is a new exception");
+        }
+        catch(Exception ex)
+        {
+            LOG.log(Level.WARNING, "There was an error thrown during this test method", ex);
+        }
+        
+    }
+    
+    @Test
+    public void testLogging()
+    {
+        Logger root = Logging.getLogger("");
+        root.log(Level.SEVERE, "THis is a test {0}, {1}, {2}", new Object[] {true, null, true});
+    }
     
     @Test
     public void testWatched() throws IOException

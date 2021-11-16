@@ -7,12 +7,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 import jvl.sage.SageCallApiException;
 
 public class Shows extends SageArrayObject<Show>
 {
     //ArrayList<Show> shows;
-
+    private static final Logger LOG = Logging.getLogger(Shows.class.getName());
+    
+    
     public Shows()
     {
         //this.shows = new ArrayList();
@@ -220,9 +225,98 @@ public class Shows extends SageArrayObject<Show>
         this.baseList = shows;
     }
     
+    /**
+     * Filters all shows where the airing is watched
+     * @throws SageCallApiException 
+     */
     public void FilterWatched() throws SageCallApiException
     {
         this.baseList = this.GetAirings().GetUnwatchedAirings().GetShows().baseList;
+    }
+    
+    /**
+     * Filters shows were all episodes in the library of the show are watched
+     * @throws SageCallApiException 
+     */
+    public void FilterWatchedShows() throws SageCallApiException
+    {
+        Shows temp = new Shows();
+        
+        class ShowDetails
+        {
+            int count = 0;
+            int watched = 0;
+        }
+
+        HashMap<String, ShowDetails> stats = new HashMap<String, ShowDetails>();
+        
+        for(int i = 0; i < this.size(); i++)
+        {       
+            String title = this.get(i).GetTitle();
+            ShowDetails showDetails = stats.get(title);
+            
+            if(showDetails == null)
+            {
+                showDetails = new ShowDetails();
+                stats.put(title, showDetails);
+            }
+
+            if(this.get(i).GetAiring().IsWatched())
+            {
+                showDetails.watched++;            
+            }
+            showDetails.count++;
+        }
+        
+        //String [] keys;
+        
+        String [] keys = stats.keySet().toArray(new String [stats.keySet().size()]);
+        for(int i = 0; i < keys.length; i++)
+        {
+            ShowDetails details = stats.get(keys[i]);
+            LOG.log(Level.WARNING, "Title: {0}, Count: {1}, Watched: {2}", new Object[]{keys[i], details.count + "", details.watched + ""});
+        }
+        
+        
+        for(int i = 0; i < this.size(); i++)
+        {
+            String title = this.get(i).GetTitle();
+            ShowDetails showDetails = stats.get(title);
+            
+            if(showDetails.count != showDetails.watched)
+            {
+                temp.add(this.get(i));
+            }
+        }
+        
+        this.baseList = temp.baseList;
+        
+        //this.baseList = this.GetAirings().GetUnwatchedAirings().GetShows().baseList;
+        /*
+        Shows temp = new Shows();
+        ArrayList<String> titles = this.GetShowTitles();
+        
+        for(int i = 0; i < titles.size(); i++)
+        {
+            Shows shows = this.GetShowsByTitle(titles.get(i));
+            int countWatched = 0;
+            
+            for(int j = 0; j < shows.size(); j++)
+            {
+                if(shows.get(j).GetAiring().IsWatched())
+                {
+                    countWatched++;
+                }
+            }
+            
+            if(countWatched != shows.size())
+            {
+                temp.addAll(shows.baseList);
+            }
+        }
+        
+        this.baseList = temp.baseList;
+        */
     }
     
     public int GetSeasonCount() throws SageCallApiException

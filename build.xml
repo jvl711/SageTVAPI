@@ -12,6 +12,7 @@
     <import file="nbproject/build-impl.xml"/>
     
     <property name="build.version" value="3.0"/>
+    
     <buildnumber file="mybuild.number"/>
     <tstamp>
         <format property="build.time" pattern="MM/dd/yyyy HH:mm:ss"/>
@@ -50,7 +51,7 @@
         <delete file="${dist.jar.dir}/JVLSageTVAPI.xml"/>
         
         <!--<filter token="BUILDNUMBER" value="${build.number}" />-->
-        <filter token="BUILDTIME" value="${build.date}" />
+        <filter token="BUILDDATE" value="${build.date}" />
         <filter token="VERSION" value="${build.version}" />
         <filter token="JARMD5" value="${jarmd5}" />
         <copy file="./JVLSageTVAPI.template" tofile="${dist.jar.dir}/JVLSageTVAPI.xml" filtering="true"/>
@@ -76,8 +77,6 @@
         <copy file="${dist.jar}" todir="${sagetvclient.path}JARs" />
         <copy file="${dist.dir}\lib\TheMovieDB.jar" todir="${sagetvclient.path}JARs" />
         <copy file="${dist.dir}\lib\json-20160810.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="${dist.dir}\lib\JavaFFmpeg.jar" todir="${sagetvclient.path}JARs" />
-        <copy file="..\JavaFFmpegLibrary\JavaFFmpeg\src\libraries\libFFmpegJNIWrapper.dll" todir="${sagetvclient.path}" />
     </target> 
     
     <target name="publishAll" depends="publishSupportLibraries">    
@@ -114,19 +113,25 @@
     </target>            
     
     <target name="sageclient">
+        
         <available property="sagetvclientx86.exists" file="C:\Program Files (x86)\SageTV\SageTV\SageTVClient.exe" type="file"/>
-       
+        <echo message="${sagetvclientx86.exists}"/>
+
         <condition property="sagetvclient.path" value="C:\Program Files (x86)\SageTV\SageTV\">
-            <istrue value="${sagetvclientx86.exists}"></istrue>
+            <istrue value="${sagetvclientx86.exists}">
+            </istrue>
         </condition>
         
         <available property="sagetvclientx64.exists" file="C:\Program Files\SageTV\SageTV\SageTVClient.exe" type="file"/>
+        <echo message="${sagetvclientx64.exists}"/>
         
         <condition property="sagetvclient.path" value="C:\Program Files\SageTV\SageTV\">
-            <istrue value="${sagetvclientx64.exists}"></istrue>
+            <istrue value="${sagetvclientx64.exists}">
+            </istrue>
         </condition>
         
-        <echo message="${sagetvclient.path}"/>
+        <echo>${sagetvclient.path}</echo>
+        
     </target>
     
     <target name="sageclientx64">
@@ -134,7 +139,7 @@
         <echo unless:set="sagetvclientx64.exists">SageTV Client x64 Not Installed!</echo>
     </target>
     
-    <target name="deploy-to-server-and-restart" depends="copySupportLibraries">
+    <target name="deploy-to-server-and-restart" depends="sageclient,copySupportLibraries">
         
         <echo>Stopping SageTV64 service</echo>
         <exec executable="cmd.exe" >

@@ -1,5 +1,7 @@
 package jvl.playback;
 
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 import jvl.sage.Debug;
 import jvl.sage.SageCallApiException;
 import jvl.sage.api.Airing;
@@ -36,6 +38,8 @@ public class Playback
     
     
     private int currentPlayNextTime;
+    
+    private static final Logger LOG = Logging.getLogger(Playback.class.getName());
     
     /**
      * Attempts to determine the object type of the media passed in.  The index
@@ -77,16 +81,22 @@ public class Playback
      */
     public Playback(String context, Object media, PlaybackOptions playbackOptions,  int index) throws SageCallApiException
     {
-        Debug.Writeln("Constructor", Debug.INFO);
+        LOG.severe("Playback constructor called");
         
         this.index = index;
         this.uicontext = new UIContext(context);
         this.playbackOptions = playbackOptions;
         this.playnextTime = Playback.DEFAULT_PLAYNEXT_TIME_SECONDS;
         
+        if(media == null)
+        {
+            LOG.severe("Constructor passed null media type");
+            throw new RuntimeException("JVL Playback - Null media type passed to constructor!");
+        }
+        
         if(media instanceof MediaFile)
         {
-            Debug.Writeln("Constructor creating from jvl.sage.MediaFile", Debug.INFO);
+            LOG.info("Constructor creating from jvl.sage.MediaFile");
             
             airings = new Airings();
             airings.add(((MediaFile)media).GetAiring());
@@ -95,7 +105,7 @@ public class Playback
         }
         else if(media instanceof Airing)
         {
-            Debug.Writeln("Constructor creating from jvl.sage.Airing", Debug.INFO);
+            LOG.info("Constructor creating from jvl.sage.Airing");
             
             airings = new Airings();
             airings.add((Airing)media);
@@ -104,22 +114,23 @@ public class Playback
         }
         else if(media instanceof MediaFiles)
         {
-            Debug.Writeln("Constructor creating from jvl.sage.MediaFiles", Debug.INFO);
+            LOG.info("Constructor creating from jvl.sage.MediaFiles");
             
             MediaFiles mediaFiles = (MediaFiles)media;
             airings = mediaFiles.GetAirings();
         }
         else if(media instanceof Airings)
         {
-            Debug.Writeln("Constructor creating from jvl.sage.Airings", Debug.INFO);
+            LOG.info("Constructor creating from jvl.sage.Airings");
             
             airings = ((Airings)media);
         }
         else
         {
+            
             if(MediaFile.IsMediaFileObject(media))
             {
-                Debug.Writeln("Constructor creating from SageTV MedisFile", Debug.INFO);
+                LOG.info("Constructor creating from SageTV MedisFile");
                 
                 airings = new Airings();
                 MediaFile mediaFile = new MediaFile(media);
@@ -128,7 +139,7 @@ public class Playback
             }
             else if(Airing.IsAiringObject(media))
             {
-                Debug.Writeln("Constructor creating from SageTV Airing", Debug.INFO);
+                LOG.info("Constructor creating from SageTV Airing");
                 
                 airings = new Airings();
                 airings.add(new Airing(media));
@@ -136,8 +147,19 @@ public class Playback
             }
             else
             {
-                Debug.Writeln("Constructor passed unknown media type", Debug.ERROR);
-                throw new RuntimeException("JVL Playback - Unknown media type passed to constructor!");
+                String className = "";
+                
+                if(media != null)
+                {
+                    className = media.getClass().getSimpleName();
+                }
+                else
+                {
+                    className = "NULL";
+                }
+                
+                LOG.severe("Constructor passed unknown media type");
+                throw new RuntimeException("JVL Playback - Unknown media type passed to constructor! [" + className + "]");
             }
         }
         

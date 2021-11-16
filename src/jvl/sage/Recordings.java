@@ -166,7 +166,7 @@ public class Recordings
             
             if(this.GetFilterWatched())
             {
-                shows.FilterWatched();
+                shows.FilterWatchedShows();
             }
             
             if(sortDir == SortDirection.DESC)

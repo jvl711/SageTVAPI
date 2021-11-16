@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SageTVPlugin>
-	<Name>JVL SageTV API</Name>
-	<Identifier>JVLSageTVAPI</Identifier>
-	<Description>A collection of calls utilized by jvl711 in a number of projects</Description>
+	<Name>JVL TheMovieDB API</Name>
+	<Identifier>JVLTheMovieDBAPI</Identifier>
+	<Description>This is a java library for utilizing TheMovieDB webserivce</Description>
 	<Author>jvl711</Author>
-	<CreationDate>2016.10.30</CreationDate>
+	<CreationDate>2018.11.05</CreationDate>
 	<ModificationDate>@BUILDDATE@</ModificationDate>
 	<Version>@VERSION@</Version>
 	<PluginType>Library</PluginType>
 	<Desktop>false</Desktop>
-	<Webpage>https://github.com/jvl711/SageTVAPI</Webpage>
+	<Webpage>https://github.com/jvl711/TheMovieDB</Webpage>
 	<Package>
         <PackageType>System</PackageType>
-        <Location>https://github.com/jvl711/SageTVAPI/releases/download/@VERSION@/JVLSageTVAPI_v@VERSION@.zip</Location>
+        <Location>https://github.com/jvl711/TheMovieDB/releases/download/@VERSION@/JVLSageTVAPI_v@VERSION@.zip</Location>
         <MD5>@JARMD5@</MD5>
-        <ReleaseNotes><![CDATA[]]></ReleaseNotes>
+        <ReleaseNotes><![CDATA[
+        1.0.0 - Intial release to GitHub for the public
+        ]]></ReleaseNotes>
     </Package>
 </SageTVPlugin>

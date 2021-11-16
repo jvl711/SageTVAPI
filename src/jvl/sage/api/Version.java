@@ -3,8 +3,8 @@ package jvl.sage.api;
 
 public class Version
 {
-    private final static String BUILDTIME = "04/02/2021 10:29:36";
-    private final static String BUILDNUMBER = "24";
+    private final static String BUILDTIME = "11/15/2021 21:20:47";
+    private final static String BUILDNUMBER = "372";
     private final static String VERSION = "3.0";
     
     public static String getVersion()

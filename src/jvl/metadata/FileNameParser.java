@@ -2,6 +2,9 @@
 package jvl.metadata;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jvl.logging.Logging;
 
 
 public class FileNameParser 
@@ -18,11 +21,14 @@ public class FileNameParser
     private int episode;
     private static final ArrayList<String> ignoreWords;
     
+    private static final Logger LOG = Logging.getLogger(FileNameParser.class.getName());
+    
     static
     {
+        LOG.info("Adding ignore words to the array of ignore words.");
         ignoreWords = new ArrayList();
         ignoreWords.add("1080p".toLowerCase());
-        ignoreWords.add("2060p".toLowerCase());
+        ignoreWords.add("2160p".toLowerCase());
         ignoreWords.add("4K".toLowerCase());
         ignoreWords.add("HDR".toLowerCase());
         ignoreWords.add("HEVC".toLowerCase());
@@ -32,6 +38,7 @@ public class FileNameParser
         ignoreWords.add("BluRay".toLowerCase());
         ignoreWords.add("BR-Rip".toLowerCase());
         ignoreWords.add("WebRip".toLowerCase());
+        ignoreWords.add("WebDL".toLowerCase());
         ignoreWords.add("DVDRip".toLowerCase());
         ignoreWords.add("x264".toLowerCase());
         ignoreWords.add("h264".toLowerCase());
@@ -43,6 +50,7 @@ public class FileNameParser
         ignoreWords.add("dts-hd".toLowerCase());
         ignoreWords.add("TRUEFRENCH".toLowerCase());
         ignoreWords.add("UNRATED".toLowerCase());
+        LOG.info("Ignore Words: " + ignoreWords.toString());
     }
     
     public FileNameParser(String fileName)

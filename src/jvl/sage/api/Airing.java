@@ -20,7 +20,7 @@ public class Airing extends SageObject
             }
             else if(MediaFile.IsMediaFileObject(airing))
             {
-                this.airing = MediaFile.GetMediaFileAiring(airing);
+                this.airing = MediaFile.GetAiring(airing);
             }
             else
             {     

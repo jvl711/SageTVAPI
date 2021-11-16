@@ -3,8 +3,11 @@ package jvl.sage.api;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 import jvl.chapterdb.ChapterSearch;
 import jvl.chapterdb.ChapterSet;
+import jvl.logging.Logging;
+import jvl.metadata.MetadataPlugin;
 import jvl.playback.Marker;
 import jvl.playback.MarkerType;
 import jvl.sage.SageAPI;
@@ -15,6 +18,7 @@ import jvl.sage.SageObject;
 public class MediaFile extends SageObject
 {
     private Object mediafile;
+    private static final Logger LOG = Logging.getLogger(MediaFile.class.getName());
 
     public MediaFile(Object mediafile)
     {
@@ -23,13 +27,16 @@ public class MediaFile extends SageObject
             if(MediaFile.IsMediaFileObject(mediafile))
             {
                 this.mediafile = mediafile;
+                LOG.info("Media file constructor called and passed an MediaFile object");
             }
             else if(Airing.IsAiringObject(mediafile))
             {
-                this.mediafile = Airing.GetMediaFileForAiring(mediafile);   
+                this.mediafile = Airing.GetMediaFileForAiring(mediafile);
+                LOG.info("Media file constructor called and passed an Airing object");
             }
             else
             {
+                LOG.severe("Media file constructor exeception.  Unknown object type passed");
                 throw new Exception("Unknown object type passed");
             }
         }
@@ -113,10 +120,12 @@ public class MediaFile extends SageObject
         return MediaFile.callAPIBoolean("IsTVFile", this.mediafile);
     }
     
-    public static Object GetMediaFileAiring(Object mediaFile) throws SageCallApiException
+    
+    public static Object GetAiring(Object mediaFile) throws SageCallApiException
     {
         return MediaFile.callApiObject("GetMediaFileAiring", mediaFile);
     }
+    
     
     public Object GetMediaFileAiring() throws SageCallApiException
     {

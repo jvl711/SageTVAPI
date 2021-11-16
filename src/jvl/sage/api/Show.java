@@ -31,6 +31,8 @@ public class Show extends SageObject
     
     private Metadata meta;
     
+    
+    
     private static final Logger LOG = Logging.getLogger(Show.class.getName());
     
     /**
@@ -43,10 +45,12 @@ public class Show extends SageObject
      */
     public Show(Object input) throws SageCallApiException
     {
+        String apikey = "";
+        
         if(MediaFile.IsMediaFileObject(input))
         {
             this.mediafile = input;
-            this.airing = MediaFile.GetMediaFileAiring(mediafile);
+            this.airing = MediaFile.GetAiring(mediafile);
             //this.show = Airing.GetShowForAiring(airing);
             
         }
@@ -70,7 +74,16 @@ public class Show extends SageObject
             this.lookupObject = mediafile;
         }
         
-        meta = new Metadata(this);
+        try
+        {
+            apikey = Configuration.GetServerProperty("jvl.metadataplugin.apikey", "");
+        }
+        catch(Exception ex)
+        {
+            LOG.severe("Error getting the APIKey for TheMovieDB.  Metadata lookups will fail without a valid key.");
+        }
+        
+        meta = new Metadata(this, apikey);
     }
     
     /**
